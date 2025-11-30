@@ -969,7 +969,7 @@ LLM outputs are not guaranteed to be accurate. They may contain errors, hallucin
 
 This project is grounded in established research and best practices. All citations follow APA 7th edition format.
 
-For a complete list of references and citations, see [docs/REFERENCES.md](docs/REFERENCES.md).
+For a complete list of references and citations, see [docs/REFERENCES.md](docs/REFERENCES.md). For a quick research summary by category, see [docs/RESEARCH_SUMMARY.md](docs/RESEARCH_SUMMARY.md).
 
 ### Key References
 
@@ -978,6 +978,20 @@ For a complete list of references and citations, see [docs/REFERENCES.md](docs/R
 - **Enterprise Patterns**: Fowler, M. (2002). *Patterns of enterprise application architecture*. Addison-Wesley Professional.
 - **Event-Driven Architecture**: Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns: Designing, building, and deploying messaging solutions*. Addison-Wesley Professional.
 - **Large Language Models**: Brown, T., et al. (2020). Language models are few-shot learners. *Advances in neural information processing systems*, 33, 1877-1901.
+
+### Research Highlights
+
+This system incorporates research across multiple domains:
+
+- **Explainable AI (XAI)**: Multi-level explanations for AI decisions (Guidotti et al., 2018; Arrieta et al., 2020)
+- **Human-in-the-Loop**: Collaborative AI systems with human oversight (Amershi et al., 2014; Bansal et al., 2021)
+- **Resilience Patterns**: Circuit breakers and fault tolerance (Nygard, 2007; Hohpe & Woolf, 2003)
+- **Advanced Prompt Engineering**: Instruction following, chain-of-thought, zero-shot reasoning (Ouyang et al., 2022; Wei et al., 2022; Kojima et al., 2022)
+- **Testing LLM Systems**: Behavioral testing and property-based testing (Ribeiro et al., 2020; Helbling & Schlobach, 2023)
+- **Observability**: Distributed tracing and monitoring (Sigelman et al., 2010; Charity & Swaminathan, 2021)
+- **Event Sourcing & CQRS**: Advanced architectural patterns (Fowler, 2005; Kleppmann, 2017; Vernon, 2013)
+
+See [docs/RESEARCH_SUMMARY.md](docs/RESEARCH_SUMMARY.md) for a categorized overview of all research foundations.
 
 ---
 

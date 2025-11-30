@@ -2,6 +2,13 @@
 
 This document describes the resilience features built into the system to handle errors gracefully and autonomously.
 
+The resilience patterns implemented here are based on established research and best practices:
+- **Circuit Breaker Pattern**: Hohpe & Woolf (2003), Nygard (2007), Fowler (2014)
+- **Retry Logic**: Exponential backoff strategies (Nygard, 2007)
+- **Graceful Degradation**: Fault tolerance patterns (Netflix Tech Blog, 2011)
+
+See: docs/REFERENCES.md#resilience-patterns--circuit-breakers
+
 ## JSON Parsing Resilience
 
 ### Problem
@@ -138,7 +145,9 @@ if data is None:
 1. **Log All Errors** for analysis
 2. **Metrics** on error rates
 3. **Automatic Alerts** for repeated failures
-4. **Circuit Breaker** pattern for failing services
+4. **Circuit Breaker** pattern for failing services (Hohpe & Woolf, 2003; Nygard, 2007; Fowler, 2014)
+5. **Distributed Tracing** for error correlation (Sigelman et al., 2010)
+6. **Observability** for production monitoring (Charity & Swaminathan, 2021)
 
 ## Testing Resilience
 

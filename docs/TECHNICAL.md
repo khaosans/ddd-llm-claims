@@ -191,6 +191,13 @@ Repositories abstract data access:
 - **Domain Rules**: Encode business rules (e.g., "amounts must be non-negative") as guardrails
 - **Few-Shot Learning**: Examples teach desired format without fine-tuning (Brown et al., 2020)
 
+**Advanced Prompt Engineering Techniques**: The system can incorporate advanced prompting strategies:
+- **Instruction Following**: Training models to follow instructions (Ouyang et al., 2022)
+- **Chain-of-Thought**: Eliciting reasoning through step-by-step prompts (Wei et al., 2022)
+- **Zero-Shot Reasoning**: Enabling complex reasoning without examples (Kojima et al., 2022)
+- **Least-to-Most Prompting**: Breaking complex problems into simpler subproblems (Zhou et al., 2022)
+- **Prompt Patterns**: Reusable patterns for common LLM tasks (White et al., 2023)
+
 #### Intake Agent Prompt
 - Defines role: "Claims Analyst"
 - Specifies output format: JSON matching `ClaimSummary` schema
@@ -373,10 +380,11 @@ Replace in-memory event bus with:
 
 ### Error Handling
 
-- Add retry logic for LLM API calls
-- Implement circuit breakers (Hohpe & Woolf, 2003, pp. 420-430)
+- Add retry logic for LLM API calls with exponential backoff
+- Implement circuit breakers (Hohpe & Woolf, 2003, pp. 420-430; Nygard, 2007; Fowler, 2014)
 - Add comprehensive logging
 - Monitor model performance
+- Graceful degradation patterns (Nygard, 2007)
 
 ### Security
 
@@ -446,14 +454,16 @@ ollama pull llama3.2
 ### Architecture Enhancements
 
 1. **Event Sourcing**
-   - Implement full event sourcing for complete audit trail (Young, 2016)
+   - Implement full event sourcing for complete audit trail (Young, 2016; Fowler, 2005)
    - Store all domain events for replay and debugging
    - Enable time-travel debugging and state reconstruction
+   - Event sourcing patterns for data-intensive applications (Kleppmann, 2017)
 
 2. **CQRS (Command Query Responsibility Segregation)**
-   - Separate read and write models for better scalability (Fowler, 2011)
+   - Separate read and write models for better scalability (Fowler, 2011; Vernon, 2013)
    - Optimize read models for different query patterns
    - Implement eventual consistency patterns
+   - CQRS Journey patterns and practices (Young & Betts, 2010; Betts et al., 2013)
 
 3. **Distributed Event Bus**
    - Replace in-memory event bus with distributed messaging (Redis, RabbitMQ, Kafka)
@@ -470,6 +480,10 @@ ollama pull llama3.2
 2. **Advanced Prompt Engineering**
    - Implement few-shot learning with examples (Brown et al., 2020)
    - Add chain-of-thought prompting (Wei et al., 2022)
+   - Support instruction following patterns (Ouyang et al., 2022)
+   - Implement zero-shot reasoning (Kojima et al., 2022)
+   - Apply least-to-most prompting for complex tasks (Zhou et al., 2022)
+   - Use prompt patterns catalog (White et al., 2023)
    - Support prompt templates and versioning
    - A/B testing for prompt effectiveness
 
@@ -478,6 +492,8 @@ ollama pull llama3.2
    - Monitor LLM token usage and costs
    - Implement agent health checks
    - Add agent decision logging
+   - Distributed tracing for agent workflows (Sigelman et al., 2010; OpenTelemetry Project, n.d.)
+   - Observability engineering practices (Charity & Swaminathan, 2021)
 
 ### Infrastructure Enhancements
 

@@ -4,6 +4,16 @@ Review Queue - Manages claims requiring human review
 The review queue determines which claims need human review based on
 business rules (high fraud scores, large amounts, policy issues, etc.)
 and manages the review workflow.
+
+This implements priority-based review queue patterns for Human-in-the-Loop
+systems, enabling efficient human oversight of AI decisions (Amershi et al., 2014;
+Holzinger, 2016).
+
+Research Foundations:
+- Amershi et al. (2014): Interactive machine learning patterns
+- Holzinger (2016): When do we need the human-in-the-loop
+
+See: docs/REFERENCES.md#human-in-the-loop-hitl-patterns
 """
 
 from dataclasses import dataclass, field

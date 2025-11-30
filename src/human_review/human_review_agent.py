@@ -3,6 +3,18 @@ Human Review Agent - Coordinates human review workflow
 
 This agent determines when human review is needed, formats information
 for reviewers, and processes human decisions to update the system.
+
+This implementation follows Human-in-the-Loop (HITL) patterns for collaborative
+AI systems, enabling human oversight and intervention in AI decision-making
+(Amershi et al., 2014; Bansal et al., 2021).
+
+Research Foundations:
+- Amershi et al. (2014): Role of humans in interactive machine learning
+- Holzinger (2016): Interactive ML for health informatics
+- Bansal et al. (2021): Human-AI team performance
+- Yang et al. (2020): Human-AI interaction design challenges
+
+See: docs/REFERENCES.md#human-in-the-loop-hitl-patterns
 """
 
 from typing import Optional
@@ -22,6 +34,19 @@ class HumanReviewAgent:
     2. Adds claims to review queue with appropriate priority
     3. Formats information for human reviewers
     4. Processes human decisions and updates the system
+    
+    This implements the Human-in-the-Loop pattern, enabling human oversight
+    and intervention in AI decision-making processes. The agent follows best
+    practices for HITL systems, including clear intervention points, feedback
+    collection, and learning from human decisions (Amershi et al., 2014;
+    Bansal et al., 2021; Yang et al., 2020).
+    
+    References:
+    - Amershi et al. (2014): Power to the people: Role of humans in interactive ML
+    - Bansal et al. (2021): Human-AI team performance
+    - Yang et al. (2020): Human-AI interaction design
+    
+    See: docs/REFERENCES.md#human-in-the-loop-hitl-patterns
     """
     
     def __init__(

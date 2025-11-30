@@ -6,6 +6,18 @@ Generates human-readable explanations for decisions at different detail levels:
 - Detailed: Full reasoning with evidence
 - Regulatory: Formatted for compliance reports
 - Debug: Technical details for developers
+
+This service implements Explainable AI (XAI) principles to provide transparency
+and interpretability for AI decision-making. The multi-level explanation approach
+supports different audiences and use cases (Guidotti et al., 2018; Arrieta et al., 2020).
+
+Research Foundations:
+- Guidotti et al. (2018): Survey of explainable AI methods
+- Adadi & Berrada (2018): XAI taxonomies and approaches
+- Miller (2019): Explanation in AI from social sciences perspective
+- Arrieta et al. (2020): XAI concepts, taxonomies, and opportunities
+
+See: docs/REFERENCES.md for complete citations
 """
 
 import json
@@ -29,6 +41,19 @@ class ExplainabilityService:
     - Business users (summary)
     - Compliance officers (detailed, regulatory)
     - Developers (debug)
+    
+    This implementation follows XAI best practices for multi-level explanations,
+    supporting different audiences and regulatory requirements (Guidotti et al., 2018;
+    Arrieta et al., 2020). The service generates explanations that balance
+    comprehensibility with technical detail based on the target audience (Miller, 2019).
+    
+    References:
+    - Guidotti et al. (2018): Survey of explainable AI methods
+    - Arrieta et al. (2020): XAI concepts and taxonomies
+    - Miller (2019): Explanation in artificial intelligence
+    - Adadi & Berrada (2018): Peeking inside black boxes
+    
+    See: docs/REFERENCES.md#explainable-ai-xai-research
     """
     
     def __init__(self, audit_service: Optional[DecisionAuditService] = None):

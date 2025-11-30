@@ -81,6 +81,7 @@ This project is designed for:
 
 - **Anti-Corruption Layer**: Agents translate external data to domain models (Evans, 2003)
 - **Prompt Engineering**: System prompts make LLMs act as domain experts (Brown et al., 2020)
+- **Advanced Prompting**: Instruction following (Ouyang et al., 2022), chain-of-thought (Wei et al., 2022), zero-shot reasoning (Kojima et al., 2022)
 - **Model Abstraction**: Support for multiple LLM providers
 - **Validation**: LLM output validated against domain models
 
@@ -93,10 +94,10 @@ This project is designed for:
 
 ### Human-in-the-Loop
 
-- **Review Queue**: Prioritized review workflow
+- **Review Queue**: Prioritized review workflow (Amershi et al., 2014; Holzinger, 2016)
 - **Intervention Points**: Human review at key stages
-- **Feedback Loop**: Learning from human decisions
-- **Override Capability**: Human decisions override AI
+- **Feedback Loop**: Learning from human decisions (Bansal et al., 2021)
+- **Override Capability**: Human decisions override AI (Yang et al., 2020)
 
 ## Structure
 
@@ -118,14 +119,19 @@ The project is organized following DDD principles (Evans, 2003) and Clean Archit
 
 ## Research and Citations
 
-This project is grounded in established research and best practices:
+This project is grounded in established research and best practices across multiple domains:
 
-- **DDD**: Based on Eric Evans' "Domain-Driven Design" (2003)
-- **Architecture**: Follows patterns from Vaughn Vernon, Martin Fowler
-- **LLMs**: Incorporates research on prompt engineering and agent patterns
-- **Events**: Based on event-driven architecture research
+- **DDD**: Based on Eric Evans' "Domain-Driven Design" (2003) and Vaughn Vernon's "Implementing DDD" (2013)
+- **Architecture**: Follows patterns from Martin Fowler, Greg Hohpe, and others
+- **LLMs**: Incorporates research on prompt engineering (Brown et al., 2020; Wei et al., 2022; Ouyang et al., 2022) and agent patterns
+- **Events**: Based on event-driven architecture research (Hohpe & Woolf, 2003; Fowler, 2005; Kleppmann, 2017)
+- **Explainable AI**: Multi-level explanations for transparency (Guidotti et al., 2018; Arrieta et al., 2020)
+- **Human-in-the-Loop**: Collaborative AI patterns (Amershi et al., 2014; Bansal et al., 2021; Yang et al., 2020)
+- **Resilience**: Fault tolerance and circuit breaker patterns (Nygard, 2007; Hohpe & Woolf, 2003)
+- **Testing**: Behavioral and property-based testing for LLM systems (Ribeiro et al., 2020; Helbling & Schlobach, 2023)
+- **Observability**: Distributed tracing and monitoring (Sigelman et al., 2010; Charity & Swaminathan, 2021)
 
-See [REFERENCES.md](docs/REFERENCES.md) for complete citations.
+See [REFERENCES.md](docs/REFERENCES.md) for complete citations and [RESEARCH_SUMMARY.md](docs/RESEARCH_SUMMARY.md) for a categorized overview.
 
 ## Contributing
 
@@ -149,12 +155,14 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 This project demonstrates concepts from:
 
-- Eric Evans - Domain-Driven Design
-- Vaughn Vernon - Implementing Domain-Driven Design
-- Martin Fowler - Enterprise Application Architecture
-- Research on LLM agents and prompt engineering
+- **Domain-Driven Design**: Eric Evans, Vaughn Vernon
+- **Software Architecture**: Martin Fowler, Greg Hohpe, Michael Nygard
+- **LLM Research**: OpenAI, Google Research, Anthropic, and the broader AI research community
+- **Explainable AI**: Researchers advancing AI transparency and interpretability
+- **Human-AI Collaboration**: Researchers exploring human-in-the-loop systems
+- **Testing & Observability**: Researchers developing strategies for AI system validation and monitoring
 
-See [REFERENCES.md](docs/REFERENCES.md) for complete acknowledgments.
+See [REFERENCES.md](docs/REFERENCES.md) for complete acknowledgments and citations.
 
 ---
 

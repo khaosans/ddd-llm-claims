@@ -1102,14 +1102,16 @@ Repositories abstract data access, keeping domain models independent of persiste
 ### Architecture Enhancements
 
 1. **Event Sourcing**
-   - Implement full event sourcing for complete audit trail
+   - Implement full event sourcing for complete audit trail (Young, 2016; Fowler, 2005)
    - Store all domain events for replay and debugging
    - Enable time-travel debugging and state reconstruction
+   - Event sourcing patterns for data-intensive applications (Kleppmann, 2017)
 
 2. **CQRS (Command Query Responsibility Segregation)**
-   - Separate read and write models for better scalability
+   - Separate read and write models for better scalability (Fowler, 2011; Vernon, 2013)
    - Optimize read models for different query patterns
    - Implement eventual consistency patterns
+   - CQRS Journey patterns and practices (Young & Betts, 2010; Betts et al., 2013)
 
 3. **Distributed Event Bus**
    - Replace in-memory event bus with distributed messaging (Redis, RabbitMQ, Kafka)
@@ -1148,8 +1150,12 @@ Repositories abstract data access, keeping domain models independent of persiste
    - Add agent specialization and delegation
 
 2. **Advanced Prompt Engineering**
-   - Implement few-shot learning with examples
+   - Implement few-shot learning with examples (Brown et al., 2020)
    - Add chain-of-thought prompting (Wei et al., 2022)
+   - Support instruction following patterns (Ouyang et al., 2022)
+   - Implement zero-shot reasoning (Kojima et al., 2022)
+   - Apply least-to-most prompting (Zhou et al., 2022)
+   - Use prompt patterns catalog (White et al., 2023)
    - Support prompt templates and versioning
    - A/B testing for prompt effectiveness
 
@@ -1158,6 +1164,8 @@ Repositories abstract data access, keeping domain models independent of persiste
    - Monitor LLM token usage and costs
    - Implement agent health checks
    - Add agent decision logging
+   - Distributed tracing for agent workflows (Sigelman et al., 2010; OpenTelemetry Project, n.d.)
+   - Observability engineering practices (Charity & Swaminathan, 2021)
 
 ### Infrastructure Enhancements
 
@@ -1217,10 +1225,12 @@ Repositories abstract data access, keeping domain models independent of persiste
 ### Monitoring & Observability
 
 1. **Application Monitoring**
-   - Add distributed tracing (Jaeger, Zipkin)
+   - Add distributed tracing (Jaeger, Zipkin) following Dapper patterns (Sigelman et al., 2010)
    - Implement structured logging
    - Add metrics collection (Prometheus)
    - Create dashboards (Grafana)
+   - OpenTelemetry integration for observability (OpenTelemetry Project, n.d.)
+   - Observability engineering practices (Charity & Swaminathan, 2021)
 
 2. **Business Metrics**
    - Track claim processing times

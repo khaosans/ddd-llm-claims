@@ -223,6 +223,8 @@ This guide outlines best practices for using, extending, and learning from this 
 
 ### Testing Best Practices
 
+Testing LLM-based systems requires specialized strategies beyond traditional unit testing:
+
 1. **Test Domain Logic**
    - Test invariants
    - Test state transitions
@@ -234,12 +236,22 @@ This guide outlines best practices for using, extending, and learning from this 
    - Test validation
    - Test error handling
    - Test output parsing
+   - Behavioral testing beyond accuracy (Ribeiro et al., 2020)
+   - Property-based testing for ML systems (Godefroid et al., 2020)
 
 3. **Test Integration**
    - Test workflows
    - Test event flow
    - Test human review
    - Test error recovery
+   - Adversarial testing for robustness (Zhang et al., 2020; Helbling & Schlobach, 2023)
+
+**Research Foundations**:
+- **Ribeiro et al. (2020)**: Behavioral testing of NLP models with CheckList
+- **Godefroid et al. (2020)**: Property-based testing for machine learning
+- **Helbling & Schlobach (2023)**: Comprehensive survey of testing LLM applications
+
+See: docs/REFERENCES.md#testing-llm-based-systems
 
 ## Documentation Best Practices
 

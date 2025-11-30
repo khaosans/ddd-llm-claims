@@ -11,10 +11,20 @@ Agents in this system act as Anti-Corruption Layers (ACL) (Evans, 2003) that:
 4. Handle errors and validation
 
 Each agent specializes in a specific domain task and uses LLMs (Brown et al., 2020)
-to perform that task intelligently.
+to perform that task intelligently through prompt engineering techniques.
 
 DDD Pattern: Anti-Corruption Layer - Agents protect the domain from messy
 external data and API changes, translating them into clean domain models.
+
+Prompt Engineering Research:
+- Brown et al. (2020): Few-shot learning with language models
+- Wei et al. (2022): Chain-of-thought prompting
+- Ouyang et al. (2022): Instruction following (InstructGPT)
+- Kojima et al. (2022): Zero-shot reasoning
+- Zhou et al. (2022): Least-to-most prompting
+- White et al. (2023): Prompt patterns catalog
+
+See: docs/REFERENCES.md#llmai-agents--prompt-engineering
 """
 
 import json
@@ -58,7 +68,18 @@ class BaseAgent(ABC):
         
         The system prompt defines the agent's role and behavior.
         It's part of "Prompt Engineering" - crafting instructions
-        that make the LLM act as a domain expert.
+        that make the LLM act as a domain expert (Brown et al., 2020;
+        Ouyang et al., 2022).
+        
+        This implements instruction-following patterns (Ouyang et al., 2022)
+        and can incorporate chain-of-thought reasoning (Wei et al., 2022)
+        or least-to-most prompting strategies (Zhou et al., 2022) as needed.
+        
+        References:
+        - Brown et al. (2020): Few-shot learning
+        - Ouyang et al. (2022): Instruction following
+        - Wei et al. (2022): Chain-of-thought prompting
+        - White et al. (2023): Prompt patterns
         
         Returns:
             System prompt string

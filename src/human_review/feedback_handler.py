@@ -3,6 +3,16 @@ Feedback Handler - Captures and processes human feedback
 
 This module handles human feedback, stores it for analysis,
 and can be used to improve the system over time.
+
+This implements feedback loop integration patterns for Human-in-the-Loop
+systems, enabling learning from human decisions and improving AI performance
+over time (Bansal et al., 2021; Amershi et al., 2014).
+
+Research Foundations:
+- Bansal et al. (2021): Learning from human-AI team performance
+- Amershi et al. (2014): Feedback loop integration in interactive ML
+
+See: docs/REFERENCES.md#human-in-the-loop-hitl-patterns
 """
 
 from dataclasses import dataclass, field
