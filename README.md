@@ -707,6 +707,8 @@ See the system in action! These screenshots demonstrate the interactive dashboar
 
 ### Processing Workflow with Extracted Facts
 
+### 3. Processing Workflow
+
 ![Processing Workflow](docs/images/workflow-processing.png)
 
 **What you're seeing**: The workflow processing interface showing real-time claim processing through the system's agent pipeline. This screenshot captures the system actively extracting facts from unstructured data.
@@ -724,7 +726,9 @@ See the system in action! These screenshots demonstrate the interactive dashboar
 
 **Why it matters**: This demonstrates the event-driven workflow in action. You can see how the system progresses through each agent (Intake → Policy → Fraud → Triage) and how unstructured data becomes structured facts. The extracted facts show the transformation from messy input to clean, usable data structures.
 
-### Fraud Assessment with High Risk Detection
+### 4. Fraud Assessment with High Risk Detection
+
+### 4. Fraud Assessment High Risk
 
 ![Fraud Assessment High Risk](docs/images/fraud-assessment-high-risk.png)
 
