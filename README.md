@@ -690,7 +690,22 @@ This will guide you through:
 
 See the system in action! These screenshots demonstrate the interactive dashboard and workflow processing capabilities.
 
-### Process Claim Input Interface
+### 1. Template Selection Interface
+
+![Process Claim Template Selection](docs/images/process_claim_template_selection.png)
+
+**What you're seeing**: The enhanced template selection interface with 37+ claim templates organized by category. This screenshot shows the clean, organized layout with expandable categories (Legitimate Claims, Fraud/Issues, Data Quality Issues, Policy Issues, Edge Cases, and Other Formats). The "Legitimate Claims" category is expanded by default, showing all available legitimate claim templates. Users can easily select from a wide variety of test scenarios to demonstrate different system capabilities.
+
+**Key Features Visible**:
+- **Organized Categories**: Templates grouped by type for easy navigation
+- **Expandable Sections**: Click to expand/collapse each category
+- **Demo Mode Toggle**: Switch between step-by-step demo mode and quick processing
+- **37+ Templates**: Comprehensive test coverage including legitimate claims, fraud patterns, data quality issues, policy problems, and edge cases
+- **One-Click Selection**: Click any template button to load it into the input field
+
+**Why it matters**: This interface makes it easy to test and demonstrate the system's capabilities with diverse scenarios. The organized categories help users understand what types of claims the system can handle and what issues it can detect.
+
+### 2. Process Claim Input Interface
 
 ![Process Claim Input Interface](docs/images/process-claim-input.png)
 
@@ -705,9 +720,7 @@ See the system in action! These screenshots demonstrate the interactive dashboar
 
 **Why it matters**: This interface demonstrates how the system accepts messy, real-world input and transforms it into structured data. The template system helps users understand different claim types, while the document upload feature shows how the system handles multi-modal inputs.
 
-### Processing Workflow with Extracted Facts
-
-### 3. Processing Workflow
+### 3. Processing Workflow with Extracted Facts
 
 ![Processing Workflow](docs/images/workflow-processing.png)
 
