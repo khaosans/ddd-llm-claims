@@ -4,15 +4,17 @@
 
 ### Database Layer ✅
 - SQLAlchemy models for Claims, Policies, Reviews, Events
-- Database-backed repositories
-- SQLite persistence (local, no cloud)
+- Database-backed repositories (`DatabaseClaimRepository`, `DatabasePolicyRepository`)
+- **UI Service Integration**: UI service uses database repositories (not in-memory)
+- SQLite persistence (local, no cloud) - **data persists across sessions**
 - Session management
 
 ### Vector Database ✅
 - ChromaDB integration (local, open-source)
+- **UI Service Integration**: Vector stores initialized in UI service
 - Claim vector store for semantic search
 - Policy vector store for matching
-- Fraud pattern store for detection
+- Fraud pattern store for detection (used by FraudAgent)
 
 ### LangChain Integration ✅
 - LangChain setup utilities
@@ -105,9 +107,9 @@ Works immediately with mock providers - perfect for demos!
 ## Next Steps
 
 To fully integrate:
-1. Connect Streamlit pages to backend orchestrator
-2. Wire up database repositories
-3. Integrate vector search in UI
+1. ✅ Connect Streamlit pages to backend orchestrator
+2. ✅ Wire up database repositories
+3. Integrate vector search in UI (vector stores are initialized and available)
 4. Connect LangChain agents
 5. Add real-time updates
 

@@ -175,6 +175,8 @@ The workflow progression:
 - **Flexibility**: Swap implementations (in-memory → PostgreSQL → MongoDB) without domain changes
 - **Abstraction**: Interfaces define what's needed, not how—makes domain data needs explicit
 
+**Current Implementation**: The UI service uses `DatabaseClaimRepository` and `DatabasePolicyRepository` (SQLite-backed) for persistent storage. In-memory repositories are still available for testing.
+
 Repositories abstract data access:
 
 - **ClaimRepository**: Manages Claim aggregates
@@ -361,7 +363,9 @@ claim = await orchestrator.process_claim(raw_email_text)
 
 ### Database Integration
 
-Replace in-memory repositories with database-backed implementations:
+**Current Status**: The UI service (`src/ui/services.py`) already uses `DatabaseClaimRepository` and `DatabasePolicyRepository` (SQLite-backed) for persistent storage. Data persists across sessions.
+
+For production, you may want to replace SQLite with PostgreSQL or another production database:
 
 ```python
 class PostgreSQLClaimRepository(ClaimRepository):
@@ -370,6 +374,8 @@ class PostgreSQLClaimRepository(ClaimRepository):
         # Publish domain events
         pass
 ```
+
+**Note**: The current SQLite implementation is suitable for local development and demos. For production scale, consider PostgreSQL or MongoDB.
 
 ### Event Bus
 

@@ -22,21 +22,34 @@ from src.agents.document_matching_agent import DocumentMatchingAgent
 from src.agents.document_validation_agent import DocumentValidationAgent
 from src.agents.api_config import get_api_config_manager
 from src.domain.policy import Policy, PolicyStatus
-from src.repositories import InMemoryClaimRepository, InMemoryPolicyRepository
+from src.repositories.db_claim_repository import DatabaseClaimRepository
+from src.repositories.db_policy_repository import DatabasePolicyRepository
 from src.orchestrator import WorkflowOrchestrator
 from src.human_review import ReviewQueue, HumanReviewAgent, FeedbackHandler
 from src.compliance.workflow_integration import get_decision_monitor
+from src.vector_store import ClaimVectorStore, PolicyVectorStore, FraudPatternStore
 
 
 class UIService:
     """Service layer for UI operations"""
     
-    def __init__(self):
-        """Initialize the UI service"""
+    def __init__(self, db_path: str = "data/claims.db", chroma_db_path: str = "data/chroma_db"):
+        """
+        Initialize the UI service.
+        
+        Args:
+            db_path: Path to SQLite database file
+            chroma_db_path: Path to ChromaDB persistence directory
+        """
         self._orchestrator: Optional[WorkflowOrchestrator] = None
-        self._claim_repo: Optional[InMemoryClaimRepository] = None
-        self._policy_repo: Optional[InMemoryPolicyRepository] = None
+        self._claim_repo: Optional[DatabaseClaimRepository] = None
+        self._policy_repo: Optional[DatabasePolicyRepository] = None
         self._review_queue: Optional[ReviewQueue] = None
+        self._claim_vector_store: Optional[ClaimVectorStore] = None
+        self._policy_vector_store: Optional[PolicyVectorStore] = None
+        self._fraud_pattern_store: Optional[FraudPatternStore] = None
+        self._db_path = db_path
+        self._chroma_db_path = chroma_db_path
         self._initialized = False
     
     async def _ensure_initialized(self, provider_type: str = "ollama", model: str = None):
@@ -113,29 +126,66 @@ class UIService:
             mock_provider.model = "mock-vision-model"
             intake_provider = policy_provider = triage_provider = fraud_provider = mock_provider
         
+        # Initialize vector stores (with graceful fallback)
+        try:
+            self._claim_vector_store = ClaimVectorStore(persist_directory=self._chroma_db_path)
+            self._policy_vector_store = PolicyVectorStore(persist_directory=self._chroma_db_path)
+            self._fraud_pattern_store = FraudPatternStore(persist_directory=self._chroma_db_path)
+        except ImportError:
+            # ChromaDB not available, continue without vector stores
+            import warnings
+            warnings.warn("ChromaDB not available. Vector stores will not be initialized. Install with: pip install chromadb")
+            self._claim_vector_store = None
+            self._policy_vector_store = None
+            self._fraud_pattern_store = None
+        except Exception as e:
+            # Other errors initializing vector stores
+            import warnings
+            warnings.warn(f"Failed to initialize vector stores: {e}. Continuing without vector stores.")
+            self._claim_vector_store = None
+            self._policy_vector_store = None
+            self._fraud_pattern_store = None
+        
+        # Create repositories (database-backed) with error handling
+        try:
+            self._claim_repo = DatabaseClaimRepository(db_path=self._db_path)
+            self._policy_repo = DatabasePolicyRepository(db_path=self._db_path)
+        except Exception as e:
+            # If database initialization fails, log warning but continue
+            # This allows the system to work even if SQLAlchemy has issues
+            import warnings
+            warnings.warn(f"Database initialization warning: {e}. System will continue but data may not persist.")
+            # Try to continue with in-memory repositories as fallback
+            from src.repositories import InMemoryClaimRepository, InMemoryPolicyRepository
+            self._claim_repo = InMemoryClaimRepository()
+            self._policy_repo = InMemoryPolicyRepository()
+        
+        # Add sample policy if it doesn't exist
+        from uuid import uuid4
+        existing_policy = await self._policy_repo.find_by_policy_number("POL-2024-001234")
+        if not existing_policy:
+            sample_policy = Policy(
+                policy_id=uuid4(),
+                policy_number="POL-2024-001234",
+                customer_id=uuid4(),
+                status=PolicyStatus.ACTIVE,
+                policy_type="auto",
+                coverage_start=datetime(2024, 1, 1),
+                coverage_end=datetime(2024, 12, 31),
+                max_coverage_amount=Decimal("50000.00"),
+            )
+            await self._policy_repo.save(sample_policy)
+        
         # Create agents
         intake_agent = IntakeAgent(intake_provider, temperature=0.3)
         policy_agent = PolicyAgent(policy_provider, temperature=0.2)
         triage_agent = TriageAgent(triage_provider, temperature=0.5)
-        fraud_agent = FraudAgent(fraud_provider, temperature=0.2)
-        
-        # Create repositories
-        self._claim_repo = InMemoryClaimRepository()
-        self._policy_repo = InMemoryPolicyRepository()
-        
-        # Add sample policy
-        from uuid import uuid4
-        sample_policy = Policy(
-            policy_id=uuid4(),
-            policy_number="POL-2024-001234",
-            customer_id=uuid4(),
-            status=PolicyStatus.ACTIVE,
-            policy_type="auto",
-            coverage_start=datetime(2024, 1, 1),
-            coverage_end=datetime(2024, 12, 31),
-            max_coverage_amount=Decimal("50000.00"),
+        # Pass FraudPatternStore to FraudAgent if available
+        fraud_agent = FraudAgent(
+            fraud_provider, 
+            temperature=0.2,
+            fraud_pattern_store=self._fraud_pattern_store
         )
-        await self._policy_repo.save(sample_policy)
         
         # Create review queue
         self._review_queue = ReviewQueue()
@@ -194,6 +244,11 @@ class UIService:
         )
         
         self._initialized = True
+    
+    @property
+    def orchestrator(self) -> Optional[WorkflowOrchestrator]:
+        """Get the workflow orchestrator"""
+        return self._orchestrator
     
     async def process_claim(self, raw_input: str, source: str = "email", provider_type: str = "ollama", model: str = None) -> Dict[str, Any]:
         """Process a claim and return results"""

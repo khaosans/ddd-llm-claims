@@ -127,6 +127,8 @@ This system takes unstructured customer input (emails, forms, notes) and automat
 
 1. **Extracts** structured facts (what happened, when, where, how much) using an LLM agent
 2. **Validates** whether the claim is covered by an active policy
+3. **Detects** fraud indicators and suspicious patterns
+4. **Assesses** data quality and completeness
 3. **Assesses** the risk of fraud using pattern detection
 4. **Routes** the claim to the appropriate department for processing
 
@@ -170,7 +172,7 @@ All of this happens automatically using **AI (Large Language Models)** (Brown et
 
 **Not Production-Ready**
 
-- **No Data Persistence**: Uses in-memory storage only—data is lost on restart
+- **Limited Data Persistence**: UI service uses SQLite for persistence (local development only), but system lacks production-grade database features
 - **No Security**: Missing authentication, authorization, encryption, and security hardening
 - **No Scalability**: Not designed for concurrent production loads or horizontal scaling
 - **No Error Recovery**: Limited error handling and recovery mechanisms
@@ -540,6 +542,8 @@ Data access is abstracted through repositories, making testing and implementatio
 - **Independence**: Domain models don't know about databases—business logic stays pure
 - **Abstraction**: Interfaces define what's needed, not how it's implemented
 
+**Current Implementation**: The UI service uses `DatabaseClaimRepository` and `DatabasePolicyRepository` (SQLite-backed) for persistent storage. In-memory repositories are still available for testing.
+
 This separation makes the system more testable and maintainable (Evans, 2003, pp. 151-170; Fowler, 2002, pp. 322-334).
 
 ---
@@ -870,6 +874,20 @@ Visualizations are powerful tools for understanding complex systems. They transf
 - **[DEMO_GUIDE.md](docs/DEMO_GUIDE.md)**: How to run and present demos
 - **[DEMO_WORKFLOW_GUIDE.md](docs/DEMO_WORKFLOW_GUIDE.md)**: Demo mode workflow details
 - **[LOCAL_SETUP.md](LOCAL_SETUP.md)**: Local development setup with Ollama
+
+### Testing & Templates
+
+- **[DATA_TEMPLATES.md](DATA_TEMPLATES.md)**: **37+ claim templates** organized by category (legitimate, fraud, data quality, policy issues, edge cases)
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)**: Comprehensive testing guide with scenarios for each template category
+- **[TEMPLATES_QUICK_REFERENCE.md](TEMPLATES_QUICK_REFERENCE.md)**: Quick reference for all available templates
+
+**Template Categories:**
+- ✅ **Legitimate Claims** (11) - Well-documented, valid claims
+- 🚨 **Fraud/Issues** (8) - Suspicious patterns and fraud indicators
+- ⚠️ **Data Quality Issues** (7) - Missing fields, invalid formats
+- ❌ **Policy Issues** (4) - Coverage problems, expired policies
+- 🔍 **Edge Cases** (5) - Unusual scenarios, boundary conditions
+- 📞 **Other Formats** (2) - Phone transcripts, web forms
 
 For a complete documentation index, see [docs/README.md](docs/README.md).
 

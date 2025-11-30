@@ -9,15 +9,17 @@ All components of the Streamlit Dashboard UI plan have been implemented with **l
 ### 1. Database Infrastructure ✅
 - **SQLAlchemy Models**: Claims, Policies, Reviews, Events
 - **Database Repositories**: Database-backed Claim and Policy repositories
+- **UI Service Integration**: UI service uses `DatabaseClaimRepository` and `DatabasePolicyRepository` (not in-memory)
 - **Session Management**: Context managers for database sessions
-- **Local Storage**: SQLite database (`data/claims.db`)
+- **Local Storage**: SQLite database (`data/claims.db`) - **data persists across sessions**
 - **Graceful Fallback**: Works even if SQLAlchemy not installed
 
 ### 2. Vector Database ✅
 - **ChromaDB Integration**: Local vector database
+- **UI Service Integration**: Vector stores initialized in UI service (`ClaimVectorStore`, `PolicyVectorStore`, `FraudPatternStore`)
 - **Claim Vector Store**: Semantic search for claims
 - **Policy Vector Store**: Policy document matching
-- **Fraud Pattern Store**: Fraud pattern detection
+- **Fraud Pattern Store**: Fraud pattern detection (used by FraudAgent)
 - **Local Storage**: `data/chroma_db/` directory
 - **Graceful Fallback**: Works even if ChromaDB not installed
 

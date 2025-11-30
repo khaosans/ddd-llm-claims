@@ -199,4 +199,5 @@ def ensure_data_directories() -> None:
     """Ensure required data directories exist"""
     Path("data").mkdir(exist_ok=True)
     Path("data/chroma_db").mkdir(parents=True, exist_ok=True)
+    # Note: Database file will be created automatically by SQLAlchemy when first used
 

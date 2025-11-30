@@ -8,6 +8,8 @@ The Streamlit UI has been fully integrated with the backend orchestrator and rep
    - Provides a clean interface between Streamlit UI and backend
    - Handles async operations synchronously for Streamlit
    - Manages orchestrator initialization and model providers
+   - **Uses DatabaseClaimRepository and DatabasePolicyRepository** for persistent storage
+   - **Initializes vector stores** (ClaimVectorStore, PolicyVectorStore, FraudPatternStore)
    - Provides methods for:
      - Processing claims
      - Getting all claims
@@ -94,13 +96,16 @@ All components have been tested:
 - **Demo Mode**: Review actions (approve/reject) are in demo mode and don't persist
 - **Mock Providers**: System works without Ollama using mock providers
 - **Real Processing**: Claims are actually processed through the orchestrator
-- **Data Persistence**: Claims are stored in in-memory repositories (resets on restart)
+- **Data Persistence**: Claims and policies are stored in SQLite database (`data/claims.db`) - **persists across sessions**
+- **Vector Stores**: ChromaDB vector stores initialized for semantic search (ClaimVectorStore, PolicyVectorStore, FraudPatternStore)
+- **Fraud Detection**: FraudAgent uses FraudPatternStore for pattern matching
 
 ## Next Steps (Optional Enhancements)
 
-- Add database persistence for claims
 - Implement real review actions
 - Add more analytics charts
 - Add claim editing capabilities
 - Add export functionality for reviews
+- Integrate vector search in UI (semantic claim search)
+- Use vector stores for policy matching in workflow
 

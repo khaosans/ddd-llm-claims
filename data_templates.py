@@ -437,6 +437,375 @@ Please process my claim.
 Best regards,
 Amanda Taylor
 amanda.taylor@email.com""",
+
+    # Additional Claim Types - Legitimate
+    "health_insurance_claim": """Subject: Medical Claim Submission
+
+Dear Insurance Provider,
+
+I am submitting a claim for medical expenses incurred on February 5, 2024.
+
+PATIENT INFORMATION:
+- Name: Maria Rodriguez
+- Date of Birth: March 15, 1985
+- Policy Number: POL-2024-001234
+
+MEDICAL SERVICES:
+- Date of Service: February 5, 2024
+- Provider: City Medical Center
+- Diagnosis: Sprained ankle from fall
+- Treatment: X-ray, examination, pain medication
+- Total Charges: $1,850.00
+
+INCIDENT DETAILS:
+I slipped on ice in a parking lot and injured my ankle. I was seen at the emergency room and received treatment.
+
+I have attached the medical bills and receipts.
+
+Thank you,
+Maria Rodriguez
+maria.rodriguez@email.com
+(555) 567-8901""",
+
+    "life_insurance_claim": """Subject: Life Insurance Claim - Death Benefit
+
+Dear Insurance Company,
+
+I am filing a claim for the death benefit under policy POL-2024-001234.
+
+DECEDENT INFORMATION:
+- Name: James Wilson
+- Date of Birth: June 10, 1950
+- Date of Death: January 20, 2024
+- Cause of Death: Natural causes (heart failure)
+
+BENEFICIARY INFORMATION:
+- Name: Sarah Wilson (spouse)
+- Relationship: Wife
+- Contact: sarah.wilson@email.com, (555) 678-9012
+
+POLICY DETAILS:
+- Policy Number: POL-2024-001234
+- Coverage Amount: $250,000.00
+- Policy Type: Term Life Insurance
+
+I have attached the death certificate and required documentation.
+
+Sincerely,
+Sarah Wilson""",
+
+    "disability_insurance_claim": """Subject: Disability Claim - Unable to Work
+
+Hello,
+
+I need to file a disability claim. I was injured at work on January 25, 2024 and cannot perform my job duties.
+
+CLAIMANT: Michael Chen
+POLICY: POL-2024-001234
+DATE OF INJURY: January 25, 2024
+
+INJURY DETAILS:
+I injured my back while lifting heavy equipment at my construction job. My doctor has placed me on medical leave for 6-8 weeks.
+
+MEDICAL INFORMATION:
+- Treating Physician: Dr. Emily Johnson
+- Diagnosis: Herniated disc, L4-L5
+- Treatment: Physical therapy, medication, rest
+- Expected Recovery: 6-8 weeks
+
+I have attached medical documentation and work restrictions.
+
+Thank you,
+Michael Chen
+michael.chen@email.com
+(555) 789-0123""",
+
+    "travel_insurance_claim": """Subject: Travel Insurance Claim - Trip Cancellation
+
+Dear Travel Insurance,
+
+I need to file a claim for trip cancellation due to medical emergency.
+
+POLICY: POL-2024-001234
+TRIP DATES: February 15-22, 2024
+CANCELLATION DATE: February 10, 2024
+
+REASON FOR CANCELLATION:
+My mother was hospitalized on February 8, 2024 with a serious medical condition. I had to cancel my trip to care for her.
+
+TRIP DETAILS:
+- Destination: Paris, France
+- Total Trip Cost: $4,200.00
+- Non-refundable Amount: $3,800.00
+
+I have attached medical documentation from the hospital and cancellation receipts from the travel agency.
+
+Best regards,
+Jennifer Martinez
+jennifer.martinez@email.com
+(555) 890-1234""",
+
+    # Additional Fraud/Issue Scenarios
+    "multiple_vehicles_stolen": """Subject: Another Stolen Vehicle Claim
+
+Hi Insurance,
+
+This is my second stolen vehicle claim this year. My car was stolen again on February 1, 2024. I parked it at the grocery store at 2 PM and when I came out at 3 PM it was gone.
+
+VEHICLE: 2022 Ford F-150
+VALUE: $42,000.00
+POLICY: POL-2024-001234
+
+(I already filed a claim for a stolen 2021 Toyota Camry in January)
+
+Please process quickly. I need the money.
+
+Thanks,
+Chris Anderson
+chris.anderson@email.com""",
+
+    "excessive_medical_claims": """Subject: Medical Claim - Third This Month
+
+Hello,
+
+I'm filing another medical claim. This is my third one this month.
+
+PATIENT: Robert Smith
+POLICY: POL-2024-001234
+DATE: February 15, 2024
+
+I went to three different doctors today:
+1. Dr. Johnson - $1,200
+2. Dr. Williams - $950
+3. Dr. Brown - $1,350
+Total: $3,500.00
+
+All for the same back pain. Each doctor gave me different treatments.
+
+Please pay all three claims.
+
+Thanks,
+Robert Smith
+robert.smith@email.com""",
+
+    "policy_lapse_claim": """Subject: Claim for Lapsed Policy
+
+Dear Insurance,
+
+I need to file a claim for an accident that happened on February 1, 2024. I know my policy lapsed on January 31, 2024 because I forgot to pay, but I think you should still cover it since it was only one day.
+
+INCIDENT: Car accident
+DATE: February 1, 2024
+DAMAGE: $5,500.00
+POLICY: POL-2024-001234 (lapsed Jan 31)
+
+I'm going to pay my premium now, so please process the claim.
+
+Thanks,
+Lisa Johnson
+lisa.johnson@email.com""",
+
+    "coordinate_fraud": """Subject: Accident Claim
+
+Hi,
+
+I had an accident on February 5, 2024. My friend was driving my car and hit another car. The other driver was also my friend. We all agreed to file claims and split the money.
+
+INCIDENT: Collision
+DATE: February 5, 2024
+DAMAGE: $8,000.00
+POLICY: POL-2024-001234
+
+My friend's insurance is also filing a claim for the same accident.
+
+Please process.
+
+Thanks,
+David Kim
+david.kim@email.com""",
+
+    "good_legitimate_claim": """Subject: Auto Insurance Claim - Complete Documentation
+
+Dear Insurance Company,
+
+I am filing a claim for a car accident that occurred on February 10, 2024 at 3:45 PM.
+
+INCIDENT DETAILS:
+- Date: February 10, 2024
+- Time: 3:45 PM
+- Location: 1234 Main Street, Springfield, IL 62701
+- Weather: Clear, dry conditions
+- Traffic: Light
+
+ACCIDENT DESCRIPTION:
+I was stopped at a red light when another vehicle rear-ended my car. The other driver admitted fault and provided their insurance information. Police were called and a report was filed (Report #PR-2024-2345).
+
+VEHICLE INFORMATION:
+- Year/Make/Model: 2021 Toyota Camry
+- VIN: 4T1B11HK5MU123456
+- License Plate: IL-ABC-1234
+- Current Mileage: 28,450
+
+DAMAGE ASSESSMENT:
+- Repair Estimate: $3,200.00 (from authorized Toyota dealer)
+- Photos: Attached (6 photos showing damage)
+- Police Report: PR-2024-2345
+
+POLICY INFORMATION:
+- Policy Number: POL-2024-001234
+- Policyholder: Emily Davis
+- Coverage: Comprehensive and Collision
+
+CONTACT INFORMATION:
+- Email: emily.davis@email.com
+- Phone: (555) 123-4567
+- Address: 567 Oak Avenue, Springfield, IL 62702
+
+I have attached all required documentation including photos, police report, and repair estimate.
+
+Thank you for your prompt attention to this matter.
+
+Sincerely,
+Emily Davis""",
+
+    "good_property_claim": """Subject: Property Damage Claim - Fire Damage
+
+Dear Insurance Provider,
+
+I am filing a claim for fire damage to my home that occurred on February 8, 2024.
+
+INCIDENT DETAILS:
+- Date: February 8, 2024
+- Time: 11:30 PM
+- Location: 789 Elm Street, Springfield, IL 62703
+- Cause: Electrical fire in kitchen (determined by fire department)
+
+DAMAGE ASSESSMENT:
+- Kitchen: Complete loss, $15,000
+- Adjacent rooms: Smoke damage, $8,500
+- Personal property: $12,300
+- Total: $35,800.00
+
+FIRE DEPARTMENT:
+- Responded: Springfield Fire Department
+- Report Number: FD-2024-0567
+- Cause: Electrical malfunction in kitchen outlet
+- No injuries reported
+
+POLICY INFORMATION:
+- Policy Number: POL-2024-001234
+- Policyholder: Thomas Anderson
+- Coverage Type: Homeowners Insurance
+
+DOCUMENTATION:
+- Fire department report: FD-2024-0567
+- Photos: Attached (15 photos)
+- Contractor estimate: $35,800.00
+- Inventory of damaged items: Attached
+
+I have been staying with family while repairs are being made. The fire department has cleared the property for assessment.
+
+Please contact me to schedule an inspection.
+
+Thank you,
+Thomas Anderson
+thomas.anderson@email.com
+(555) 234-5678""",
+
+    "edge_case_zero_amount": """Subject: Claim Submission
+
+Hi,
+
+I had an accident but there's no damage. I'm filing a claim just in case something comes up later.
+
+INCIDENT: Minor fender bender
+DATE: February 12, 2024
+DAMAGE: $0.00
+POLICY: POL-2024-001234
+
+Thanks,
+Alex Brown
+alex.brown@email.com""",
+
+    "edge_case_very_old_incident": """Subject: Claim for Old Accident
+
+Hello,
+
+I'm filing a claim for an accident that happened 2 years ago on January 15, 2022. I just realized I never filed a claim for it.
+
+INCIDENT: Car accident
+DATE: January 15, 2022
+DAMAGE: $4,500.00
+POLICY: POL-2024-001234
+
+Please process this old claim.
+
+Thanks,
+Patricia White
+patricia.white@email.com""",
+
+    "edge_case_future_date": """Subject: Accident Claim
+
+Hi Insurance,
+
+I'm filing a claim for an accident that will happen tomorrow, February 20, 2024. I know it's going to happen because I saw it in a dream.
+
+INCIDENT: Car accident
+DATE: February 20, 2024 (tomorrow)
+DAMAGE: $6,000.00
+POLICY: POL-2024-001234
+
+Please approve the claim now so I'm ready.
+
+Thanks,
+Daniel Garcia
+daniel.garcia@email.com""",
+
+    "good_health_claim": """Subject: Medical Claim - Complete Documentation
+
+Dear Insurance,
+
+I am submitting a medical claim with complete documentation.
+
+PATIENT: Susan Lee
+POLICY: POL-2024-001234
+DATE OF SERVICE: February 10, 2024
+
+MEDICAL SERVICES:
+- Provider: Springfield Medical Center
+- Diagnosis: Broken wrist from fall
+- Treatment: X-ray, cast application, follow-up care
+- Total Charges: $2,450.00
+
+INCIDENT:
+I fell on ice in a parking lot on February 10, 2024 at 2:30 PM. I was taken to the emergency room where X-rays confirmed a broken wrist. A cast was applied and I was given pain medication.
+
+DOCUMENTATION:
+- Medical bills: Attached
+- X-ray results: Attached
+- Doctor's notes: Attached
+- Receipts: Attached
+
+Thank you,
+Susan Lee
+susan.lee@email.com
+(555) 345-6789""",
+
+    "bad_health_claim_missing_docs": """Subject: Medical Claim
+
+Hi,
+
+I need money for medical bills. I went to the doctor but I don't have any receipts or bills. Just trust me, it cost $5,000.
+
+PATIENT: Mark Thompson
+POLICY: POL-2024-001234
+AMOUNT: $5,000.00
+
+Please send payment.
+
+Thanks,
+Mark Thompson
+mark.thompson@email.com""",
 }
 
 # Feedback Templates for Review Queue

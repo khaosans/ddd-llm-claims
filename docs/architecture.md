@@ -957,12 +957,12 @@ Repositories abstract data access, keeping domain models independent of persiste
 - **`ClaimRepository`** (`src/repositories/claim_repository.py`)
   - **Methods**: `save()`, `find_by_id()`, `find_all()`, `delete()`
   - **Purpose**: Abstract interface for Claim aggregate persistence
-  - **Implementations**: `InMemoryClaimRepository`, `DBClaimRepository`
+  - **Implementations**: `InMemoryClaimRepository`, `DatabaseClaimRepository`
 
 - **`PolicyRepository`** (`src/repositories/policy_repository.py`)
   - **Methods**: `save()`, `find_by_id()`, `find_by_customer()`, `find_active()`
   - **Purpose**: Abstract interface for Policy aggregate persistence
-  - **Implementations**: `InMemoryPolicyRepository`, `DBPolicyRepository`
+  - **Implementations**: `InMemoryPolicyRepository`, `DatabasePolicyRepository`
 
 - **`DocumentRepository`** (`src/repositories/document_repository.py`)
   - **Methods**: `save()`, `find_by_id()`, `find_by_claim()`
@@ -972,8 +972,8 @@ Repositories abstract data access, keeping domain models independent of persiste
 
 - **`InMemoryClaimRepository`** - For testing and development
 - **`InMemoryPolicyRepository`** - For testing and development
-- **`DBClaimRepository`** - Database-backed implementation
-- **`DBPolicyRepository`** - Database-backed implementation
+- **`DatabaseClaimRepository`** - Database-backed implementation (SQLite) - **used by UI service**
+- **`DatabasePolicyRepository`** - Database-backed implementation (SQLite) - **used by UI service**
 
 ### Application Services
 

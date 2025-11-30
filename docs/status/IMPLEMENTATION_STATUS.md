@@ -37,8 +37,8 @@
 ## 🔄 In Progress / To Complete
 
 ### Backend Integration
-- [ ] Connect Streamlit pages to orchestrator
-- [ ] Wire up database repositories in UI
+- [x] Connect Streamlit pages to orchestrator
+- [x] Wire up database repositories in UI
 - [ ] Integrate vector search in claim processing
 - [ ] Connect LangChain agents to workflow
 - [ ] Real-time updates in UI
@@ -127,9 +127,11 @@ streamlit run streamlit_app.py
 - ✅ Open-source models
 
 ### Database
-- ✅ SQLite persistence
-- ✅ ChromaDB vectors
+- ✅ SQLite persistence (used by UI service)
+- ✅ ChromaDB vectors (initialized in UI service)
 - ✅ Local storage only
+- ✅ Database repositories integrated in UI
+- ✅ Vector stores initialized and available
 
 ### UI
 - ✅ Interactive dashboard

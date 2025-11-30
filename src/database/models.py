@@ -161,7 +161,7 @@ class DecisionContextModel(Base):
     llm_response = Column(Text)
     intermediate_steps = Column(Text)  # JSON string
     evidence = Column(Text)  # JSON string
-    metadata = Column(Text)  # JSON string
+    context_metadata = Column(Text)  # JSON string (renamed from 'metadata' to avoid SQLAlchemy reserved name)
     
     created_at = Column(DateTime, default=datetime.utcnow)
     

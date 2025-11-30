@@ -163,7 +163,8 @@ curl http://localhost:11434/api/tags
 ## Notes
 
 - **Mock Mode**: System works without Ollama using mock providers
-- **Data Persistence**: Claims stored in-memory (resets on restart)
+- **Data Persistence**: Claims and policies stored in SQLite database (`data/claims.db`) - **persists across sessions**
+- **Vector Stores**: ChromaDB vector stores initialized for semantic search (`data/chroma_db/`)
 - **Port Conflicts**: Use different ports if needed
 - **Virtual Environment**: Always activate before running commands
 

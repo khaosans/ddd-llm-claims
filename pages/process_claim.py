@@ -45,24 +45,76 @@ try:
 except ImportError:
     templates_available = False
 
-# Simplified template selector
+# Enhanced template selector with categories
 if templates_available:
-    template_options = {
-        "🚗 Auto Insurance": "auto_insurance_claim",
-        "💰 High Value Claim": "high_value_claim",
-        "📝 Simple Claim": "simple_claim",
-        "🏠 Property Damage": "property_damage_claim",
+    # Organize templates by category
+    template_categories = {
+        "✅ Legitimate Claims": {
+            "🚗 Auto Insurance": "auto_insurance_claim",
+            "🏠 Property Damage": "property_damage_claim",
+            "💰 High Value Claim": "high_value_claim",
+            "📝 Simple Claim": "simple_claim",
+            "🏥 Health Insurance": "health_insurance_claim",
+            "💼 Life Insurance": "life_insurance_claim",
+            "🦽 Disability Insurance": "disability_insurance_claim",
+            "✈️ Travel Insurance": "travel_insurance_claim",
+            "✅ Good Legitimate Claim": "good_legitimate_claim",
+            "✅ Good Property Claim": "good_property_claim",
+            "✅ Good Health Claim": "good_health_claim",
+        },
+        "🚨 Fraud/Issues": {
+            "🚨 Stolen Vehicle": "fraud_risk_claim",
+            "🚨 Stolen Vehicle Fraud": "stolen_vehicle_fraud",
+            "🚨 Inflated Damage": "inflated_damage_claim",
+            "🚨 Duplicate Claim": "duplicate_claim",
+            "🚨 Suspicious Timing": "suspicious_timing",
+            "🚨 Multiple Vehicles Stolen": "multiple_vehicles_stolen",
+            "🚨 Excessive Medical Claims": "excessive_medical_claims",
+            "🚨 Coordinate Fraud": "coordinate_fraud",
+        },
+        "⚠️ Data Quality Issues": {
+            "⚠️ Missing Documentation": "missing_documentation",
+            "⚠️ Inconsistent Story": "inconsistent_story",
+            "⚠️ Missing Critical Fields": "missing_critical_fields",
+            "⚠️ Invalid Date Format": "invalid_date_format",
+            "⚠️ Invalid Amount Format": "invalid_amount_format",
+            "⚠️ Missing Policy Number": "missing_policy_number",
+            "⚠️ Bad Health Claim": "bad_health_claim_missing_docs",
+        },
+        "❌ Policy Issues": {
+            "❌ Expired Policy": "expired_policy_claim",
+            "❌ Coverage Mismatch": "coverage_mismatch",
+            "❌ Amount Exceeds Coverage": "amount_exceeds_coverage",
+            "❌ Policy Lapse": "policy_lapse_claim",
+        },
+        "🔍 Edge Cases": {
+            "🔍 Zero Amount": "edge_case_zero_amount",
+            "🔍 Very Old Incident": "edge_case_very_old_incident",
+            "🔍 Future Date": "edge_case_future_date",
+            "🔍 Multiple Claims": "multiple_claims_short_period",
+            "🔍 Claim After Policy Start": "claim_after_policy_start",
+        },
+        "📞 Other Formats": {
+            "📞 Phone Transcript": "phone_transcript",
+            "🌐 Web Form": "web_form_submission",
+        },
     }
     
-    selected_template_key = st.selectbox(
-        "📋 Select a template (or use custom input below)",
-        ["Custom Input"] + list(template_options.keys()),
-        help="Choose a sample template to see how the system works"
-    )
-    
+    # Create expandable sections for each category
     selected_template = None
-    if selected_template_key != "Custom Input":
-        selected_template = template_options[selected_template_key]
+    st.markdown("**📋 Select a template by category:**")
+    
+    for category, templates in template_categories.items():
+        with st.expander(category, expanded=(category == "✅ Legitimate Claims")):
+            cols = st.columns(2)
+            for idx, (display_name, template_key) in enumerate(templates.items()):
+                col = cols[idx % 2]
+                if col.button(display_name, key=f"template_{category}_{template_key}", use_container_width=True):
+                    selected_template = template_key
+                    st.success(f"✅ Selected: {display_name}")
+    
+    if selected_template:
+        st.info(f"💡 Template '{selected_template}' selected. Scroll down to see it in the input field.")
 else:
     selected_template = None
 
