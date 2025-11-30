@@ -1,0 +1,65 @@
+# Configuration file for DDD Claims Processing System
+
+# Model Provider Settings
+model_provider:
+  # Primary provider: ollama, openai, or anthropic
+  provider: "ollama"
+  
+  # Ollama Configuration (for local models and SLMs)
+  ollama:
+    base_url: "http://localhost:11434"
+    default_model: "llama3.2:3b"  # Optimized for single GPU (smallest, fastest)
+    # Recommended SLMs for single GPU (in priority order):
+    # - llama3.2:3b (2GB) - Best for single GPU
+    # - mistral:latest (4.4GB) - Good balance
+    # - llama3.2 (larger) - Better quality but slower
+  
+  # OpenAI Configuration
+  openai:
+    api_key: "${OPENAI_API_KEY}"
+    default_model: "gpt-4o-mini"
+  
+  # Anthropic Configuration
+  anthropic:
+    api_key: "${ANTHROPIC_API_KEY}"
+    default_model: "claude-3-5-sonnet-20241022"
+
+# Agent-Specific Model Configuration
+# Each agent can use a different model for optimal performance
+agents:
+  intake:
+    model: "llama3.2:3b"  # Optimized for single GPU
+    provider: "ollama"
+    temperature: 0.3  # Lower temperature for more consistent fact extraction
+  
+  policy:
+    model: "llama3.2:3b"  # Optimized for single GPU
+    provider: "ollama"
+    temperature: 0.2  # Very low temperature for policy validation
+  
+  triage:
+    model: "llama3.2:3b"  # Optimized for single GPU (can use mistral:latest if available)
+    provider: "ollama"
+    temperature: 0.5  # Slightly higher for routing decisions
+  
+  fraud:
+    model: "llama3.2:3b"  # Optimized for single GPU
+    provider: "ollama"
+    temperature: 0.2  # Low temperature for consistent fraud detection
+
+# Application Settings
+app:
+  log_level: "INFO"
+  enable_event_logging: true
+  event_bus_type: "in_memory"  # Options: in_memory, redis, rabbitmq
+
+# Domain Settings
+domain:
+  claim:
+    max_claim_amount: 1000000.0
+    require_policy_validation: true
+  
+  fraud:
+    fraud_threshold: 0.7
+    enable_ml_model: false  # Set to true when ML model is integrated
+

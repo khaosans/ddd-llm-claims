@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDD Claims Processing System - Visualization Dashboard</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/themes/light-border.css">
+    <script src="https://unpkg.com/intro.js@7/minified/intro.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/intro.js@7/minified/introjs.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .diagram-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            min-height: 500px;
+            border: 2px solid #e9ecef;
+        }
+        #architecture-diagram {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        #workflow-diagram {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .status-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .status-box h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        .status-box ul {
+            margin-left: 20px;
+        }
+        .status-box li {
+            margin: 8px 0;
+        }
+        .workflow-step {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 8px 5px;
+            background: #3498db;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .workflow-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .workflow-step.active {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        .workflow-step.completed {
+            background: #95a5a6;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .arrow {
+            display: inline-block;
+            margin: 0 10px;
+            color: #7f8c8d;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 DDD Claims Processing System - Visualization Dashboard</h1>
+        <p style="font-size: 1.1em; color: #555;">This interactive dashboard visualizes the architecture and workflow of the claims processing system using interactive network diagrams.</p>
+        <button onclick="startTour()" style="background: #3498db; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            🎯 Start Guided Tour
+        </button>
+    </div>
+
+    <div class="container" data-intro="This diagram shows the complete system architecture with three bounded contexts: Policy Management (Supporting Domain), Claim Intake (Core Domain), and Fraud Assessment (Subdomain). Each context has clear boundaries and communicates through domain events (Evans, 2003)." data-step="1">
+        <h2>📐 System Architecture</h2>
+        <p>The high-level architecture showing bounded contexts, components, and data flow:</p>
+        <p style="background: #e7f3ff; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <strong>💡 Tip:</strong> Hover over or click nodes in the diagram below to see detailed explanations of DDD concepts, patterns, and citations to research.
+        </p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #90EE90;"></div>
+                <span>Policy Management (Supporting Domain)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #87CEEB;"></div>
+                <span>Claim Intake (Core Domain)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #D3D3D3;"></div>
+                <span>Fraud Assessment (Subdomain)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #9370DB;"></div>
+                <span>Domain Events</span>
+            </div>
+        </div>
+        
+        <div class="diagram-container" data-intro="The architecture diagram is interactive! Click or hover over nodes to see tooltips explaining DDD concepts. Try clicking on 'Claim Intake (Core Domain)' or 'Intake Agent (LLM)' to learn more." data-step="2">
+            <div id="architecture-diagram"></div>
+        </div>
+    </div>
+
+    <div class="container" data-intro="This sequence diagram shows the step-by-step workflow of processing a claim. Notice how domain events (like ClaimFactsExtracted) trigger the next steps, enabling loose coupling between components (Hohpe & Woolf, 2003)." data-step="3">
+        <h2>🔄 Workflow Sequence</h2>
+        <p>The step-by-step flow of processing a claim from input to final routing:</p>
+        <p style="background: #e7f3ff; padding: 10px; border-radius: 4px; margin: 10px 0;">
+            <strong>📖 Narrative:</strong> This diagram shows the complete journey of a claim through the system. Starting with unstructured customer input, the claim moves through fact extraction, policy validation, fraud assessment, and finally routing to downstream systems. Each step is coordinated through domain events, enabling loose coupling between components (Hohpe & Woolf, 2003).
+        </p>
+        <div class="diagram-container">
+            <div id="workflow-diagram"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Workflow Progress</h2>
+        <p>Typical claim processing workflow steps:</p>
+        <div class="status-box" style="background: white; color: #333;">
+            <div class="workflow-step completed">📝 Draft</div>
+            <span class="arrow">→</span>
+            <div class="workflow-step completed">✅ Facts Extracted</div>
+            <span class="arrow">→</span>
+            <div class="workflow-step active">🔍 Policy Validated</div>
+            <span class="arrow">→</span>
+            <div class="workflow-step">🎯 Triaged</div>
+            <span class="arrow">→</span>
+            <div class="workflow-step">⚙️ Processing</div>
+            <span class="arrow">→</span>
+            <div class="workflow-step">✨ Completed</div>
+        </div>
+    </div>
+
+    <div class="container" data-intro="These are the key DDD concepts used in this system. Bounded Contexts separate domains, Domain Events enable communication, and Agents act as Anti-Corruption Layers (Evans, 2003)." data-step="4">
+        <h2>🎯 Key Concepts</h2>
+        <div class="status-box">
+            <h3>Bounded Contexts</h3>
+            <p>Separate domains with clear boundaries:</p>
+            <ul>
+                <li><strong>Claim Intake</strong> (Core Domain) - The main business</li>
+                <li><strong>Policy Management</strong> (Supporting Domain) - Provides services</li>
+                <li><strong>Fraud Assessment</strong> (Subdomain) - Specialized services</li>
+            </ul>
+        </div>
+        <div class="status-box">
+            <h3>Domain Events</h3>
+            <p>Notifications that trigger workflow steps:</p>
+            <ul>
+                <li>⚡ <strong>ClaimFactsExtracted</strong> - Facts successfully extracted</li>
+                <li>⚡ <strong>PolicyValidated</strong> - Policy check complete</li>
+                <li>⚡ <strong>FraudScoreCalculated</strong> - Fraud assessment done</li>
+            </ul>
+        </div>
+        <div class="status-box">
+            <h3>Agents</h3>
+            <p>AI-powered specialized workers:</p>
+            <ul>
+                <li>🤖 <strong>Intake Agent</strong> - Extracts facts from unstructured data</li>
+                <li>🔍 <strong>Policy Agent</strong> - Validates policy coverage</li>
+                <li>🎯 <strong>Triage Agent</strong> - Routes claims to appropriate handlers</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🚀 How to Use</h2>
+        <div class="info-box">
+            <p><strong>Interactive Features:</strong></p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Drag nodes</strong> to rearrange the diagrams</li>
+                <li><strong>Zoom</strong> using mouse wheel or pinch gesture</li>
+                <li><strong>Click nodes</strong> to see details</li>
+                <li><strong>Pan</strong> by dragging the background</li>
+            </ul>
+        </div>
+        <ol style="margin-left: 20px; margin-top: 15px;">
+            <li><strong>Run Interactive Tool</strong>: Execute <code>python visualize.py</code> for real-time terminal visualization</li>
+            <li><strong>View Diagrams</strong>: The diagrams above are fully interactive - drag, zoom, and explore!</li>
+            <li><strong>Export</strong>: Right-click on diagrams to save as image</li>
+        </ol>
+    </div>
+
+    <script type="text/javascript">
+        // Architecture Diagram
+        var architectureNodes = new vis.DataSet([
+            // Bounded Contexts
+            {id: 1, label: 'Policy Management\n(Supporting Domain)', group: 'policy', shape: 'box', color: {background: '#90EE90', border: '#006400'}},
+            {id: 2, label: 'Claim Intake\n(Core Domain)', group: 'claim', shape: 'box', color: {background: '#87CEEB', border: '#0000CD'}},
+            {id: 3, label: 'Fraud Assessment\n(Subdomain)', group: 'fraud', shape: 'box', color: {background: '#D3D3D3', border: '#696969'}},
+            
+            // Claim Intake Components
+            {id: 4, label: 'Unstructured\nCustomer Data', group: 'claim', shape: 'ellipse', color: {background: '#E3F2FD'}},
+            {id: 5, label: 'Intake Agent\n(LLM)', group: 'claim', shape: 'diamond', color: {background: '#FFF9C4'}},
+            {id: 6, label: 'Prompt\nEngineering', group: 'claim', shape: 'box', color: {background: '#F3E5F5'}},
+            {id: 7, label: 'Policy\nRepository', group: 'policy', shape: 'database', color: {background: '#E8F5E9'}},
+            {id: 8, label: 'Policy\n(Aggregate)', group: 'policy', shape: 'box', color: {background: '#E8F5E9'}},
+            {id: 9, label: 'ClaimFact\nExtravice', group: 'claim', shape: 'hexagon', color: {background: '#4169E1', font: {color: 'white'}}},
+            {id: 10, label: 'ClaimSummary\n(Value Object)', group: 'claim', shape: 'box', color: {background: '#E1F5FE'}},
+            {id: 11, label: 'ClaimFactsExtracted\n(Domain Event)', group: 'event', shape: 'triangle', color: {background: '#9370DB', font: {color: 'white'}}},
+            
+            // Fraud Assessment
+            {id: 12, label: 'FraudCheckResult', group: 'fraud', shape: 'box', color: {background: '#FFF3E0'}},
+            {id: 13, label: 'ML Fraud Model', group: 'fraud', shape: 'box', color: {background: '#FFE0B2'}},
+            
+            // Workflow Orchestrator
+            {id: 14, label: 'Workflow\nOrchestrator', group: 'orchestrator', shape: 'box', color: {background: '#C0C0C0', border: '#808080'}},
+            {id: 15, label: 'PolicyValidated\n(Domain Event)', group: 'event', shape: 'triangle', color: {background: '#9370DB', font: {color: 'white'}}},
+            {id: 16, label: 'FraudScoreCalculated\n(Domain Event)', group: 'event', shape: 'triangle', color: {background: '#9370DB', font: {color: 'white'}}},
+            {id: 17, label: 'Policy Validation\nAgent', group: 'orchestrator', shape: 'diamond', color: {background: '#E1BEE7'}},
+            {id: 18, label: 'Triage & Routing\nAgent (1)', group: 'orchestrator', shape: 'diamond', color: {background: '#E1BEE7'}},
+            {id: 19, label: 'Triage & Routing\nAgent (2)', group: 'orchestrator', shape: 'diamond', color: {background: '#E1BEE7'}},
+            {id: 20, label: 'Downstream Systems\n(Human Adjudicator Queue)', group: 'orchestrator', shape: 'box', color: {background: '#C8E6C9'}},
+        ]);
+
+        var architectureEdges = new vis.DataSet([
+            {from: 4, to: 5, label: 'Unstructured Input', arrows: 'to'},
+            {from: 6, to: 5, label: 'System Prompt', arrows: 'to'},
+            {from: 7, to: 8, label: 'Policy Data', arrows: 'to'},
+            {from: 8, to: 5, label: 'Reference', arrows: 'to', dashes: true},
+            {from: 5, to: 9, label: 'Extracted Facts', arrows: 'to'},
+            {from: 9, to: 10, label: 'Structured Summary', arrows: 'to'},
+            {from: 9, to: 11, label: 'Publishes', arrows: 'to'},
+            {from: 10, to: 12, label: 'Claim Summary', arrows: 'to'},
+            {from: 12, to: 13, label: 'Assessment', arrows: 'to'},
+            {from: 11, to: 14, label: 'Triggers', arrows: 'to'},
+            {from: 14, to: 15, label: 'Publishes', arrows: 'to'},
+            {from: 14, to: 16, label: 'Publishes', arrows: 'to'},
+            {from: 15, to: 17, label: 'Triggers', arrows: 'to'},
+            {from: 17, to: 18, label: 'Routes', arrows: 'to'},
+            {from: 16, to: 19, label: 'Triggers', arrows: 'to'},
+            {from: 18, to: 19, label: 'Routes', arrows: 'to'},
+            {from: 19, to: 20, label: 'Dispatches', arrows: 'to'},
+        ]);
+
+        var architectureData = {
+            nodes: architectureNodes,
+            edges: architectureEdges
+        };
+
+        var architectureOptions = {
+            nodes: {
+                font: {size: 14, face: 'Arial'},
+                borderWidth: 2,
+                shadow: true
+            },
+            edges: {
+                arrows: {to: {enabled: true}},
+                font: {size: 11, align: 'middle'},
+                smooth: {type: 'continuous', roundness: 0.5}
+            },
+            layout: {
+                hierarchical: {
+                    enabled: false
+                }
+            },
+            physics: {
+                enabled: true,
+                stabilization: {iterations: 200}
+            },
+            groups: {
+                policy: {color: {background: '#90EE90'}},
+                claim: {color: {background: '#87CEEB'}},
+                fraud: {color: {background: '#D3D3D3'}},
+                event: {color: {background: '#9370DB'}},
+                orchestrator: {color: {background: '#C0C0C0'}}
+            }
+        };
+
+        var architectureNetwork = new vis.Network(document.getElementById('architecture-diagram'), architectureData, architectureOptions);
+
+        // Workflow Sequence Diagram
+        var workflowNodes = new vis.DataSet([
+            {id: 1, label: 'User', level: 0, shape: 'icon', icon: {face: 'FontAwesome', code: '\f007', size: 50, color: '#2c3e50'}},
+            {id: 2, label: 'Orchestrator', level: 1, shape: 'box', color: {background: '#3498db'}},
+            {id: 3, label: 'Intake Agent', level: 2, shape: 'diamond', color: {background: '#e74c3c'}},
+            {id: 4, label: 'LLM\n(Ollama/OpenAI)', level: 3, shape: 'ellipse', color: {background: '#f39c12'}},
+            {id: 5, label: 'Claim\nRepository', level: 1, shape: 'database', color: {background: '#9b59b6'}},
+            {id: 6, label: 'Policy Agent', level: 2, shape: 'diamond', color: {background: '#e74c3c'}},
+            {id: 7, label: 'Policy\nRepository', level: 1, shape: 'database', color: {background: '#9b59b6'}},
+            {id: 8, label: 'Fraud\nAssessment', level: 2, shape: 'diamond', color: {background: '#e74c3c'}},
+            {id: 9, label: 'Triage Agent', level: 2, shape: 'diamond', color: {background: '#e74c3c'}},
+            {id: 10, label: 'Downstream\nSystems', level: 1, shape: 'box', color: {background: '#27ae60'}},
+        ]);
+
+        var workflowEdges = new vis.DataSet([
+            {from: 1, to: 2, label: 'Submit Claim', arrows: 'to'},
+            {from: 2, to: 5, label: 'Create Claim', arrows: 'to'},
+            {from: 5, to: 2, label: 'Claim Created', arrows: 'to'},
+            {from: 2, to: 3, label: 'Extract Facts', arrows: 'to'},
+            {from: 3, to: 4, label: 'Send Email + Prompt', arrows: 'to'},
+            {from: 4, to: 3, label: 'Return JSON', arrows: 'to'},
+            {from: 3, to: 5, label: 'Update Claim', arrows: 'to'},
+            {from: 3, to: 2, label: 'Publish Event', arrows: 'to'},
+            {from: 2, to: 6, label: 'Validate Policy', arrows: 'to'},
+            {from: 6, to: 7, label: 'Find Policies', arrows: 'to'},
+            {from: 7, to: 6, label: 'Return Policies', arrows: 'to'},
+            {from: 6, to: 4, label: 'Send Claim + Policies', arrows: 'to'},
+            {from: 4, to: 6, label: 'Return Result', arrows: 'to'},
+            {from: 6, to: 5, label: 'Update Status', arrows: 'to'},
+            {from: 2, to: 8, label: 'Assess Fraud', arrows: 'to'},
+            {from: 8, to: 4, label: 'Analyze Claim', arrows: 'to'},
+            {from: 4, to: 8, label: 'Return Score', arrows: 'to'},
+            {from: 2, to: 9, label: 'Route Claim', arrows: 'to'},
+            {from: 9, to: 4, label: 'Determine Route', arrows: 'to'},
+            {from: 4, to: 9, label: 'Return Decision', arrows: 'to'},
+            {from: 9, to: 5, label: 'Update Status', arrows: 'to'},
+            {from: 9, to: 10, label: 'Dispatch', arrows: 'to'},
+            {from: 10, to: 1, label: 'Claim Processed', arrows: 'to'},
+        ]);
+
+        var workflowData = {
+            nodes: workflowNodes,
+            edges: workflowEdges
+        };
+
+        var workflowOptions = {
+            nodes: {
+                font: {size: 14, face: 'Arial'},
+                borderWidth: 2,
+                shadow: true
+            },
+            edges: {
+                arrows: {to: {enabled: true}},
+                font: {size: 11, align: 'middle'},
+                smooth: {type: 'continuous', roundness: 0.3}
+            },
+            layout: {
+                hierarchical: {
+                    enabled: true,
+                    direction: 'LR',
+                    sortMethod: 'directed',
+                    levelSeparation: 150,
+                    nodeSpacing: 200
+                }
+            },
+            physics: {
+                enabled: false
+            }
+        };
+
+        var workflowNetwork = new vis.Network(document.getElementById('workflow-diagram'), workflowData, workflowOptions);
+        
+        // Tooltip content for architecture diagram nodes
+        const tooltipContent = {
+            1: 'Policy Management (Supporting Domain)<br><small>Provides policy validation services to the Core Domain. In DDD, supporting domains help the core domain function but aren\'t the primary business value. <strong>Reference:</strong> <a href="REFERENCES.html#policy-management">Evans (2003)</a></small>',
+            2: 'Claim Intake (Core Domain)<br><small>The heart of the business - processing claims. This is where the primary business value is created. <strong>Reference:</strong> <a href="REFERENCES.html#domain-driven-design">Evans (2003)</a></small>',
+            3: 'Fraud Assessment (Subdomain)<br><small>Important but not core to the business. Provides specialized fraud detection services. <strong>Reference:</strong> <a href="REFERENCES.html#domain-driven-design">Evans (2003)</a></small>',
+            4: 'Unstructured Customer Data<br><small>Raw input from customers (emails, forms, notes). This is the starting point - messy, unstructured data that needs to be processed.</small>',
+            5: 'Intake Agent (LLM)<br><small>An AI agent that acts as an Anti-Corruption Layer, translating unstructured data into domain models. Uses prompt engineering to extract facts. <strong>Reference:</strong> <a href="REFERENCES.html#llmai-agents">Brown et al. (2020)</a></small>',
+            6: 'Prompt Engineering<br><small>The art of crafting prompts that make LLMs act as domain experts. Critical for getting structured output from unstructured input. <strong>Reference:</strong> <a href="REFERENCES.html#llmai-agents">Wei et al. (2022)</a></small>',
+            7: 'Policy Repository<br><small>Abstracts data access for policies. Follows the Repository pattern to keep domain model independent of persistence. <strong>Reference:</strong> <a href="REFERENCES.html#repository-pattern">Evans (2003), Fowler (2002)</a></small>',
+            8: 'Policy (Aggregate)<br><small>An Aggregate Root representing an insurance policy. Aggregates enforce business rules and maintain consistency. <strong>Reference:</strong> <a href="REFERENCES.html#aggregate-pattern">Evans (2003)</a></small>',
+            9: 'ClaimFact Extravice<br><small>The core service that extracts claim facts. Acts as the heart of the Claim Intake bounded context.</small>',
+            10: 'ClaimSummary (Value Object)<br><small>An immutable Value Object representing structured claim facts. Value Objects are defined by their attributes, not identity. <strong>Reference:</strong> <a href="REFERENCES.html#value-objects">Evans (2003)</a></small>',
+            11: 'ClaimFactsExtracted (Domain Event)<br><small>A Domain Event published when facts are extracted. Events enable loose coupling between bounded contexts. <strong>Reference:</strong> <a href="REFERENCES.html#domain-events">Vernon (2013)</a></small>',
+            12: 'FraudCheckResult<br><small>A Value Object containing fraud assessment results. Immutable and validated at creation.</small>',
+            13: 'ML Fraud Model<br><small>Machine learning model for fraud detection. Can be integrated with LLM-based assessment.</small>',
+            14: 'Workflow Orchestrator<br><small>Event-driven coordinator that manages workflow through domain events. Enables loose coupling. <strong>Reference:</strong> <a href="REFERENCES.html#event-driven-architecture">Hohpe & Woolf (2003)</a></small>',
+            15: 'PolicyValidated (Domain Event)<br><small>Published after policy validation completes. Triggers next steps in workflow. <strong>Reference:</strong> <a href="REFERENCES.html#domain-events">Vernon (2013)</a></small>',
+            16: 'FraudScoreCalculated (Domain Event)<br><small>Published when fraud assessment completes. Used for routing decisions. <strong>Reference:</strong> <a href="REFERENCES.html#domain-events">Vernon (2013)</a></small>',
+            17: 'Policy Validation Agent<br><small>AI agent that validates claims against policies. Acts as Anti-Corruption Layer between Policy and Claim contexts.</small>',
+            18: 'Triage & Routing Agent<br><small>AI agent that routes claims to appropriate downstream systems based on policy status and fraud score.</small>',
+            19: 'Triage & Routing Agent<br><small>Second routing agent that makes final dispatch decisions based on all available information.</small>',
+            20: 'Downstream Systems<br><small>Final destination for processed claims. Could be human adjudicator queues, automated processing, or fraud investigation.</small>'
+        };
+        
+        // Add tooltips to architecture diagram nodes
+        architectureNetwork.on("click", function (params) {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const content = tooltipContent[nodeId] || 'Click nodes to learn more about DDD concepts.';
+                if (content) {
+                    tippy(params.event.target, {
+                        content: content,
+                        allowHTML: true,
+                        theme: 'light-border',
+                        placement: 'right',
+                        interactive: true,
+                        maxWidth: 400
+                    });
+                }
+            }
+        });
+        
+        // Add hover tooltips
+        architectureNetwork.on("hoverNode", function (params) {
+            const nodeId = params.node;
+            const content = tooltipContent[nodeId];
+            if (content) {
+                const nodeElement = document.querySelector(`[data-node-id="${nodeId}"]`);
+                if (nodeElement) {
+                    tippy(nodeElement, {
+                        content: content,
+                        allowHTML: true,
+                        theme: 'light-border',
+                        placement: 'right',
+                        interactive: true,
+                        maxWidth: 400
+                    });
+                }
+            }
+        });
+        
+        // Guided Tour
+        function startTour() {
+            introJs().setOptions({
+                steps: [
+                    {
+                        intro: "Welcome to the DDD Claims Processing System Dashboard!<br><br>This guided tour will help you understand the key concepts and how to interact with the visualizations.<br><br>Click 'Next' to continue."
+                    },
+                    {
+                        element: '.container[data-step="1"]',
+                        intro: "This is the System Architecture diagram. It shows three Bounded Contexts (Evans, 2003):<br><br>• <strong>Claim Intake</strong> (Core Domain) - The main business<br>• <strong>Policy Management</strong> (Supporting Domain) - Provides services<br>• <strong>Fraud Assessment</strong> (Subdomain) - Specialized services<br><br>Each context has clear boundaries and communicates through domain events."
+                    },
+                    {
+                        element: '.diagram-container[data-step="2"]',
+                        intro: "The diagram is fully interactive!<br><br>• <strong>Click nodes</strong> to see detailed tooltips with DDD explanations and citations<br>• <strong>Drag nodes</strong> to rearrange<br>• <strong>Zoom</strong> with mouse wheel<br><br>Try clicking on 'Intake Agent (LLM)' to see how it acts as an Anti-Corruption Layer (Evans, 2003)."
+                    },
+                    {
+                        element: '.container[data-step="3"]',
+                        intro: "This sequence diagram shows the complete workflow from user input to final routing.<br><br>Notice how:<br>• Domain Events trigger workflow steps<br>• Components are loosely coupled<br>• The Orchestrator coordinates everything<br><br>This follows Event-Driven Architecture principles (Hohpe & Woolf, 2003)."
+                    },
+                    {
+                        element: '.container[data-step="4"]',
+                        intro: "Key DDD Concepts:<br><br>• <strong>Bounded Contexts</strong> - Separate domains with clear boundaries<br>• <strong>Domain Events</strong> - Notifications that trigger workflow steps<br>• <strong>Agents</strong> - AI-powered specialized workers<br><br>All concepts are grounded in research - see REFERENCES.md for citations."
+                    },
+                    {
+                        intro: "You're all set!<br><br>• Explore the diagrams interactively<br>• Check out REFERENCES.md for research citations<br>• Run <code>python visualize.py</code> for terminal visualization<br><br>Happy learning! 🎓"
+                    }
+                ],
+                showProgress: true,
+                showBullets: false,
+                exitOnOverlayClick: true,
+                exitOnEsc: true,
+                nextLabel: 'Next →',
+                prevLabel: '← Previous',
+                doneLabel: 'Done'
+            }).start();
+        }
+    </script>
+</body>
+</html>

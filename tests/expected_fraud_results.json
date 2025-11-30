@@ -1,0 +1,107 @@
+{
+  "template_expectations": {
+    "auto_insurance_claim": {
+      "expected_fraud_score_range": [0.0, 0.3],
+      "expected_risk_level": "low",
+      "expected_is_suspicious": false,
+      "description": "Normal auto insurance claim"
+    },
+    "stolen_vehicle_fraud": {
+      "expected_fraud_score_range": [0.6, 1.0],
+      "expected_risk_level": "high",
+      "expected_is_suspicious": true,
+      "description": "Suspicious stolen vehicle claim with timing issues"
+    },
+    "inflated_damage_claim": {
+      "expected_fraud_score_range": [0.6, 1.0],
+      "expected_risk_level": "high",
+      "expected_is_suspicious": true,
+      "description": "Unusually high repair costs for minor incident"
+    },
+    "duplicate_claim": {
+      "expected_fraud_score_range": [0.4, 0.8],
+      "expected_risk_level": "medium",
+      "expected_is_suspicious": false,
+      "description": "Same incident claimed multiple times"
+    },
+    "suspicious_timing": {
+      "expected_fraud_score_range": [0.6, 1.0],
+      "expected_risk_level": "high",
+      "expected_is_suspicious": true,
+      "description": "Claim filed immediately after policy start"
+    },
+    "missing_documentation": {
+      "expected_fraud_score_range": [0.3, 0.7],
+      "expected_risk_level": "medium",
+      "expected_is_suspicious": false,
+      "description": "Claim with insufficient evidence"
+    },
+    "inconsistent_story": {
+      "expected_fraud_score_range": [0.5, 0.9],
+      "expected_risk_level": "high",
+      "expected_is_suspicious": true,
+      "description": "Contradictory details in claim"
+    },
+    "missing_critical_fields": {
+      "expected_fraud_score_range": [0.2, 0.5],
+      "expected_risk_level": "low",
+      "expected_is_suspicious": false,
+      "description": "Incomplete claim information"
+    },
+    "invalid_date_format": {
+      "expected_fraud_score_range": [0.2, 0.5],
+      "expected_risk_level": "low",
+      "expected_is_suspicious": false,
+      "description": "Date format inconsistencies"
+    },
+    "invalid_amount_format": {
+      "expected_fraud_score_range": [0.2, 0.5],
+      "expected_risk_level": "low",
+      "expected_is_suspicious": false,
+      "description": "Amount formatting issues"
+    },
+    "missing_policy_number": {
+      "expected_fraud_score_range": [0.2, 0.5],
+      "expected_risk_level": "low",
+      "expected_is_suspicious": false,
+      "description": "Policy information missing"
+    },
+    "expired_policy_claim": {
+      "expected_fraud_score_range": [0.3, 0.6],
+      "expected_risk_level": "medium",
+      "expected_is_suspicious": false,
+      "description": "Claim on expired policy"
+    },
+    "coverage_mismatch": {
+      "expected_fraud_score_range": [0.3, 0.6],
+      "expected_risk_level": "medium",
+      "expected_is_suspicious": false,
+      "description": "Claim type not covered by policy"
+    },
+    "amount_exceeds_coverage": {
+      "expected_fraud_score_range": [0.4, 0.7],
+      "expected_risk_level": "medium",
+      "expected_is_suspicious": false,
+      "description": "Claim exceeds policy limits"
+    },
+    "multiple_claims_short_period": {
+      "expected_fraud_score_range": [0.5, 0.9],
+      "expected_risk_level": "high",
+      "expected_is_suspicious": true,
+      "description": "Multiple claims in short timeframe"
+    },
+    "claim_after_policy_start": {
+      "expected_fraud_score_range": [0.6, 1.0],
+      "expected_risk_level": "high",
+      "expected_is_suspicious": true,
+      "description": "Suspicious timing after policy activation"
+    }
+  },
+  "test_metrics": {
+    "min_detection_accuracy": 0.8,
+    "max_false_positive_rate": 0.2,
+    "max_false_negative_rate": 0.2,
+    "max_processing_time_seconds": 30.0
+  }
+}
+

@@ -1,0 +1,15 @@
+{
+  "claim_type": "auto",
+  "incident_date": "2024-01-15T14:30:00",
+  "reported_date": "2024-01-16T09:00:00",
+  "claimed_amount": "3500.00",
+  "currency": "USD",
+  "incident_location": "Intersection of Main Street and Oak Avenue, Anytown, State 12345",
+  "description": "Rear-end collision at intersection. Other driver ran red light and hit claimant's vehicle from behind. Vehicle sustained damage to rear bumper, trunk, and rear lights.",
+  "claimant_name": "John Doe",
+  "claimant_email": "john.doe@email.com",
+  "claimant_phone": "+1-555-0123",
+  "policy_number": "POL-2024-001234",
+  "tags": ["auto", "collision", "rear-end", "intersection"]
+}
+
