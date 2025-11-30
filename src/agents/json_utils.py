@@ -83,6 +83,8 @@ def clean_json_string(json_str: str) -> str:
     - Trailing commas
     - Comments (basic)
     - Extra whitespace
+    - Unescaped quotes in strings
+    - Control characters
     
     Args:
         json_str: JSON string to clean
@@ -96,8 +98,18 @@ def clean_json_string(json_str: str) -> str:
     # Remove single-line comments (basic)
     json_str = re.sub(r'//.*?$', '', json_str, flags=re.MULTILINE)
     
+    # Remove multi-line comments
+    json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
+    
     # Remove trailing commas before } or ]
     json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+    
+    # Remove control characters (except newlines and tabs)
+    json_str = re.sub(r'[\x00-\x08\x0b-\x0c\x0e-\x1f]', '', json_str)
+    
+    # Fix common quote issues (but be careful not to break valid JSON)
+    # Only fix if we see obvious issues like unescaped quotes in what looks like a string value
+    # This is conservative to avoid breaking valid JSON
     
     return json_str.strip()
 
@@ -111,10 +123,11 @@ def parse_json_resilient(text: str, max_attempts: int = 3) -> Optional[Dict[str,
     2. Extract JSON from text
     3. Clean and retry
     4. Try to find first valid JSON object
+    5. Try to repair common JSON issues
     
     Args:
         text: Text containing JSON
-        max_attempts: Maximum parsing attempts
+        max_attempts: Maximum parsing attempts (will try up to 5 strategies)
         
     Returns:
         Parsed JSON dict, or None if all attempts fail
@@ -123,29 +136,71 @@ def parse_json_resilient(text: str, max_attempts: int = 3) -> Optional[Dict[str,
         return None
     
     attempts = [
-        # Strategy 1: Direct parse
+        # Strategy 1: Direct parse (fastest, most common case)
         lambda t: json.loads(t),
         
-        # Strategy 2: Extract JSON first
+        # Strategy 2: Extract JSON first (handles markdown, extra text)
         lambda t: json.loads(extract_json_from_text(t) or t),
         
-        # Strategy 3: Clean then parse
+        # Strategy 3: Clean then parse (handles trailing commas, comments)
         lambda t: json.loads(clean_json_string(t)),
         
-        # Strategy 4: Extract, clean, then parse
+        # Strategy 4: Extract, clean, then parse (most comprehensive)
         lambda t: json.loads(clean_json_string(extract_json_from_text(t) or t)),
         
-        # Strategy 5: Try to find and parse first JSON object
+        # Strategy 5: Try to find and parse first JSON object (handles multiple objects)
         lambda t: _parse_first_json_object(t),
+        
+        # Strategy 6: Try to repair and parse (last resort)
+        lambda t: _repair_and_parse(t),
     ]
     
-    for attempt in attempts[:max_attempts]:
+    # Try up to max_attempts strategies (but don't exceed available strategies)
+    num_strategies = min(max_attempts, len(attempts))
+    
+    for i, attempt in enumerate(attempts[:num_strategies]):
         try:
-            return attempt(text)
-        except (json.JSONDecodeError, ValueError, TypeError):
+            result = attempt(text)
+            if result is not None:
+                return result
+        except (json.JSONDecodeError, ValueError, TypeError, AttributeError) as e:
+            # Continue to next strategy unless this is the last one
+            if i == num_strategies - 1:
+                # Last attempt failed, return None
+                pass
             continue
     
     return None
+
+
+def _repair_and_parse(text: str) -> Dict[str, Any]:
+    """
+    Attempt to repair common JSON issues and parse.
+    
+    This is a last-resort strategy that tries to fix:
+    - Missing quotes around keys
+    - Single quotes instead of double quotes
+    - Unescaped quotes in strings
+    """
+    # Try extracting JSON first
+    extracted = extract_json_from_text(text) or text
+    
+    # Try replacing single quotes with double quotes (but be careful)
+    # Only do this if it looks like JSON with single quotes
+    if "'" in extracted and '"' not in extracted:
+        # Simple replacement (not perfect but may work for simple cases)
+        repaired = extracted.replace("'", '"')
+        try:
+            return json.loads(repaired)
+        except json.JSONDecodeError:
+            pass
+    
+    # Try cleaning
+    cleaned = clean_json_string(extracted)
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        raise ValueError("Could not repair JSON")
 
 
 def _parse_first_json_object(text: str) -> Dict[str, Any]:

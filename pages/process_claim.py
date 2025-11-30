@@ -52,6 +52,12 @@ if templates_available:
         "💰 High Value Claim": "high_value_claim",
         "📝 Simple Claim": "simple_claim",
         "🏠 Property Damage": "property_damage_claim",
+        "🏥 Health Insurance": "health_insurance_claim",
+        "📞 Phone Transcript": "phone_transcript",
+        "🌐 Web Form Submission": "web_form_submission",
+        "⚠️ Fraud Risk Claim": "fraud_risk_claim",
+        "✅ Good Legitimate Claim": "good_legitimate_claim",
+        "🔥 Property Fire Damage": "good_property_claim",
     }
     
     selected_template_key = st.selectbox(

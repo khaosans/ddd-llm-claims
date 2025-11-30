@@ -152,7 +152,7 @@ IMPORTANT: Output ONLY valid JSON. No additional text, explanations, or markdown
                 # Validate output against domain model (ClaimSummary Value Object)
                 # This is the Anti-Corruption Layer in action - we're ensuring
                 # external LLM output conforms to our strict domain model
-                claim_summary = self.validate_output(raw_output, ClaimSummary, max_retries=2)
+                claim_summary = self.validate_output(raw_output, ClaimSummary, max_retries=3)
                 
                 # Success - add evidence
                 tracker.add_evidence("extraction_success", {

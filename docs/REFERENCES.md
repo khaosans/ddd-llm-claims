@@ -49,6 +49,7 @@ Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns: Designing, buil
 Nygard, M. T. (2007). *Release it!: Design and deploy production-ready software*. Pragmatic Bookshelf.
 
 - **ISBN**: 978-0978739218
+- **Key Concepts**: Retry logic, exponential backoff, graceful degradation, progressive error recovery
 - **Online Resources**:
   - [Pragmatic Bookshelf](https://pragprog.com/titles/mnee2/release-it-second-edition/)
   - [Michael Nygard's Blog](https://www.michaelnygard.com/)
@@ -64,6 +65,21 @@ Fowler, M. (2014, March 6). Circuit breaker. *Martin Fowler's Blog*. Retrieved f
 - **Pattern**: Circuit Breaker
 - **Online Resources**:
   - [Circuit Breaker Pattern](https://martinfowler.com/bliki/CircuitBreaker.html)
+
+Fowler, M. (2002). *Patterns of enterprise application architecture* (pp. 455-480). Addison-Wesley Professional.
+
+- **Pattern**: Input Validation, Data Transformation
+- **Key Concepts**: Input validation patterns, data normalization, type conversion
+- **Online Resources**:
+  - [Patterns Catalog](https://martinfowler.com/eaaCatalog/)
+  - [Martin Fowler's Website](https://martinfowler.com/)
+
+Evans, E. (2003). *Domain-driven design: Tackling complexity in the heart of software* (pp. 97-124). Addison-Wesley Professional.
+
+- **Key Concepts**: Value Objects, type safety, domain invariants, validation at boundaries
+- **Online Resources**:
+  - [Domain-Driven Design Community](https://www.domainlanguage.com/)
+  - [DDD Reference](https://www.domainlanguage.com/ddd/reference/)
 
 Netflix Technology Blog. (2011, December 6). *Fault tolerance in a high volume, distributed system*. Retrieved from https://netflixtechblog.com/fault-tolerance-in-a-high-volume-distributed-system-91ab4faae74a
 
