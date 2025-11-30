@@ -474,12 +474,11 @@ Just like a company has separate departments (Sales, HR, Finance), this system h
 - **Policy Management** (Supporting Domain): Provides policy information services
 - **Fraud Assessment** (Subdomain): Provides fraud detection capabilities
 
-**Why Separate Contexts?** Each bounded context has its own rules, data, and communicates with others through clear interfaces (Evans, 2003). We separated them because:
-
-1. **Different Rules**: Claim processing rules are different from policy rules. Keeping them separate prevents one from breaking the other.
-2. **Independent Evolution**: Fraud detection algorithms can change without affecting claim processing code.
-3. **Clear Ownership**: Different teams can own different contexts without stepping on each other.
-4. **Maintainability**: When you need to change fraud detection, you know exactly where to look.
+**Why Separate Contexts?** Each bounded context has its own rules, data, and communicates through clear interfaces (Evans, 2003). Separation enables:
+- **Different Rules**: Claim processing rules differ from policy rules—separation prevents conflicts
+- **Independent Evolution**: Fraud detection can change without affecting claim processing
+- **Clear Ownership**: Different teams can own different contexts independently
+- **Maintainability**: Changes are localized—you know exactly where to look
 
 This separation is a core DDD principle that makes complex systems manageable (Evans, 2003, pp. 335-365).
 
@@ -487,11 +486,11 @@ This separation is a core DDD principle that makes complex systems manageable (E
 
 When something important happens (like "facts extracted" or "policy validated"), the system sends a notification called a "domain event" (Vernon, 2013). Other parts of the system can listen to these notifications and react accordingly. This follows event-driven architecture principles (Hohpe & Woolf, 2003).
 
-**Why Events Instead of Direct Calls?** We use events because:
-- **Loose Coupling**: Components don't need to know about each other—they just publish and listen to events
-- **Flexibility**: New features can listen to existing events without modifying existing code
-- **Scalability**: Events can be processed asynchronously, allowing parallel processing
-- **Resilience**: If one component fails, others continue processing
+**Why Events Instead of Direct Calls?** Events enable:
+- **Loose Coupling**: Components publish/listen without direct dependencies
+- **Flexibility**: New features can listen to existing events without code changes
+- **Scalability**: Asynchronous processing enables parallel execution
+- **Resilience**: Component failures don't cascade—others continue processing
 
 This makes the system easier to test, modify, and scale (Hohpe & Woolf, 2003, pp. 516-530).
 
@@ -499,23 +498,23 @@ This makes the system easier to test, modify, and scale (Hohpe & Woolf, 2003, pp
 
 Instead of storing messy data, the system creates clean, structured "value objects" like `ClaimSummary` (Evans, 2003). Value objects are immutable and enforce business rules.
 
-**Why Immutable?** We make value objects immutable because:
-- **Safety**: Once created, they can't be accidentally modified, preventing bugs
-- **Thread Safety**: Immutable objects are naturally thread-safe
-- **Predictability**: You always know what a value object contains—it never changes
-- **Validation**: Business rules are enforced at creation time, ensuring data integrity
+**Why Immutable?** Immutability provides:
+- **Safety**: No accidental modifications—prevents entire classes of bugs
+- **Thread Safety**: Naturally safe for concurrent access
+- **Predictability**: Value never changes after creation
+- **Validation**: Business rules enforced at creation time
 
-This immutability is a core DDD principle that makes code more reliable (Evans, 2003, pp. 97-124).
+This is a core DDD principle that makes code more reliable (Evans, 2003, pp. 97-124).
 
 ### Aggregates (Consistency Boundaries)
 
 Claims and Policies are "aggregates" - they maintain consistency within their boundaries (Evans, 2003; Vernon, 2013). Only aggregate roots can be referenced from outside the aggregate.
 
-**Why Aggregates?** We use aggregates because:
-- **Consistency**: All changes to a Claim must go through the Claim aggregate, ensuring business rules are always enforced
-- **Encapsulation**: Internal details (like how ClaimSummary is stored) are hidden from outside code
-- **Boundaries**: Aggregates define what must be consistent together—you can't have a Claim with invalid state
-- **Identity**: Aggregates have unique identities (UUIDs), making them easy to reference and track
+**Why Aggregates?** Aggregates provide:
+- **Consistency**: All changes go through the aggregate root—business rules always enforced
+- **Encapsulation**: Internal details hidden from outside code
+- **Boundaries**: Define what must be consistent together—prevents invalid states
+- **Identity**: Unique identities (UUIDs) enable easy reference and tracking
 
 This pattern prevents invalid states and makes the system more reliable (Evans, 2003, pp. 125-150; Vernon, 2013, pp. 345-380).
 
@@ -523,23 +522,23 @@ This pattern prevents invalid states and makes the system more reliable (Evans, 
 
 The agents act as "translators" between messy external data (customer emails) and the clean, structured system. This pattern is called an "Anti-Corruption Layer" (Evans, 2003). They protect the system from bad data and validate LLM outputs.
 
-**Why Anti-Corruption Layer?** We use agents as an Anti-Corruption Layer because:
-- **Data Quality**: LLM outputs are unpredictable—agents validate and transform data before it enters the domain
-- **Domain Protection**: The clean domain model stays protected from external system changes
-- **Validation**: Agents enforce business rules at the boundary, preventing invalid data from corrupting the system
-- **Abstraction**: Domain code doesn't need to know about LLM APIs, prompts, or provider details
+**Why Anti-Corruption Layer?** Agents protect the domain by:
+- **Data Quality**: Validating and transforming unpredictable LLM outputs before domain entry
+- **Domain Protection**: Shielding clean domain models from external system changes
+- **Validation**: Enforcing business rules at boundaries—prevents invalid data corruption
+- **Abstraction**: Domain code doesn't know about LLM APIs, prompts, or provider details
 
-This pattern is especially important with AI systems where outputs can vary significantly (Evans, 2003, pp. 365-380).
+Critical for AI systems where outputs vary significantly (Evans, 2003, pp. 365-380).
 
 ### Repository Pattern
 
 Data access is abstracted through repositories, making testing and implementation swapping easier (Evans, 2003; Fowler, 2002).
 
-**Why Repositories?** We use repositories because:
-- **Testability**: In-memory repositories make testing fast and simple—no database setup needed
-- **Flexibility**: We can swap implementations (in-memory → PostgreSQL → MongoDB) without changing domain code
-- **Independence**: Domain models don't know about databases, keeping business logic pure
-- **Abstraction**: Repository interfaces define what operations are needed, not how they're implemented
+**Why Repositories?** Repositories enable:
+- **Testability**: In-memory implementations make testing fast—no database setup
+- **Flexibility**: Swap implementations (in-memory → PostgreSQL → MongoDB) without domain changes
+- **Independence**: Domain models don't know about databases—business logic stays pure
+- **Abstraction**: Interfaces define what's needed, not how it's implemented
 
 This separation makes the system more testable and maintainable (Evans, 2003, pp. 151-170; Fowler, 2002, pp. 322-334).
 
