@@ -31,6 +31,7 @@ This directory contains all project documentation organized by category. All doc
 
 ### 📚 Reference Materials
 - **[REFERENCES.md](REFERENCES.md)** - Research citations (APA format) and academic references
+- **[RESEARCH_SUMMARY.md](RESEARCH_SUMMARY.md)** - Quick reference for all research areas by category
 - **[COMPLIANCE_USAGE.md](COMPLIANCE_USAGE.md)** - Compliance and explainability features
 - **[RESILIENCE.md](RESILIENCE.md)** - Error handling and resilience patterns
 - **[OLLAMA_SINGLE_GPU_SETUP.md](OLLAMA_SINGLE_GPU_SETUP.md)** - Ollama setup for single GPU

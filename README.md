@@ -599,7 +599,7 @@ Sometimes, the AI needs human help. When a claim is unusual (very large amount, 
 
 ### Quick Start (3 Minutes)
 
-The fastest way to see the system in action:
+The fastest way to get started:
 
 ```bash
 # 1. Clone the repository
@@ -621,8 +621,6 @@ The dashboard will open in your browser. Click "Start Processing Claims" and sel
 
 **No Ollama required** - Mock mode works out of the box for demos!
 
-For detailed setup instructions, see [QUICK_START.md](QUICK_START.md).
-
 ### Prerequisites
 
 - **Python 3.10 or higher**
@@ -631,44 +629,12 @@ For detailed setup instructions, see [QUICK_START.md](QUICK_START.md).
   - No API keys required
   - Perfect for demos and education
 
-### Installation
+### Detailed Setup Guides
 
-#### Option 1: Quick Setup (Recommended)
-
-```bash
-# Use the setup script (creates venv and installs dependencies)
-python3 scripts/setup.py
-```
-
-#### Option 2: Manual Setup
-
-```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-#### Option 3: With Ollama (Local Models)
-
-```bash
-# Install Ollama (if not already installed)
-brew install ollama  # macOS
-# or visit https://ollama.com for other platforms
-
-# Start Ollama service
-ollama serve
-
-# Download a model (in another terminal)
-ollama pull llama3.2
-
-# Run the dashboard - it will auto-detect Ollama
-streamlit run streamlit_app.py
-```
-
-See [LOCAL_SETUP.md](LOCAL_SETUP.md) for complete local setup guide.
+For comprehensive setup instructions, see:
+- **[QUICK_START.md](QUICK_START.md)** - Fastest way to get started (3 minutes)
+- **[LOCAL_SETUP.md](LOCAL_SETUP.md)** - Complete local setup with Ollama
+- **[docs/OLLAMA_SINGLE_GPU_SETUP.md](docs/OLLAMA_SINGLE_GPU_SETUP.md)** - Ollama setup for single GPU systems
 
 ---
 
@@ -894,9 +860,9 @@ Visualizations are powerful tools for understanding complex systems. They transf
 
 **Available Visualizations**:
 
-- **[Architecture Diagram](docs/architecture.md)**: Detailed system architecture with narrative introductions explaining what each diagram shows and why it matters
-- **[Sequence Diagram](docs/sequence_diagram.md)**: Step-by-step workflow sequence with comprehensive journey storytelling
-- **[Interactive Dashboard](docs/visualization.html)**: Interactive visualizations with narrative tooltips, guided tours, and accessibility features
+- **[Architecture Diagram](docs/architecture.md)**: Detailed system architecture with technical explanations of components and their relationships
+- **[Sequence Diagram](docs/sequence_diagram.md)**: Complete workflow sequence documenting temporal ordering of component interactions
+- **[Interactive Dashboard](docs/visualization.html)**: Interactive visualizations with tooltips, guided tours, and accessibility features
 - **[Visualization Guide](docs/visualization_guide.md)**: Complete guide to understanding and using visualizations, with accessibility considerations and reading guides
 
 ### Guides
@@ -999,39 +965,18 @@ See [docs/RESEARCH_SUMMARY.md](docs/RESEARCH_SUMMARY.md) for a categorized overv
 
 > **Note**: This section outlines potential improvements and extensions for educational purposes. This is a demonstration system and these enhancements would require significant additional development.
 
-### Architecture Enhancements
+For a comprehensive list of future work items organized by category, see [docs/architecture.md](docs/architecture.md#future-work). The following provides a high-level overview:
 
-- **Event Sourcing**: Implement full event sourcing for complete audit trail
-- **CQRS**: Separate read and write models for better scalability
-- **Distributed Event Bus**: Replace in-memory event bus with distributed messaging
-- **API Gateway**: Add REST API layer for external integrations
+### Key Enhancement Areas
 
-### Domain Model Extensions
+- **Architecture**: Event Sourcing, CQRS, distributed event bus, API gateway
+- **Domain Model**: Additional bounded contexts, enhanced domain models, advanced value objects
+- **Agents**: Multi-agent collaboration, advanced prompt engineering, agent monitoring
+- **Infrastructure**: Persistence layer, caching, search & indexing, file storage
+- **Security & Compliance**: Authentication, data protection, regulatory compliance
+- **Observability**: Distributed tracing, metrics collection, structured logging
 
-- **Additional Bounded Contexts**: Payment Processing, Customer Management, Notification Service
-- **Enhanced Domain Models**: Multi-line claims, claim history, document relationships
-- **Advanced Value Objects**: Money, Address, Date Range value objects
-
-### Agent Improvements
-
-- **Multi-Agent Collaboration**: Agent-to-agent communication and negotiation
-- **Advanced Prompt Engineering**: Few-shot learning, chain-of-thought prompting
-- **Agent Monitoring**: Performance metrics, token usage tracking, health checks
-
-### Infrastructure Enhancements
-
-- **Persistence Layer**: PostgreSQL or MongoDB with migrations
-- **Caching Layer**: Redis for frequently accessed data
-- **Search & Indexing**: Enhanced vector store with full-text search
-- **File Storage**: Cloud storage integration (S3, Azure Blob, GCS)
-
-### Security & Compliance
-
-- **Authentication & Authorization**: OAuth2/JWT, RBAC, MFA
-- **Data Protection**: Encryption, data masking, audit logging
-- **Compliance Features**: HIPAA, GDPR, SOC 2 compliance
-
-For a complete list of future work items, see [docs/architecture.md](docs/architecture.md#future-work).
+See [docs/architecture.md](docs/architecture.md#future-work) for detailed future work items with research citations.
 
 ---
 

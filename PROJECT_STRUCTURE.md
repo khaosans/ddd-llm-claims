@@ -58,14 +58,17 @@ src/
 - `TECHNICAL.md` - Technical architecture documentation
 - `architecture.md` - Architecture diagrams
 - `sequence_diagram.md` - Workflow sequence diagrams
-- `REFERENCES.md` - Research citations
+- `REFERENCES.md` - Research citations (APA format)
+- `RESEARCH_SUMMARY.md` - Quick reference for research by category
 - `CORRECTNESS.md` - System invariants
 - `DOA_CHECKLIST.md` - DDD verification checklist
 - `DEMO_GUIDE.md` - Demo presentation guide
 - `DEMO_WORKFLOW_GUIDE.md` - Demo mode workflow details
-- `visualization_guide.md` - Visualization usage
+- `visualization_guide.md` - Visualization usage guide
 - `visualization.html` - Interactive visualization dashboard
-- `status/` - Implementation status and history documents
+- `RESILIENCE.md` - Error handling and resilience patterns
+- `COMPLIANCE_USAGE.md` - Compliance and explainability features
+- `status/` - Historical implementation status documents
 
 ### `/tests` - Test Suite
 - `test_domain_models.py` - Domain model tests

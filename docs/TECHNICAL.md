@@ -559,7 +559,7 @@ ollama pull llama3.2
    - Measure agent performance
    - Track human review patterns
 
-For more detailed future work items, see [docs/architecture.md](architecture.md#future-work).
+For comprehensive future work items organized by category with detailed research citations, see [docs/architecture.md](architecture.md#future-work).
 
 ---
 

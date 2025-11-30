@@ -159,15 +159,16 @@
                 <strong>Welcome to the Interactive Visualization Dashboard</strong>
             </p>
             <p style="font-size: 1.1em; color: #555; line-height: 1.7; margin-bottom: 15px;">
-                Imagine you're visiting a well-organized office building. Each floor represents a different department, 
-                and you can see how information flows between them, how decisions are made, and how work gets done. 
-                That's exactly what this dashboard shows you about our claims processing system.
+                This interactive dashboard provides a comprehensive view of the claims processing system architecture, 
+                illustrating how components are organized, how information flows between bounded contexts, and how 
+                processing workflows are coordinated. The visualizations demonstrate Domain-Driven Design principles 
+                in practice.
             </p>
             <p style="font-size: 1.05em; color: #555; line-height: 1.7;">
-                This interactive dashboard tells the complete story of how claims are processed—from a customer's 
-                unstructured email to final routing. You'll see the architecture (how departments are organized), 
-                the workflow (how claims travel through the system), and the key concepts that make it all work. 
-                Each visualization is interactive—click, hover, and explore to discover the story behind the system.
+                This dashboard documents the complete claim processing workflow—from unstructured input through 
+                final routing. You'll explore the system architecture (bounded context organization), processing 
+                workflows (temporal component interactions), and key DDD concepts. Each visualization is interactive— 
+                click, hover, and explore to understand component relationships and system behavior.
             </p>
             <p style="font-size: 1.05em; color: #555; line-height: 1.7; margin-top: 15px; font-style: italic;">
                 All concepts are grounded in established research on Domain-Driven Design (Evans, 2003) and 
@@ -183,19 +184,17 @@
         <h2>📐 System Architecture: The Organizational Map</h2>
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #3498db;">
             <p style="margin: 0; line-height: 1.7; color: #2c3e50;">
-                <strong>The Story This Diagram Tells:</strong> Think of this like a company's organizational chart, but for software. 
-                You'll see three main "departments" (bounded contexts), each with its own responsibilities. The Claim Intake 
-                department (Core Domain) is where the main business happens—this is like the sales department in a company, 
-                where the primary value is created. Policy Management provides supporting services (like HR or IT), and 
-                Fraud Assessment is a specialized department (like legal or compliance). Notice how they communicate through 
-                "memos" (domain events) rather than directly calling each other—this keeps them independent and flexible 
-                (Evans, 2003; Hohpe & Woolf, 2003).
+                <strong>Architecture Overview:</strong> This diagram illustrates the system's organizational structure through 
+                three bounded contexts, each with distinct responsibilities. The Claim Intake bounded context (Core Domain) 
+                contains the primary business logic where claim processing occurs. Policy Management provides supporting services, 
+                and Fraud Assessment is a specialized subdomain. Components communicate through domain events rather than 
+                direct method calls, maintaining loose coupling and enabling independent evolution (Evans, 2003; Hohpe & Woolf, 2003).
             </p>
         </div>
         <p style="font-size: 1.05em; color: #555; margin: 15px 0;">The high-level architecture showing bounded contexts, components, and data flow:</p>
         <p style="background: #e7f3ff; padding: 10px; border-radius: 4px; margin: 10px 0;">
             <strong>💡 Interactive Exploration:</strong> Hover over or click nodes in the diagram below to see detailed explanations 
-            of DDD concepts, patterns, and citations to research. Each tooltip tells part of the story—how components work, 
+            of DDD concepts, patterns, and citations to research. Each tooltip provides technical explanations—how components work, 
             why they're designed this way, and what research supports these patterns.
         </p>
         
@@ -227,9 +226,9 @@
         <h2>🔄 Workflow Sequence: The Journey of a Claim</h2>
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #27ae60;">
             <p style="margin: 0; line-height: 1.7; color: #2c3e50;">
-                <strong>The Story This Diagram Tells:</strong> Follow a single claim as it travels through the system, like watching a package 
-                move through a shipping facility. You'll see each stop, each person (agent) who handles it, and what happens at each stage. 
-                The journey starts when a customer submits an unstructured email—think of it as dropping off paperwork at the front desk. 
+                <strong>Workflow Sequence:</strong> This diagram documents the complete claim processing workflow, illustrating 
+                temporal ordering of component interactions throughout the claim lifecycle. The sequence begins with claim 
+                submission and proceeds through fact extraction, policy validation, fraud assessment, and routing decisions. 
                 Then specialized workers (agents) process it: first extracting the key facts, then validating against policies, assessing 
                 fraud risk, and finally routing it to the right destination. Notice how each step publishes a "notification" (domain event) 
                 that wakes up the next worker—this event-driven approach keeps everything loosely coupled and flexible (Hohpe & Woolf, 2003).
@@ -238,7 +237,7 @@
         <p style="font-size: 1.05em; color: #555; margin: 15px 0;">The step-by-step flow of processing a claim from input to final routing:</p>
         <p style="background: #e7f3ff; padding: 10px; border-radius: 4px; margin: 10px 0;">
             <strong>📖 Reading the Flow:</strong> Read this diagram from top to bottom, following the arrows. Each horizontal line represents 
-            a component (like an agent or repository), and the arrows show messages or actions. The sequence shows the complete journey: 
+            a component (like an agent or repository), and the arrows show messages or actions. The sequence documents the complete workflow: 
             intake → validation → assessment → routing → completion. Notice how domain events (like ClaimFactsExtracted) trigger the next 
             steps—this is the event-driven architecture in action, enabling loose coupling between components (Hohpe & Woolf, 2003).
         </p>
@@ -251,7 +250,7 @@
         <h2>📊 Workflow Progress: Where Are We Now?</h2>
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f39c12;">
             <p style="margin: 0; line-height: 1.7; color: #2c3e50;">
-                <strong>The Story This Shows:</strong> Like a progress bar on a download, this visualization shows where a claim is in its journey. 
+                <strong>Status Visualization:</strong> This visualization indicates the current processing stage of a claim, providing real-time visibility into workflow progress. 
                 Each step represents a milestone: Draft (just created), Facts Extracted (structured information extracted), Policy Validated 
                 (coverage confirmed), Triaged (routing decision made), Processing (being handled), and Completed (finished). The active step 
                 (highlighted in green) shows what's happening right now, while completed steps (gray) show what's already done.
@@ -277,8 +276,8 @@
         <h2>🎯 Key Concepts: The Building Blocks</h2>
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #9b59b6;">
             <p style="margin: 0; line-height: 1.7; color: #2c3e50;">
-                <strong>The Story Behind the Concepts:</strong> These aren't just technical terms—they're patterns that help us organize 
-                complex software systems. Think of Bounded Contexts as separate departments in a company, each with its own language and rules. 
+                <strong>DDD Concepts:</strong> These patterns provide structure for organizing complex software systems. Bounded Contexts 
+                define clear boundaries with distinct domain models and business rules. 
                 Domain Events are like inter-office memos that notify others when something important happens. Agents are specialized workers 
                 that translate messy external data into clean, structured information. Together, these concepts create a system that's organized, 
                 flexible, and maintainable (Evans, 2003; Vernon, 2013).
@@ -320,8 +319,8 @@
         <h2>🚀 How to Use: Exploring the System</h2>
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #e74c3c;">
             <p style="margin: 0; line-height: 1.7; color: #2c3e50;">
-                <strong>The Story of Exploration:</strong> This dashboard is designed for discovery. Start with the guided tour to get oriented, 
-                then explore the interactive diagrams. Click on nodes to learn about concepts, follow the workflow to understand the journey, 
+                <strong>Exploration Guide:</strong> This dashboard is designed for systematic exploration. Start with the guided tour to get oriented, 
+                then explore the interactive diagrams. Click on nodes to learn about concepts, follow the workflow to understand processing flows, 
                 and use the progress indicators to see where claims are in the process. The more you explore, the more you'll understand how 
                 all the pieces fit together.
             </p>
@@ -343,7 +342,7 @@
             <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
                 <li><strong>Start with the Guided Tour</strong>: Click "Start Guided Tour" above to get an overview of all features and concepts</li>
                 <li><strong>Explore the Architecture</strong>: Click on different nodes in the architecture diagram to understand how components relate</li>
-                <li><strong>Follow the Workflow</strong>: Trace a claim's journey through the sequence diagram to see the complete process</li>
+                <li><strong>Follow the Workflow</strong>: Trace claim processing through the sequence diagram to see the complete workflow</li>
                 <li><strong>Run Interactive Tools</strong>: Execute <code>python scripts/visualize.py</code> for real-time terminal visualization of actual claim processing</li>
                 <li><strong>Export for Reference</strong>: Right-click on diagrams to save as images for presentations or documentation</li>
             </ol>
@@ -525,7 +524,7 @@
             1: 'Policy Management (Supporting Domain)<br><small><strong>The Story:</strong> Like the HR or IT department in a company, Policy Management provides essential services that support the core business. It doesn\'t create the primary value, but the core domain couldn\'t function without it. In Domain-Driven Design, supporting domains help the core domain function but aren\'t the primary business value (Evans, 2003). This bounded context manages insurance policies and provides validation services to the Claim Intake domain. <strong>Reference:</strong> <a href="REFERENCES.html#policy-management">Evans (2003)</a></small>',
             2: 'Claim Intake (Core Domain)<br><small><strong>The Story:</strong> This is the heart of the business—where the primary value is created. Think of it like the sales department in a company: everything else exists to support this core function. The Claim Intake bounded context receives messy, unstructured customer input and transforms it into structured, processable claims. This is where the magic happens—where customer needs meet business capabilities. <strong>Reference:</strong> <a href="REFERENCES.html#domain-driven-design">Evans (2003)</a></small>',
             3: 'Fraud Assessment (Subdomain)<br><small><strong>The Story:</strong> Important but not core to the business, Fraud Assessment is like a specialized department (legal or compliance) that provides critical services. It\'s essential for risk management but not the primary business function. This subdomain uses both machine learning models and LLM agents to assess fraud risk, providing scores that help route claims appropriately. <strong>Reference:</strong> <a href="REFERENCES.html#domain-driven-design">Evans (2003)</a></small>',
-            4: 'Unstructured Customer Data<br><small><strong>The Story:</strong> This is where every claim journey begins—a messy, unstructured email, form, or note from a customer. Think of it like a handwritten letter dropped in a mailbox: it contains all the information needed, but it\'s not in a format computers can easily process. This raw input is the starting point that agents will transform into structured data. The challenge is extracting meaning from this chaos.</small>',
+            4: 'Unstructured Customer Data<br><small><strong>Overview:</strong> Claims originate as unstructured input (emails, forms, notes) containing necessary information in formats requiring transformation. This raw input serves as the entry point for agent processing, where unstructured data is transformed into structured domain models through fact extraction.</small>',
             5: 'Intake Agent (LLM)<br><small><strong>The Story:</strong> This AI agent acts like a skilled claims analyst who can read messy customer emails and extract the key facts. It uses Large Language Models (Brown et al., 2020) combined with prompt engineering to understand unstructured input and produce structured output. This is an "Anti-Corruption Layer" (Evans, 2003)—it protects the clean, structured system from messy external data. The agent translates customer language into domain language. <strong>Reference:</strong> <a href="REFERENCES.html#llmai-agents">Brown et al. (2020)</a>, <a href="REFERENCES.html#anti-corruption-layer">Evans (2003)</a></small>',
             6: 'Prompt Engineering<br><small><strong>The Story:</strong> Prompt engineering is the art of crafting instructions that make AI models act like domain experts. It\'s like writing a job description so detailed that the AI knows exactly how to behave. By carefully designing prompts, we can get structured, validated output from unstructured input. Techniques like chain-of-thought prompting (Wei et al., 2022) help models reason through complex tasks. <strong>Reference:</strong> <a href="REFERENCES.html#llmai-agents">Wei et al. (2022)</a></small>',
             7: 'Policy Repository<br><small><strong>The Story:</strong> Like a filing cabinet for policies, the Policy Repository abstracts how policies are stored and retrieved. This follows the Repository pattern (Evans, 2003; Fowler, 2002), which keeps the domain model independent of how data is persisted. The domain doesn\'t care if policies are in a database, file system, or cloud storage—it just asks the repository for what it needs. This makes the system flexible and testable. <strong>Reference:</strong> <a href="REFERENCES.html#repository-pattern">Evans (2003), Fowler (2002)</a></small>',
