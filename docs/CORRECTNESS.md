@@ -4,7 +4,7 @@ This document describes the critical domain invariants, correctness guarantees, 
 
 ## Domain Invariants
 
-Domain invariants are business rules that must always be true. These are enforced at the domain model level to ensure correctness.
+Domain invariants are business rules that must always be true (Evans, 2003). These are enforced at the domain model level to ensure correctness. Invariants are a core concept in Domain-Driven Design, representing constraints that must hold true for the domain model to be valid (Evans, 2003, pp. 125-150).
 
 ### 1. Claim Amount Invariant
 
@@ -63,7 +63,7 @@ def validate_incident_date(cls, v: datetime) -> datetime:
 
 ### 4. Value Object Immutability
 
-**Invariant**: Value Objects (ClaimSummary, FraudCheckResult) are immutable.
+**Invariant**: Value Objects (ClaimSummary, FraudCheckResult) are immutable (Evans, 2003, pp. 97-124).
 
 **Location**: All Value Object classes
 
@@ -79,7 +79,7 @@ class Config:
 
 ### 5. Aggregate Consistency
 
-**Invariant**: Aggregate roots maintain consistency within their boundaries.
+**Invariant**: Aggregate roots maintain consistency within their boundaries (Evans, 2003, pp. 125-150; Vernon, 2013, pp. 345-380).
 
 **Location**: `src/domain/claim/claim.py`, `src/domain/policy/policy.py`
 
@@ -96,7 +96,7 @@ class Config:
 
 ### Repository Pattern
 
-**Correctness**: Repository abstraction maintains domain model independence from persistence.
+**Correctness**: Repository abstraction maintains domain model independence from persistence (Evans, 2003, pp. 151-170; Fowler, 2002, pp. 322-334).
 
 **Verification**: 
 - In-memory implementation for testing
@@ -107,7 +107,7 @@ class Config:
 
 ### Anti-Corruption Layer
 
-**Correctness**: Agents properly translate external data into domain models.
+**Correctness**: Agents properly translate external data into domain models (Evans, 2003, pp. 365-380). This pattern protects the domain model from external system changes and ensures data quality.
 
 **Verification**:
 - Intake Agent validates LLM output against ClaimSummary schema
@@ -118,7 +118,7 @@ class Config:
 
 ### Event-Driven Architecture
 
-**Correctness**: Domain events enable loose coupling without data loss.
+**Correctness**: Domain events enable loose coupling without data loss (Vernon, 2013, pp. 381-420; Hohpe & Woolf, 2003, pp. 516-530). Events represent immutable facts about domain occurrences and enable asynchronous processing.
 
 **Verification**:
 - Events are immutable

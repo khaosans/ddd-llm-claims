@@ -70,26 +70,26 @@ This project is designed for:
 
 ### Domain-Driven Design
 
-- **Bounded Contexts**: Separate domains (Claim Intake, Policy Management, Fraud Assessment)
-- **Aggregates**: Claim and Policy as aggregate roots
-- **Value Objects**: ClaimSummary, FraudCheckResult as immutable values
-- **Domain Events**: ClaimFactsExtracted, PolicyValidated, FraudScoreCalculated
-- **Repositories**: Abstract data access
-- **Ubiquitous Language**: Domain terms used consistently
+- **Bounded Contexts**: Separate domains (Claim Intake, Policy Management, Fraud Assessment) (Evans, 2003)
+- **Aggregates**: Claim and Policy as aggregate roots (Evans, 2003; Vernon, 2013)
+- **Value Objects**: ClaimSummary, FraudCheckResult as immutable values (Evans, 2003)
+- **Domain Events**: ClaimFactsExtracted, PolicyValidated, FraudScoreCalculated (Vernon, 2013)
+- **Repositories**: Abstract data access (Evans, 2003; Fowler, 2002)
+- **Ubiquitous Language**: Domain terms used consistently (Evans, 2003)
 
 ### LLM Integration
 
-- **Anti-Corruption Layer**: Agents translate external data to domain models
-- **Prompt Engineering**: System prompts make LLMs act as domain experts
+- **Anti-Corruption Layer**: Agents translate external data to domain models (Evans, 2003)
+- **Prompt Engineering**: System prompts make LLMs act as domain experts (Brown et al., 2020)
 - **Model Abstraction**: Support for multiple LLM providers
 - **Validation**: LLM output validated against domain models
 
 ### Event-Driven Architecture
 
-- **Domain Events**: Immutable facts about domain occurrences
-- **Event Bus**: Loose coupling through events
-- **Workflow Orchestration**: Coordinated through events
-- **Asynchronous Processing**: Non-blocking workflow
+- **Domain Events**: Immutable facts about domain occurrences (Vernon, 2013)
+- **Event Bus**: Loose coupling through events (Hohpe & Woolf, 2003)
+- **Workflow Orchestration**: Coordinated through events (Hohpe & Woolf, 2003)
+- **Asynchronous Processing**: Non-blocking workflow (Hohpe & Woolf, 2003)
 
 ### Human-in-the-Loop
 
@@ -100,7 +100,7 @@ This project is designed for:
 
 ## Structure
 
-The project is organized following DDD principles:
+The project is organized following DDD principles (Evans, 2003) and Clean Architecture (Martin, 2017):
 
 - **Domain Layer**: Core business logic (src/domain/)
 - **Application Layer**: Orchestration and coordination (src/orchestrator/)

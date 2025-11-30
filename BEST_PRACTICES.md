@@ -24,10 +24,10 @@ This guide outlines best practices for using, extending, and learning from this 
    - Start with examples before customizing
 
 4. **Follow DDD Principles**
-   - Keep domain logic in domain layer
-   - Use aggregates correctly
-   - Maintain bounded context boundaries
-   - Preserve domain invariants
+   - Keep domain logic in domain layer (Evans, 2003)
+   - Use aggregates correctly (Evans, 2003; Vernon, 2013)
+   - Maintain bounded context boundaries (Evans, 2003)
+   - Preserve domain invariants (Evans, 2003)
 
 5. **Test Your Changes**
    - Write tests for new features
@@ -84,10 +84,10 @@ This guide outlines best practices for using, extending, and learning from this 
    ```
 
 2. **Maintain Patterns**
-   - Use aggregates for entities
-   - Use value objects for data
-   - Publish domain events
-   - Use repositories for data access
+   - Use aggregates for entities (Evans, 2003; Vernon, 2013)
+   - Use value objects for data (Evans, 2003)
+   - Publish domain events (Vernon, 2013)
+   - Use repositories for data access (Evans, 2003; Fowler, 2002)
 
 3. **Add Tests**
    - Unit tests for domain logic
@@ -118,7 +118,7 @@ This guide outlines best practices for using, extending, and learning from this 
 
 2. **Act as Anti-Corruption Layer**
    - Validate LLM output
-   - Translate to domain models
+   - Translate to domain models (Evans, 2003, pp. 365-380)
    - Enforce domain rules
    - Handle errors gracefully
 
@@ -176,10 +176,10 @@ This guide outlines best practices for using, extending, and learning from this 
 ### Key Learning Points
 
 1. **DDD Patterns**
-   - How aggregates maintain consistency
-   - How value objects enforce invariants
-   - How events enable loose coupling
-   - How repositories abstract persistence
+   - How aggregates maintain consistency (Evans, 2003; Vernon, 2013)
+   - How value objects enforce invariants (Evans, 2003)
+   - How events enable loose coupling (Vernon, 2013; Hohpe & Woolf, 2003)
+   - How repositories abstract persistence (Evans, 2003; Fowler, 2002)
 
 2. **LLM Integration**
    - Prompt engineering techniques
@@ -188,20 +188,20 @@ This guide outlines best practices for using, extending, and learning from this 
    - Model selection criteria
 
 3. **Architecture**
-   - Event-driven design
-   - Bounded context boundaries
-   - Anti-corruption layers
-   - Workflow orchestration
+   - Event-driven design (Hohpe & Woolf, 2003)
+   - Bounded context boundaries (Evans, 2003)
+   - Anti-corruption layers (Evans, 2003)
+   - Workflow orchestration (Hohpe & Woolf, 2003)
 
 ## Code Quality
 
 ### Writing Good Code
 
 1. **Follow DDD Principles**
-   - Domain logic in domain layer
-   - Infrastructure separate
-   - Clear boundaries
-   - Proper abstractions
+   - Domain logic in domain layer (Evans, 2003)
+   - Infrastructure separate (Evans, 2003; Martin, 2017)
+   - Clear boundaries (Evans, 2003)
+   - Proper abstractions (Fowler, 2002)
 
 2. **Write Clear Code**
    - Descriptive names

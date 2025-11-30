@@ -36,6 +36,13 @@ Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns: Designing, buil
   - [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/)
   - [Pattern Catalog](https://www.enterpriseintegrationpatterns.com/patterns/messaging/)
 
+**Key Patterns Referenced**:
+- **Message Queue Pattern** (pp. 102-115): Asynchronous messaging for system integration
+- **Message Router Pattern** (pp. 230-237): Routing messages to appropriate destinations
+- **Request-Reply Pattern** (pp. 154-161): Synchronous request-response communication
+- **Workflow Pattern** (pp. 347-360): Multi-step process coordination
+- **Event-Driven Architecture** (pp. 516-530): Event-based system communication
+
 Young, G. (2016). *Versioning in an event-sourced system*. Leanpub.
 
 - **Online Resources**:
@@ -69,12 +76,29 @@ Martin, R. C. (2017). *Clean architecture: A craftsman's guide to software struc
   - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
   - [Uncle Bob's Blog](https://blog.cleancoder.com/)
 
+**Key Concepts Referenced**:
+- **Layered Architecture**: Separation of concerns across layers
+- **Dependency Rule**: Dependencies point inward toward the domain
+- **Independence**: Business logic independent of frameworks and infrastructure
+
+Fowler, M. (2011). CQRS. *Martin Fowler's Blog*. Retrieved from https://martinfowler.com/bliki/CQRS.html
+
+- **Pattern**: Command Query Responsibility Segregation
+- **Online Resources**:
+  - [CQRS Pattern](https://martinfowler.com/bliki/CQRS.html)
+  - [Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html)
+
 Newman, S. (2021). *Building microservices: Designing fine-grained systems* (2nd ed.). O'Reilly Media.
 
 - **ISBN**: 978-1492034025
 - **Online Resources**:
   - [Microservices.io](https://microservices.io/)
   - [Sam Newman's Website](https://samnewman.io/)
+
+**Key Patterns Referenced**:
+- **API Gateway Pattern** (pp. 78-95): Single entry point for external API access
+- **Service Discovery**: Locating and connecting to microservices
+- **Service Mesh**: Infrastructure layer for service-to-service communication
 
 ## Anti-Corruption Layer Pattern
 

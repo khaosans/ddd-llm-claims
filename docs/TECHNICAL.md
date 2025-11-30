@@ -7,36 +7,74 @@
 
 ### Domain-Driven Design (DDD) Implementation
 
-This system follows DDD principles (Evans, 2003) to structure the codebase around business domains rather than technical layers.
+**Why DDD?** This system follows DDD principles (Evans, 2003) to structure the codebase around business domains rather than technical layers. We chose DDD because:
+
+1. **Business Alignment**: Insurance claims processing is a complex business domain with many rules and relationships. DDD helps organize code to match how the business actually works, making it easier for both developers and domain experts to understand (Evans, 2003).
+
+2. **Maintainability**: As requirements change (new claim types, policy rules, fraud patterns), code organized by domain is easier to locate and modify. Changes to fraud detection don't affect policy validation code.
+
+3. **Testability**: Domain logic separated from infrastructure makes it easier to test business rules without mocking databases or external services.
+
+4. **Scalability**: Bounded contexts can evolve independently, allowing different parts of the system to scale or change at different rates.
+
+This approach organizes code around business concepts, making the system more maintainable and aligned with business needs (Evans, 2003; Vernon, 2013).
 
 #### Bounded Contexts
 
+**Why Separate Bounded Contexts?** We separated the system into three bounded contexts because each has different rules, responsibilities, and rates of change. This separation prevents one context's changes from breaking another (Evans, 2003, pp. 335-365).
+
 1. **Claim Intake (Core Domain)**
-   - The heart of the business
+   - **Why it's Core**: This is the heart of the business—processing claims is what the system exists to do
+   - **Why Separate**: Claim processing rules change frequently (new claim types, extraction requirements)
    - Contains Claim aggregate, ClaimSummary value object
    - Handles fact extraction from unstructured data
 
 2. **Policy Management (Supporting Domain)**
+   - **Why it's Supporting**: Policies support claim processing but aren't the core business
+   - **Why Separate**: Policy rules are relatively stable and can be maintained independently
    - Provides services to the Core Domain
    - Contains Policy aggregate
    - Handles policy validation
 
 3. **Fraud Assessment (Subdomain)**
+   - **Why it's a Subdomain**: Important for business but not the core value proposition
+   - **Why Separate**: Fraud detection algorithms evolve independently and may be replaced with different ML models
    - Important but not core
    - Contains FraudCheckResult value object
    - Provides fraud detection capabilities
 
 #### Domain Patterns
 
+**Why These Patterns?** Each pattern solves a specific problem in managing complex business logic:
+
 - **Aggregates**: `Claim` and `Policy` are aggregate roots with unique identities (Evans, 2003; Vernon, 2013)
+  - **Why**: Aggregates define consistency boundaries. All changes to a Claim must go through the Claim aggregate, ensuring business rules are always enforced. This prevents invalid states (e.g., a claim with extracted facts but no summary).
+
 - **Value Objects**: `ClaimSummary`, `FraudCheckResult` are immutable value objects (Evans, 2003)
+  - **Why**: Immutability prevents accidental modification and ensures data integrity. Once a ClaimSummary is created, it can't be changed—you create a new one. This eliminates entire classes of bugs and makes the code easier to reason about (Evans, 2003, pp. 97-124).
+
 - **Domain Events**: `ClaimFactsExtracted`, `PolicyValidated`, `FraudScoreCalculated` (Vernon, 2013)
+  - **Why**: Events enable loose coupling between components. The Intake Agent doesn't need to know about Policy validation—it just publishes an event. This makes the system flexible: we can add new event handlers without modifying existing code (Vernon, 2013, pp. 381-420).
+
 - **Repositories**: Abstract data access, enabling easy testing and swapping implementations (Evans, 2003; Fowler, 2002)
+  - **Why**: Repositories keep domain logic independent of persistence. We can test with in-memory repositories, then swap to PostgreSQL in production without changing domain code. This separation of concerns makes the system more testable and maintainable (Evans, 2003, pp. 151-170).
+
 - **Anti-Corruption Layer**: Agents translate external data into domain models (Evans, 2003)
+  - **Why**: LLM outputs are unpredictable and may not match our domain model. Agents validate and transform this external data before it enters our clean domain, protecting business logic from bad data. This is especially important with AI systems where outputs can vary (Evans, 2003, pp. 365-380).
 
 ### Model Provider Architecture
 
-The system supports multiple LLM backends through a provider abstraction:
+**Why Provider Abstraction?** The system supports multiple LLM backends through a provider abstraction because:
+
+1. **Flexibility**: Different use cases need different models. Local development might use Ollama for cost/privacy, while production might use OpenAI for quality.
+
+2. **Vendor Independence**: We're not locked into one LLM provider. If a better model or pricing becomes available, we can switch without rewriting agent code.
+
+3. **Testing**: Mock providers allow testing without making expensive API calls or requiring internet connectivity.
+
+4. **Cost Optimization**: We can use smaller, cheaper models for simple tasks and larger models only when needed.
+
+The abstraction layer isolates agent code from provider-specific details, making the system more maintainable and flexible.
 
 #### Supported Providers
 
@@ -57,7 +95,18 @@ The system supports multiple LLM backends through a provider abstraction:
 
 #### Per-Agent Model Selection
 
-Each agent can use a different model, allowing optimization per task:
+**Why Per-Agent Models?** Each agent can use a different model, allowing optimization per task. This design decision was made because:
+
+1. **Task-Specific Optimization**: Different tasks have different requirements:
+   - **Fact Extraction** (Intake Agent): Needs accuracy, so we use larger models (llama3.2)
+   - **Policy Validation** (Policy Agent): Needs consistency, so we use smaller models with low temperature (llama3.2:3b, temp=0.2)
+   - **Triage** (Triage Agent): Needs reasoning, so we use medium models with higher temperature (mistral:7b, temp=0.5)
+
+2. **Cost Efficiency**: Using smaller models for simple tasks reduces costs. A 3B model is sufficient for policy validation but not for complex fact extraction.
+
+3. **Performance**: Smaller models are faster, improving response times for high-frequency operations like policy validation.
+
+4. **Flexibility**: Teams can experiment with different models per agent to find optimal configurations.
 
 ```yaml
 agents:
@@ -104,7 +153,19 @@ All agents inherit from `BaseAgent`, which provides:
 
 ### Event-Driven Architecture
 
-The workflow is orchestrated through domain events (Hohpe & Woolf, 2003):
+**Why Event-Driven?** The workflow is orchestrated through domain events (Hohpe & Woolf, 2003) because:
+
+1. **Loose Coupling**: Components don't directly depend on each other. The Intake Agent doesn't know about Policy validation—it just publishes an event. This makes the system easier to modify and test (Hohpe & Woolf, 2003, pp. 516-530).
+
+2. **Scalability**: Events can be processed asynchronously. Multiple claims can be processed in parallel without blocking each other.
+
+3. **Extensibility**: New features can listen to existing events without modifying existing code. Want to send an email when facts are extracted? Just add an event handler.
+
+4. **Auditability**: Events provide a complete history of what happened, making debugging and compliance easier.
+
+5. **Resilience**: If one component fails, others can continue processing. Failed events can be retried without affecting the entire workflow.
+
+The workflow progression:
 
 1. **ClaimFactsExtracted** → Triggers policy validation and fraud assessment
 2. **PolicyValidated** → Indicates policy check complete
@@ -112,12 +173,32 @@ The workflow is orchestrated through domain events (Hohpe & Woolf, 2003):
 
 #### Event Bus
 
-- Simple in-memory implementation for MVP
-- Production: Replace with Redis Streams, RabbitMQ, or Kafka
+**Why In-Memory for MVP?** We chose a simple in-memory implementation for the MVP because:
+
+1. **Simplicity**: No infrastructure setup required—works immediately for demos and education
+2. **Sufficient for Learning**: Demonstrates event-driven concepts without complexity
+3. **Easy Testing**: In-memory events are easier to test and reason about
+
+**Why Replace for Production?** Production systems need:
+- **Persistence**: In-memory events are lost on restart. Production needs Redis Streams, RabbitMQ, or Kafka for durability
+- **Distributed Processing**: Multiple service instances need shared event bus
+- **Reliability**: Message brokers provide delivery guarantees, retries, and dead-letter queues
+- **Ordering**: Some events must be processed in order (message brokers provide ordering guarantees)
+
 - Handlers subscribe to event types
 - Events are immutable and timestamped
 
 ### Repository Pattern
+
+**Why Repositories?** Repositories abstract data access because:
+
+1. **Domain Independence**: Domain models don't know about databases, SQL, or persistence details. This keeps business logic pure and testable (Evans, 2003, pp. 151-170).
+
+2. **Testability**: In-memory repositories make testing fast and simple. We can test business logic without setting up databases or mocking complex ORMs.
+
+3. **Flexibility**: We can swap implementations (in-memory → PostgreSQL → MongoDB) without changing domain code. This is especially useful when requirements change.
+
+4. **Abstraction**: Repository interfaces define what operations are needed, not how they're implemented. This makes the domain's data needs explicit.
 
 Repositories abstract data access:
 
@@ -128,7 +209,17 @@ Repositories abstract data access:
 
 ### Prompt Engineering
 
-System prompts are carefully crafted to make LLMs act as domain experts:
+**Why Structured Prompts?** System prompts are carefully crafted to make LLMs act as domain experts (Brown et al., 2020). This follows prompt engineering best practices where structured prompts guide LLM behavior. We use structured prompts because:
+
+1. **Consistency**: Well-defined prompts produce more consistent outputs, reducing the need for retries and error handling.
+
+2. **Role Definition**: Prompts define the agent's role (e.g., "Claims Analyst"), helping the LLM understand context and expectations.
+
+3. **Output Format**: Specifying JSON schemas in prompts helps ensure outputs match our domain models, reducing validation failures.
+
+4. **Domain Rules**: Prompts can encode business rules (e.g., "amounts must be non-negative"), providing guardrails for LLM behavior.
+
+5. **Few-Shot Learning**: Including examples in prompts teaches the LLM the desired format and behavior without fine-tuning (Brown et al., 2020).
 
 #### Intake Agent Prompt
 - Defines role: "Claims Analyst"
@@ -313,7 +404,7 @@ Replace in-memory event bus with:
 ### Error Handling
 
 - Add retry logic for LLM API calls
-- Implement circuit breakers
+- Implement circuit breakers (Hohpe & Woolf, 2003, pp. 420-430)
 - Add comprehensive logging
 - Monitor model performance
 
@@ -385,12 +476,12 @@ ollama pull llama3.2
 ### Architecture Enhancements
 
 1. **Event Sourcing**
-   - Implement full event sourcing for complete audit trail
+   - Implement full event sourcing for complete audit trail (Young, 2016)
    - Store all domain events for replay and debugging
    - Enable time-travel debugging and state reconstruction
 
 2. **CQRS (Command Query Responsibility Segregation)**
-   - Separate read and write models for better scalability
+   - Separate read and write models for better scalability (Fowler, 2011)
    - Optimize read models for different query patterns
    - Implement eventual consistency patterns
 
@@ -407,7 +498,7 @@ ollama pull llama3.2
    - Add agent specialization and delegation
 
 2. **Advanced Prompt Engineering**
-   - Implement few-shot learning with examples
+   - Implement few-shot learning with examples (Brown et al., 2020)
    - Add chain-of-thought prompting (Wei et al., 2022)
    - Support prompt templates and versioning
    - A/B testing for prompt effectiveness

@@ -437,9 +437,34 @@ Before diving into details, let's understand the overall architecture story. Thi
 
 **The Three Bounded Contexts**: Like departments in a company, bounded contexts are separate areas with their own rules and language. They communicate through well-defined interfaces, keeping them independent but coordinated.
 
+**Why Three Contexts?** We separated the system into three bounded contexts because each has different:
+- **Rules**: Claim processing rules differ from policy rules
+- **Change Rates**: Fraud detection algorithms change more frequently than policy structures
+- **Ownership**: Different teams might own different contexts
+- **Language**: Each context has its own domain terminology
+
+This separation prevents changes in one context from breaking another, making the system more maintainable (Evans, 2003, pp. 335-365).
+
 **The Event-Driven Flow**: Components don't directly call each other—they publish and listen to domain events. This event-driven architecture (Hohpe & Woolf, 2003) keeps components loosely coupled and makes the system flexible.
 
+**Why Events Instead of Direct Calls?** We chose events because:
+- **Loose Coupling**: Components don't need to know about each other directly
+- **Scalability**: Events can be processed asynchronously and in parallel
+- **Extensibility**: New features can listen to events without modifying existing code
+- **Resilience**: If one component fails, others continue processing
+- **Auditability**: Events provide a complete history of system behavior
+
+This makes the system easier to test, modify, and scale (Hohpe & Woolf, 2003, pp. 516-530).
+
 **The Agent Layer**: AI agents act as "translators" between messy external data and the clean domain model. This Anti-Corruption Layer pattern (Evans, 2003) protects the system from bad data while enabling intelligent processing.
+
+**Why Agents as Anti-Corruption Layer?** We use agents as an Anti-Corruption Layer because:
+- **Data Quality**: LLM outputs are unpredictable—agents validate and transform data before it enters the domain
+- **Domain Protection**: The clean domain model stays protected from external system changes
+- **Validation**: Agents enforce business rules at the boundary, preventing invalid data from entering the system
+- **Abstraction**: Domain code doesn't need to know about LLM APIs, prompts, or provider-specific details
+
+This pattern is especially important with AI systems where outputs can vary significantly (Evans, 2003, pp. 365-380).
 
 ### Bounded Contexts
 
@@ -504,6 +529,222 @@ Understanding the flow helps you see how all the pieces work together. Here's th
 8. **Dispatch**: The claim is sent to downstream systems—the final destination where it will be processed, reviewed, or investigated.
 
 **The Story**: This flow shows how a claim transforms from messy input to structured, routed information. Each step adds value and moves the claim closer to resolution. The event-driven approach means each step can happen independently, making the system flexible and maintainable.
+
+## Downstream Systems: Integration and Routing
+
+### What Are Downstream Systems?
+
+**Downstream Systems** represent the final destinations where processed claims are dispatched after the triage and routing decision. These are external systems, queues, or services that handle the actual claim processing, review, investigation, or rejection. In a production insurance environment, these would be separate systems with their own responsibilities and lifecycles.
+
+**Why They Matter**: Understanding downstream systems is crucial because they represent the boundary between our DDD-based claims processing system and the rest of the insurance ecosystem. The integration patterns used here demonstrate how to maintain bounded context boundaries while enabling system integration (Evans, 2003; Hohpe & Woolf, 2003).
+
+### Types of Downstream Systems
+
+Based on the routing decisions made by the Triage Agent, claims are dispatched to different types of downstream systems:
+
+#### 1. Human Adjudicator Queue
+
+**Purpose**: For complex claims requiring human judgment, high-value claims, or cases where automated processing is insufficient.
+
+**Characteristics**:
+- **Complexity**: Claims with ambiguous facts, multiple incidents, or unusual circumstances
+- **High Value**: Claims exceeding business-defined thresholds (e.g., >$50,000)
+- **Policy Ambiguity**: Claims where policy coverage is unclear or requires interpretation
+- **Customer Service**: Claims requiring special handling or customer communication
+
+**Integration Pattern**: Message Queue (Hohpe & Woolf, 2003)
+- Claims are placed in a priority queue (e.g., RabbitMQ, Amazon SQS, Azure Service Bus)
+- Human adjudicators pull claims from the queue based on priority
+- Queue supports priority ordering, retry logic, and dead-letter queues
+- Integration follows the **Message Queue pattern** (Hohpe & Woolf, 2003, pp. 102-115)
+
+**Example Flow**:
+```
+Triage Agent → Publish "ClaimRoutedToHumanReview" Event
+Event Bus → Human Review Queue Service
+Queue Service → Enqueue Claim (with priority)
+Human Adjudicator → Dequeue and Review
+Adjudicator → Update Claim Status (Approved/Rejected/NeedsMoreInfo)
+```
+
+**Why This Pattern**: Message queues provide asynchronous processing, ensuring the workflow orchestrator doesn't block waiting for human review. This follows the **Asynchronous Messaging pattern** (Hohpe & Woolf, 2003, pp. 516-530).
+
+#### 2. Automated Processing System
+
+**Purpose**: For simple, low-risk, valid claims that can be processed automatically without human intervention.
+
+**Characteristics**:
+- **Low Fraud Risk**: Fraud score < 0.3
+- **Valid Policy**: Policy is active and clearly covers the claim
+- **Simple Claims**: Single incident, clear facts, standard claim types
+- **Low Value**: Claims below automated processing thresholds
+
+**Integration Pattern**: REST API or Event-Driven Integration (Newman, 2021)
+- Claims are dispatched via REST API call or domain event
+- Downstream system processes claim automatically
+- Payment processing, claim approval, and notification systems are triggered
+- Integration follows the **API Gateway pattern** (Newman, 2021, pp. 78-95) or **Event-Driven Architecture** (Hohpe & Woolf, 2003)
+
+**Example Flow**:
+```
+Triage Agent → Publish "ClaimRoutedToAutomatedProcessing" Event
+Event Bus → Automated Processing Service
+Service → Validate Final Business Rules
+Service → Calculate Settlement Amount
+Service → Trigger Payment Processing
+Service → Send Approval Notification
+Service → Update Claim Status (Approved)
+```
+
+**Why This Pattern**: REST APIs provide synchronous integration for systems that need immediate confirmation, while events enable loose coupling for systems that can process asynchronously.
+
+#### 3. Fraud Investigation System
+
+**Purpose**: For suspicious claims requiring specialized fraud investigation and analysis.
+
+**Characteristics**:
+- **High Fraud Risk**: Fraud score > 0.7
+- **Suspicious Patterns**: Multiple red flags detected
+- **Anomaly Detection**: Unusual patterns or inconsistencies
+- **Historical Matches**: Similar to previously investigated fraudulent claims
+
+**Integration Pattern**: Message Queue with Priority Routing (Hohpe & Woolf, 2003)
+- Claims are routed to a specialized fraud investigation queue
+- Fraud investigators receive prioritized alerts
+- System may trigger additional document requests or verification
+- Integration follows the **Message Router pattern** (Hohpe & Woolf, 2003, pp. 230-237) with priority-based routing
+
+**Example Flow**:
+```
+Triage Agent → Publish "ClaimRoutedToFraudInvestigation" Event
+Event Bus → Fraud Investigation Queue (High Priority)
+Queue → Fraud Investigator Dashboard
+Investigator → Request Additional Documents
+Investigator → Perform Deep Analysis
+Investigator → Make Decision (Approve/Deny/Refer to Law Enforcement)
+```
+
+**Why This Pattern**: Priority queues ensure high-risk claims are handled quickly, while maintaining audit trails for compliance and regulatory requirements.
+
+#### 4. Specialist Review Queue
+
+**Purpose**: For claims requiring domain-specific expertise (e.g., medical claims, complex property damage, legal issues).
+
+**Characteristics**:
+- **Domain Expertise**: Requires specialized knowledge (medical, legal, engineering)
+- **Complex Assessment**: Needs expert evaluation beyond standard processing
+- **Regulatory Compliance**: May require certified specialist review
+- **Multi-Disciplinary**: May require input from multiple specialists
+
+**Integration Pattern**: Workflow Engine or Task Queue (Hohpe & Woolf, 2003)
+- Claims are routed to specialized queues based on claim type
+- Workflow engine manages multi-step review processes
+- Integration follows the **Workflow pattern** (Hohpe & Woolf, 2003, pp. 347-360)
+
+**Example Flow**:
+```
+Triage Agent → Publish "ClaimRoutedToSpecialistReview" Event
+Event Bus → Specialist Routing Service
+Service → Route to Medical/Legal/Engineering Queue
+Specialist → Review and Provide Assessment
+Service → Aggregate Specialist Inputs
+Service → Make Final Decision
+```
+
+#### 5. Rejection/Invalid Claims Handler
+
+**Purpose**: For claims that are invalid, ineligible, or should be rejected.
+
+**Characteristics**:
+- **Invalid Policy**: Policy is inactive, expired, or doesn't exist
+- **Ineligible Claim**: Claim type not covered by policy
+- **Missing Information**: Critical information cannot be extracted or validated
+- **Business Rules**: Fails business rule validation
+
+**Integration Pattern**: Direct API Call or Event Notification (Newman, 2021)
+- Claims are immediately rejected with reason codes
+- Customer notification system is triggered
+- Audit log records rejection reason
+- Integration follows the **Request-Reply pattern** (Hohpe & Woolf, 2003, pp. 154-161) for synchronous rejection
+
+**Example Flow**:
+```
+Triage Agent → Publish "ClaimRejected" Event
+Event Bus → Rejection Handler
+Handler → Update Claim Status (Rejected)
+Handler → Generate Rejection Letter
+Handler → Send Customer Notification
+Handler → Log Rejection for Analytics
+```
+
+### Integration Patterns Used
+
+This system demonstrates several integration patterns from Enterprise Integration Patterns (Hohpe & Woolf, 2003):
+
+1. **Message Queue Pattern** (pp. 102-115): Used for asynchronous dispatch to human review and fraud investigation queues
+2. **Message Router Pattern** (pp. 230-237): The Triage Agent acts as a message router, directing claims to appropriate downstream systems
+3. **Event-Driven Architecture** (pp. 516-530): Domain events trigger downstream system integration
+4. **Request-Reply Pattern** (pp. 154-161): Used for synchronous integration with automated processing systems
+5. **Workflow Pattern** (pp. 347-360): Used for multi-step specialist review processes
+
+### What's Missing in This Demonstration System
+
+**⚠️ Important**: This is a demonstration system. In production, downstream systems would include:
+
+**Missing Production Features**:
+- **Actual Integration**: This system simulates dispatch but doesn't actually integrate with real downstream systems
+- **Message Queue Implementation**: Uses in-memory event bus instead of production message queues (RabbitMQ, Kafka, etc.)
+- **API Gateway**: No API gateway for external system integration
+- **Service Discovery**: No service discovery mechanism for locating downstream systems
+- **Circuit Breaker**: No circuit breaker pattern for handling downstream system failures
+- **Retry Logic**: No retry mechanisms for failed downstream dispatches
+- **Dead Letter Queues**: No handling for messages that cannot be processed
+- **Monitoring & Observability**: No monitoring of downstream system health or performance
+- **Idempotency**: No guarantees that duplicate dispatches won't occur
+- **Transaction Management**: No distributed transaction handling across system boundaries
+
+**What This System Demonstrates**:
+- **Routing Logic**: How to make intelligent routing decisions
+- **Event-Driven Integration**: How to use events for system coordination
+- **Bounded Context Boundaries**: How to maintain clean boundaries between systems
+- **Anti-Corruption Layer**: How the Triage Agent acts as an ACL between our system and downstream systems
+
+### Production Integration Considerations
+
+For production use, downstream system integration would require:
+
+1. **Message Queue Infrastructure** (Hohpe & Woolf, 2003)
+   - RabbitMQ, Apache Kafka, or Amazon SQS for reliable message delivery
+   - Dead letter queues for failed messages
+   - Message versioning for schema evolution
+
+2. **API Gateway** (Newman, 2021)
+   - REST API endpoints for synchronous integration
+   - Rate limiting and throttling
+   - API versioning and backward compatibility
+
+3. **Service Mesh** (Newman, 2021)
+   - Service discovery for locating downstream systems
+   - Load balancing and health checks
+   - Circuit breakers for fault tolerance
+
+4. **Monitoring & Observability**
+   - Distributed tracing (OpenTelemetry, Jaeger)
+   - Metrics collection (Prometheus)
+   - Log aggregation (ELK stack)
+
+5. **Error Handling & Resilience**
+   - Retry policies with exponential backoff
+   - Circuit breaker pattern for failing systems
+   - Saga pattern for distributed transactions
+
+### References
+
+- **Message Queue Pattern**: Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns* (pp. 102-115). Addison-Wesley Professional.
+- **Message Router Pattern**: Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns* (pp. 230-237). Addison-Wesley Professional.
+- **Event-Driven Architecture**: Hohpe, G., & Woolf, B. (2003). *Enterprise integration patterns* (pp. 516-530). Addison-Wesley Professional.
+- **API Gateway Pattern**: Newman, S. (2021). *Building microservices* (2nd ed., pp. 78-95). O'Reilly Media.
+- **Bounded Context Boundaries**: Evans, E. (2003). *Domain-driven design* (pp. 335-365). Addison-Wesley Professional.
 
 ## DDD Concepts Illustrated
 

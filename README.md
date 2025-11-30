@@ -474,27 +474,74 @@ Just like a company has separate departments (Sales, HR, Finance), this system h
 - **Policy Management** (Supporting Domain): Provides policy information services
 - **Fraud Assessment** (Subdomain): Provides fraud detection capabilities
 
-Each bounded context has its own rules, data, and communicates with others through clear interfaces (Evans, 2003).
+**Why Separate Contexts?** Each bounded context has its own rules, data, and communicates with others through clear interfaces (Evans, 2003). We separated them because:
+
+1. **Different Rules**: Claim processing rules are different from policy rules. Keeping them separate prevents one from breaking the other.
+2. **Independent Evolution**: Fraud detection algorithms can change without affecting claim processing code.
+3. **Clear Ownership**: Different teams can own different contexts without stepping on each other.
+4. **Maintainability**: When you need to change fraud detection, you know exactly where to look.
+
+This separation is a core DDD principle that makes complex systems manageable (Evans, 2003, pp. 335-365).
 
 ### Domain Events (Notifications)
 
 When something important happens (like "facts extracted" or "policy validated"), the system sends a notification called a "domain event" (Vernon, 2013). Other parts of the system can listen to these notifications and react accordingly. This follows event-driven architecture principles (Hohpe & Woolf, 2003).
 
+**Why Events Instead of Direct Calls?** We use events because:
+- **Loose Coupling**: Components don't need to know about each other—they just publish and listen to events
+- **Flexibility**: New features can listen to existing events without modifying existing code
+- **Scalability**: Events can be processed asynchronously, allowing parallel processing
+- **Resilience**: If one component fails, others continue processing
+
+This makes the system easier to test, modify, and scale (Hohpe & Woolf, 2003, pp. 516-530).
+
 ### Value Objects (Structured Information)
 
 Instead of storing messy data, the system creates clean, structured "value objects" like `ClaimSummary` (Evans, 2003). Value objects are immutable and enforce business rules.
+
+**Why Immutable?** We make value objects immutable because:
+- **Safety**: Once created, they can't be accidentally modified, preventing bugs
+- **Thread Safety**: Immutable objects are naturally thread-safe
+- **Predictability**: You always know what a value object contains—it never changes
+- **Validation**: Business rules are enforced at creation time, ensuring data integrity
+
+This immutability is a core DDD principle that makes code more reliable (Evans, 2003, pp. 97-124).
 
 ### Aggregates (Consistency Boundaries)
 
 Claims and Policies are "aggregates" - they maintain consistency within their boundaries (Evans, 2003; Vernon, 2013). Only aggregate roots can be referenced from outside the aggregate.
 
+**Why Aggregates?** We use aggregates because:
+- **Consistency**: All changes to a Claim must go through the Claim aggregate, ensuring business rules are always enforced
+- **Encapsulation**: Internal details (like how ClaimSummary is stored) are hidden from outside code
+- **Boundaries**: Aggregates define what must be consistent together—you can't have a Claim with invalid state
+- **Identity**: Aggregates have unique identities (UUIDs), making them easy to reference and track
+
+This pattern prevents invalid states and makes the system more reliable (Evans, 2003, pp. 125-150; Vernon, 2013, pp. 345-380).
+
 ### Agents (Anti-Corruption Layer)
 
 The agents act as "translators" between messy external data (customer emails) and the clean, structured system. This pattern is called an "Anti-Corruption Layer" (Evans, 2003). They protect the system from bad data and validate LLM outputs.
 
+**Why Anti-Corruption Layer?** We use agents as an Anti-Corruption Layer because:
+- **Data Quality**: LLM outputs are unpredictable—agents validate and transform data before it enters the domain
+- **Domain Protection**: The clean domain model stays protected from external system changes
+- **Validation**: Agents enforce business rules at the boundary, preventing invalid data from corrupting the system
+- **Abstraction**: Domain code doesn't need to know about LLM APIs, prompts, or provider details
+
+This pattern is especially important with AI systems where outputs can vary significantly (Evans, 2003, pp. 365-380).
+
 ### Repository Pattern
 
 Data access is abstracted through repositories, making testing and implementation swapping easier (Evans, 2003; Fowler, 2002).
+
+**Why Repositories?** We use repositories because:
+- **Testability**: In-memory repositories make testing fast and simple—no database setup needed
+- **Flexibility**: We can swap implementations (in-memory → PostgreSQL → MongoDB) without changing domain code
+- **Independence**: Domain models don't know about databases, keeping business logic pure
+- **Abstraction**: Repository interfaces define what operations are needed, not how they're implemented
+
+This separation makes the system more testable and maintainable (Evans, 2003, pp. 151-170; Fowler, 2002, pp. 322-334).
 
 ---
 
@@ -527,11 +574,14 @@ Think of this system like a well-organized office with specialized departments:
 
 - **What it does**: Decides where the claim should go next
 - **Who does it**: An AI agent (LLM) that considers all the information
-- **Result**: Routes the claim to:
-  - Human reviewers (for complex or high-risk claims)
-  - Automated processing (for simple, low-risk claims)
-  - Fraud investigation (for suspicious claims)
-  - Rejection (for invalid claims)
+- **Result**: Routes the claim to downstream systems:
+  - **Human Adjudicator Queue**: For complex, high-value, or ambiguous claims requiring human judgment
+  - **Automated Processing System**: For simple, low-risk, valid claims that can be processed automatically
+  - **Fraud Investigation System**: For suspicious or high-risk claims requiring specialized investigation
+  - **Specialist Review Queue**: For claims requiring domain expertise (medical, legal, engineering)
+  - **Rejection Handler**: For invalid, ineligible, or non-covered claims
+
+**Downstream Systems Explained**: These represent the final destinations where processed claims are dispatched. In production, these would be separate systems integrated via message queues (Hohpe & Woolf, 2003), REST APIs (Newman, 2021), or event-driven architectures. See [Architecture Documentation](docs/architecture.md#downstream-systems-integration-and-routing) for detailed integration patterns and what's included (and missing) in this demonstration system.
 
 ### The Orchestrator 🎼
 

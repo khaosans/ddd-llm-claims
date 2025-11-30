@@ -171,12 +171,27 @@ sequenceDiagram
 4. **Claim Status Updated**: The Triage Agent updates the claim status in the repository with the routing decision.
 
 5. **Dispatch**: The claim is dispatched to the appropriate downstream system:
-   - **Human Review Queue**: For complex, high-risk, or ambiguous claims
-   - **Automated Processing**: For simple, low-risk, valid claims
-   - **Fraud Investigation**: For suspicious or high-risk claims
-   - **Rejection**: For invalid claims
+   - **Human Adjudicator Queue**: For complex, high-risk, or ambiguous claims requiring human judgment
+   - **Automated Processing System**: For simple, low-risk, valid claims that can be processed automatically
+   - **Fraud Investigation System**: For suspicious or high-risk claims requiring specialized investigation
+   - **Specialist Review Queue**: For claims requiring domain expertise (medical, legal, engineering)
+   - **Rejection Handler**: For invalid, ineligible, or non-covered claims
 
-**Why This Matters**: Intelligent routing ensures claims go to the right place. Simple claims get fast, automated processing. Complex claims get human attention. Suspicious claims get investigation. This balances efficiency, accuracy, and risk management.
+**Integration Patterns**: Downstream systems are integrated using various patterns:
+- **Message Queue Pattern** (Hohpe & Woolf, 2003, pp. 102-115): For asynchronous dispatch to human review and fraud investigation queues
+- **REST API** (Newman, 2021): For synchronous integration with automated processing systems
+- **Event-Driven Architecture** (Hohpe & Woolf, 2003, pp. 516-530): Domain events trigger downstream system integration
+- **Message Router Pattern** (Hohpe & Woolf, 2003, pp. 230-237): The Triage Agent acts as a message router, directing claims to appropriate destinations
+
+**What Happens After Dispatch**: Once a claim reaches a downstream system:
+- **Human Adjudicator Queue**: Claims are queued with priority, human reviewers pull claims, make decisions, and update claim status
+- **Automated Processing**: System validates final rules, calculates settlement, triggers payment, and sends notifications
+- **Fraud Investigation**: Specialized investigators receive prioritized alerts, perform deep analysis, and make decisions
+- **Rejection Handler**: Claims are immediately rejected, customer notifications are sent, and audit logs are created
+
+**Why This Matters**: Intelligent routing ensures claims go to the right place. Simple claims get fast, automated processing. Complex claims get human attention. Suspicious claims get investigation. This balances efficiency, accuracy, and risk management. The integration patterns demonstrate how to maintain bounded context boundaries (Evans, 2003) while enabling system integration.
+
+**⚠️ Note**: This demonstration system simulates dispatch but doesn't actually integrate with real downstream systems. In production, this would require message queue infrastructure (RabbitMQ, Kafka), API gateways, service discovery, and monitoring. See [Architecture Documentation](architecture.md#downstream-systems-integration-and-routing) for complete details on what's included and what's missing.
 
 ---
 
