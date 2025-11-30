@@ -3,13 +3,13 @@
 > **⚠️ IMPORTANT**: This is a **DEMONSTRATION SYSTEM** for **EDUCATIONAL PURPOSES ONLY**.  
 > **NOT for production use**. See [DISCLAIMERS.md](../DISCLAIMERS.md) for complete information.
 
-## The Journey of a Claim: A Complete Story
+## Claim Processing Workflow: Complete Lifecycle
 
-Imagine you're following a package as it moves through a shipping facility. You'd see it arrive at the loading dock, get sorted, checked, routed, and finally dispatched to its destination. This sequence diagram does the same thing for a claim—it shows you the complete journey from the moment a customer submits it until it reaches its final destination.
+This sequence diagram documents the complete claim processing lifecycle, from initial submission through final routing. It illustrates the temporal ordering of component interactions and the transformation of unstructured input into processed, routed claims.
 
-**The Story**: Every claim starts as unstructured input—a messy email, form, or note from a customer. Like a handwritten letter, it contains all the information needed, but it's not in a format computers can easily process. Through a series of coordinated steps, specialized AI agents transform this chaos into structured, validated, and routed information. Each step adds value and moves the claim closer to resolution.
+**Processing Overview**: Claims originate as unstructured input (emails, forms, notes) containing necessary information in formats requiring transformation. Through coordinated processing stages, specialized AI agents transform this input into structured, validated domain models. Each processing stage adds value and advances the claim toward resolution.
 
-**Why This Matters**: Understanding this sequence helps you see the complete lifecycle of a claim. You'll understand dependencies (what must happen before something else can start), timing (what happens in sequence vs. parallel), and decision points (where the system makes choices). This knowledge is essential for debugging, optimization, and extending the system.
+**Workflow Significance**: Understanding this sequence enables analysis of processing dependencies (precedence constraints), temporal relationships (sequential vs. parallel execution), and decision points (routing logic). This knowledge supports debugging, performance optimization, and system extension.
 
 ---
 
@@ -17,7 +17,7 @@ Imagine you're following a package as it moves through a shipping facility. You'
 
 ### How to Read This Diagram
 
-Sequence diagrams read like a story from top to bottom. Each horizontal line (called a "lifeline") represents a component or actor in the system. Time flows downward, so actions at the top happen before actions at the bottom.
+Sequence diagrams represent temporal ordering of interactions. Each horizontal line (lifeline) represents a component or actor. Time flows downward, with earlier interactions appearing above later ones.
 
 **The Components**:
 - **User**: The person submitting the claim
@@ -40,7 +40,7 @@ Sequence diagrams read like a story from top to bottom. Each horizontal line (ca
 
 ### Phase 1: Claim Creation and Intake
 
-**The Story**: A customer submits a claim—maybe an email describing an accident, a form with incomplete information, or a note with handwritten details. The system receives this unstructured input and begins the transformation process.
+**Processing Overview**: A customer submits a claim through various channels (email, form, note). The system receives this unstructured input and initiates the transformation process.
 
 ```mermaid
 sequenceDiagram
@@ -90,17 +90,17 @@ sequenceDiagram
 
 **What Happens**:
 
-1. **User Submits Claim**: The journey begins when a user submits unstructured input—an email, form, or note. This is like dropping off paperwork at the front desk.
+1. **User Submits Claim**: Processing begins when a user submits unstructured input (email, form, or note) to the system.
 
-2. **Orchestrator Creates Claim**: The Workflow Orchestrator receives the input and creates a new Claim aggregate in the repository. The claim starts in DRAFT status, like a new file folder being created.
+2. **Orchestrator Creates Claim**: The Workflow Orchestrator receives the input and creates a new Claim aggregate in the repository. The claim is initialized in DRAFT status.
 
-3. **Intake Agent Extracts Facts**: The Orchestrator tells the Intake Agent to extract facts from the unstructured input. The agent acts like a skilled claims analyst, reading the messy input and identifying key information.
+3. **Intake Agent Extracts Facts**: The Orchestrator invokes the Intake Agent to extract structured facts from the unstructured input. The agent applies prompt engineering techniques to identify and extract key information.
 
 4. **LLM Processing**: The Intake Agent sends the unstructured input plus a carefully crafted system prompt to the LLM. The prompt tells the LLM how to behave—like giving detailed instructions to a new employee.
 
 5. **Structured Output**: The LLM returns structured JSON containing the extracted facts (claim type, date, location, amount, description). This is like the analyst writing a clean summary report.
 
-6. **Validation**: The Intake Agent validates the LLM output against the domain model, ensuring it meets business rules. This is like a supervisor checking the report for accuracy.
+6. **Validation**: The Intake Agent validates the LLM output against the domain model schema, ensuring compliance with business rules and domain invariants.
 
 7. **Claim Updated**: The validated ClaimSummary is stored in the repository, updating the claim with structured information.
 
@@ -112,7 +112,7 @@ sequenceDiagram
 
 ### Phase 2: Policy Validation
 
-**The Story**: Now that we have structured claim facts, we need to verify that the claim is actually covered by an active insurance policy. This is like checking if someone has valid insurance before processing their claim.
+**Policy Validation Phase**: With structured claim facts extracted, the system verifies that the claim is covered by an active insurance policy. This validation ensures policy coverage before claim processing proceeds.
 
 **What Happens**:
 
@@ -122,7 +122,7 @@ sequenceDiagram
 
 3. **Policies Retrieved**: The repository returns relevant policies, including coverage details, effective dates, and terms.
 
-4. **LLM Validation**: The Policy Agent sends the claim details and policy information to the LLM, asking it to determine if the claim is covered. The LLM acts like a policy expert, comparing claim details against policy terms.
+4. **LLM Validation**: The Policy Agent sends claim details and policy information to the LLM, requesting coverage determination. The LLM applies policy validation logic to compare claim details against policy terms.
 
 5. **Validation Result**: The LLM returns a validation result—covered, not covered, or needs review. This decision is based on policy terms, coverage dates, and claim details.
 
@@ -136,13 +136,13 @@ sequenceDiagram
 
 ### Phase 3: Fraud Assessment
 
-**The Story**: Even if a claim is covered by a policy, we need to assess the risk of fraud. This is like a security check—we want to catch suspicious patterns before processing the claim.
+**Fraud Assessment Phase**: Following policy validation, the system assesses fraud risk. This analysis identifies suspicious patterns and anomalies before claim processing proceeds.
 
 **What Happens**:
 
 1. **Event Triggers Assessment**: The `PolicyValidated` event (or the original `ClaimFactsExtracted` event) triggers fraud assessment. The Orchestrator tells the Fraud Agent to assess risk.
 
-2. **LLM Analysis**: The Fraud Agent sends the claim details to the LLM, asking it to analyze patterns, anomalies, and risk indicators. The LLM acts like a fraud investigator, looking for suspicious signs.
+2. **LLM Analysis**: The Fraud Agent sends claim details to the LLM, requesting pattern analysis, anomaly detection, and risk indicator evaluation. The LLM applies fraud detection algorithms to identify suspicious patterns.
 
 3. **Fraud Score**: The LLM returns a fraud score and risk level (low, medium, high), along with reasons for the assessment. This might include patterns like unusual claim amounts, suspicious timing, or inconsistent details.
 
@@ -154,7 +154,7 @@ sequenceDiagram
 
 ### Phase 4: Triage and Routing
 
-**The Story**: Now that we have all the information—structured facts, policy validation, and fraud assessment—we can make an intelligent routing decision. This is like a dispatcher deciding which department should handle a case.
+**Triage and Routing Phase**: With complete information (structured facts, policy validation results, fraud assessment), the system makes routing decisions. The Triage Agent evaluates all available data to determine appropriate downstream processing.
 
 **What Happens**:
 
@@ -219,10 +219,10 @@ These events enable the workflow to progress without components needing direct k
 ### Agent Pattern: AI as Domain Expert
 
 Each agent uses LLMs to act as a domain expert:
-- **Intake Agent**: Acts like a claims analyst, extracting facts from unstructured input
-- **Policy Agent**: Acts like a policy expert, validating coverage
-- **Fraud Agent**: Acts like a fraud investigator, assessing risk
-- **Triage Agent**: Acts like a dispatcher, making routing decisions
+- **Intake Agent**: Extracts structured facts from unstructured input using LLM-based processing
+- **Policy Agent**: Validates claim coverage against active policies
+- **Fraud Agent**: Assesses fraud risk through pattern analysis and anomaly detection
+- **Triage Agent**: Makes routing decisions based on policy status, fraud score, and claim complexity
 
 This pattern (Brown et al., 2020) enables the system to handle unstructured input intelligently while maintaining clean domain models.
 
@@ -266,7 +266,7 @@ If any step fails:
 
 ## Key Takeaways
 
-1. **The Journey is Event-Driven**: Each step publishes a domain event that triggers the next step, keeping components loosely coupled (Hohpe & Woolf, 2003).
+1. **Event-Driven Architecture**: Each processing stage publishes domain events that trigger subsequent stages, maintaining loose coupling between components (Hohpe & Woolf, 2003).
 
 2. **Agents Transform Data**: AI agents act as domain experts, transforming unstructured input into structured, validated information (Brown et al., 2020).
 

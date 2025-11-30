@@ -20,13 +20,13 @@ This document visualizes the LLM-Enhanced Claims Processing System using Domain-
 
 ## High-Level Architecture
 
-### The Story This Diagram Tells
+### Architecture Overview
 
-Imagine you're looking at an organizational chart for a well-run company. You'd see different departments, each with clear responsibilities, and you'd understand how they work together. This diagram does the same thing for software—it shows how the system is organized into "departments" (bounded contexts), what each department contains, and how they communicate.
+This diagram illustrates the system's organizational structure through bounded contexts (Evans, 2003), analogous to organizational units with distinct responsibilities and interfaces. Each bounded context encapsulates related domain logic, data models, and business rules, communicating through well-defined boundaries.
 
-**The Journey**: Start at the top with "Unstructured Customer Data"—this is where every claim begins, like a customer dropping off paperwork. Follow the flow down through the Claim Intake department (the Core Domain, shown in blue), where messy input becomes structured information. Notice how domain events (purple triangles) act like inter-office memos, notifying other departments when important things happen. The Workflow Orchestrator (gray box) coordinates everything, like a manager ensuring work flows smoothly between departments.
+**System Flow**: The workflow initiates with unstructured customer data at the entry point. Data flows through the Claim Intake bounded context (Core Domain, highlighted in blue), where unstructured input undergoes transformation into structured domain models. Domain events (represented by purple triangles) serve as asynchronous notifications, enabling loose coupling between bounded contexts. The Workflow Orchestrator (gray box) coordinates cross-context interactions, managing the event-driven workflow orchestration.
 
-**Why This Matters**: Understanding this architecture helps you see the big picture. Just like understanding a company's structure helps you know who to contact, understanding this architecture helps you know where functionality lives and how components interact. The separation into bounded contexts (Evans, 2003) keeps the system organized and maintainable.
+**Architectural Significance**: This bounded context separation (Evans, 2003) provides clear functional boundaries, enabling independent evolution of domain logic while maintaining system coherence. Understanding this structure facilitates component location, dependency management, and system maintenance.
 
 ### Reading the Diagram
 
@@ -109,15 +109,15 @@ graph TB
 
 ## Component Diagram
 
-### The Story This Diagram Tells
+### Component Architecture
 
-If the High-Level Architecture diagram shows the "departments," this diagram shows the "organizational layers"—like understanding both the departments and the hierarchy within a company. It shows how components are organized into layers (Presentation, Application, Domain, Agent, Infrastructure) and how they interact.
+This diagram presents the layered architecture, illustrating how components are organized across architectural layers (Presentation, Application, Domain, Agent, Infrastructure) and their interaction patterns.
 
-**The Layers**: Think of this like a building with floors. The top floor (Presentation Layer) is what users see—the Streamlit UI and CLI. The middle floors (Application and Domain Layers) contain the business logic and rules. The bottom floor (Infrastructure Layer) handles technical concerns like storage and databases. The Agent Layer acts as a "translator" between messy external data and the clean domain.
+**Layer Organization**: The architecture follows a layered structure where each layer has distinct responsibilities. The Presentation Layer provides user interfaces (Streamlit UI and CLI). The Application and Domain Layers contain business logic and domain rules. The Infrastructure Layer handles technical concerns including storage and database operations. The Agent Layer functions as an Anti-Corruption Layer (Evans, 2003), translating external data formats into domain models.
 
-**The Flow**: Notice how requests flow down through layers (from UI to Application to Domain) and how data flows up (from Infrastructure to Domain to Application to UI). The Domain Layer is at the heart—it doesn't depend on infrastructure or presentation, keeping business logic independent of technical concerns.
+**Data Flow**: Requests flow downward through layers (Presentation → Application → Domain), while data flows upward (Infrastructure → Domain → Application → Presentation). The Domain Layer maintains independence from infrastructure and presentation concerns, preserving business logic purity.
 
-**Why This Matters**: This layered architecture (Fowler, 2002) separates concerns, making the system easier to understand, test, and maintain. The Domain Layer (the business logic) is independent of how data is stored or how users interact, making it flexible and reusable.
+**Architectural Benefits**: This layered architecture (Fowler, 2002) enforces separation of concerns, improving system understandability, testability, and maintainability. Domain logic independence from technical infrastructure enables flexibility and reusability.
 
 ### Reading the Diagram
 
@@ -203,15 +203,15 @@ graph TB
 
 ## Event Flow Diagram
 
-### The Story This Diagram Tells
+### Workflow Sequence
 
-This sequence diagram tells the complete story of a claim's journey through the system, step by step, moment by moment. It's like watching a time-lapse video of a package moving through a shipping facility—you see each stop, each person who handles it, and exactly what happens at each stage.
+This sequence diagram documents the complete claim processing workflow, illustrating temporal ordering of interactions between system components throughout the claim lifecycle.
 
-**The Journey**: Follow a claim from the moment a user submits it (top of the diagram) until it reaches downstream systems (bottom). You'll see how the Intake Agent extracts facts, how the Policy Agent validates coverage, how the Fraud Agent assesses risk, and how the Triage Agent makes routing decisions. Each step publishes a domain event that triggers the next step.
+**Processing Flow**: The sequence begins with claim submission and proceeds through fact extraction, policy validation, fraud assessment, and routing decisions. Each processing stage publishes domain events that trigger subsequent workflow steps, enabling event-driven coordination (Hohpe & Woolf, 2003).
 
-**The Communication**: Notice how components don't directly call each other—they communicate through the Event Bus. When the Intake Agent finishes, it publishes "ClaimFactsExtracted," and the Event Bus delivers this to the Orchestrator, which then tells the Policy Agent to start. This event-driven communication (Hohpe & Woolf, 2003) keeps components loosely coupled.
+**Event-Driven Communication**: Components interact asynchronously through the Event Bus rather than direct method calls. When the Intake Agent completes fact extraction, it publishes a `ClaimFactsExtracted` event. The Event Bus delivers this event to the Orchestrator, which then initiates the Policy Agent. This pattern maintains loose coupling between components (Hohpe & Woolf, 2003).
 
-**Why This Matters**: Understanding this flow helps you see dependencies, identify bottlenecks, and understand what happens when something goes wrong. The sequence shows the complete lifecycle, making it easier to trace issues and understand system behavior.
+**Operational Value**: Understanding this sequence enables dependency analysis, bottleneck identification, and failure mode analysis. The complete lifecycle representation facilitates issue tracing and system behavior comprehension.
 
 ### Reading the Diagram
 
@@ -286,15 +286,15 @@ sequenceDiagram
 
 ## Deployment Diagram
 
-### The Story This Diagram Tells
+### Deployment Architecture
 
-While other diagrams show logical architecture (how components relate), this diagram shows physical deployment (where components run). It's like the difference between an organizational chart (who reports to whom) and a building floor plan (where people actually sit).
+This diagram presents the physical deployment topology, distinguishing logical architecture from deployment infrastructure. It illustrates component placement across deployment layers and their network connectivity.
 
-**The Layers**: The diagram shows four main deployment layers: Client Layer (where users interact), Application Server (where the main application runs), LLM Services (where AI models are hosted), and Data Storage (where data is persisted). This separation allows each layer to scale independently.
+**Deployment Layers**: The architecture comprises four deployment layers: Client Layer (user interaction endpoints), Application Server (core application runtime), LLM Services (AI model hosting infrastructure), and Data Storage (persistence layer). This separation enables independent scaling and deployment of each layer.
 
-**The Connections**: Notice how the Application Server connects to multiple LLM services (Ollama for local models, OpenAI and Anthropic for cloud models). This shows the system's flexibility—it can use different AI providers depending on needs and availability.
+**Service Integration**: The Application Server integrates with multiple LLM service providers (Ollama for local models, OpenAI and Anthropic for cloud-based models), demonstrating provider abstraction and deployment flexibility. This design supports hybrid deployment strategies based on requirements, availability, and cost considerations.
 
-**Why This Matters**: Understanding deployment helps you see how the system would actually run in practice. The separation into layers allows for flexibility—you could run everything locally with Ollama, use cloud services, or mix both. This is important for understanding scalability, cost, and operational considerations.
+**Deployment Considerations**: Understanding the deployment architecture informs operational decisions regarding scalability, cost optimization, and infrastructure requirements. The layered separation supports flexible deployment strategies, from fully local (Ollama) to fully cloud-based or hybrid configurations.
 
 ### Reading the Diagram
 
@@ -351,17 +351,17 @@ graph TB
 
 ## Domain Model Diagram
 
-### The Story This Diagram Tells
+### Domain Model
 
-This Entity-Relationship Diagram (ERD) shows the core domain model—the fundamental concepts and how they relate. It's like a database schema, but more importantly, it shows the business concepts and their relationships. Think of it as a map of the "things" in the system and how they connect.
+This Entity-Relationship Diagram (ERD) represents the core domain model, defining fundamental business concepts and their relationships. While structurally similar to a database schema, the domain model emphasizes business semantics over technical implementation.
 
-**The Entities**: The main entities are Claim, Policy, ClaimSummary, FraudCheckResult, and Document. Each represents a core business concept with its own identity and lifecycle.
+**Core Entities**: The primary entities include Claim, Policy, ClaimSummary, FraudCheckResult, and Document. Each entity represents a distinct business concept with unique identity and lifecycle management.
 
-**The Relationships**: The lines between entities show relationships. For example, a Claim "has" ClaimSummaries (one-to-many), and a ClaimSummary "is evaluated by" a FraudCheckResult (one-to-one). These relationships reflect business rules.
+**Entity Relationships**: Relationship lines indicate associations between entities. For example, Claim maintains a one-to-many relationship with ClaimSummary, while ClaimSummary has a one-to-one relationship with FraudCheckResult. These relationships encode business rules and domain constraints.
 
-**The Attributes**: Each entity shows its key attributes. For example, a Claim has a claim_id (unique identifier), raw_input, status, and timestamps. These attributes represent the information the system needs to track.
+**Entity Attributes**: Each entity includes key attributes defining its structure. For instance, Claim includes claim_id (unique identifier), raw_input, status, and temporal attributes (created_at, updated_at). These attributes capture the information necessary for business operations.
 
-**Why This Matters**: The domain model is the heart of Domain-Driven Design (Evans, 2003). It represents the business concepts in code, making the system understandable to both developers and domain experts. Understanding this model helps you understand what the system is really about.
+**Domain Model Significance**: The domain model serves as the foundation of Domain-Driven Design (Evans, 2003), representing business concepts in code. This representation enables shared understanding between developers and domain experts, making the system's purpose and structure explicit.
 
 ### Reading the Diagram
 
@@ -509,27 +509,27 @@ This pattern is especially important with AI systems where outputs can vary sign
 - **Triage & Routing Agents**: Route claims to appropriate downstream systems
 - **Downstream Systems**: Final destination (e.g., Human Adjudicator Queue)
 
-### Flow: The Complete Journey
+### Complete Workflow Process
 
-Understanding the flow helps you see how all the pieces work together. Here's the complete journey of a claim through the system:
+The workflow process illustrates how system components coordinate to transform unstructured input into processed, routed claims. The following sequence describes the complete processing pipeline:
 
-1. **Input**: Unstructured customer data enters the system—like a customer dropping off paperwork at the front desk. This could be an email, form, or note.
+1. **Input Reception**: Unstructured customer data enters the system through various channels (email, form submissions, notes). This input requires transformation into structured domain models.
 
-2. **Fact Extraction**: The Intake Agent (LLM) reads the unstructured input and extracts key facts—date, location, amount, description. It's like a skilled analyst reading a messy document and pulling out the important information.
+2. **Fact Extraction**: The Intake Agent (LLM-based) processes unstructured input to extract structured facts: incident date, location, claimed amount, description, and other relevant attributes. The agent applies prompt engineering techniques (Brown et al., 2020; Ouyang et al., 2022) to perform this extraction.
 
-3. **Domain Event**: When facts are extracted, the system publishes a `ClaimFactsExtracted` event. This is like sending a memo to notify other departments that the first step is complete.
+3. **Domain Event Publication**: Upon successful fact extraction, the system publishes a `ClaimFactsExtracted` domain event. This event signals completion of the extraction phase and triggers downstream processing.
 
-4. **Orchestration**: The Workflow Orchestrator receives the event and coordinates the next steps. Like a manager, it doesn't do the work itself but ensures everything happens in the right order.
+4. **Workflow Orchestration**: The Workflow Orchestrator receives domain events and coordinates subsequent processing steps. It manages workflow state and ensures proper sequencing of operations without implementing business logic directly.
 
-5. **Policy Validation**: The Policy Validation Agent checks whether the claim is covered by an active policy. It's like a policy expert reviewing coverage rules.
+5. **Policy Validation**: The Policy Validation Agent evaluates whether the claim is covered by an active policy. This validation ensures compliance with policy terms and coverage rules.
 
-6. **Fraud Assessment**: The Fraud Agent assesses the risk of fraud, calculating a score based on patterns and anomalies. This helps determine how the claim should be handled.
+6. **Fraud Assessment**: The Fraud Agent analyzes claim patterns and anomalies to calculate a fraud risk score. This assessment informs routing decisions and risk management strategies.
 
-7. **Triage**: The Triage & Routing Agents look at all available information (policy status, fraud score, complexity) and decide where the claim should go next—human review, automated processing, fraud investigation, or rejection.
+7. **Triage and Routing**: The Triage Agent evaluates all available information (policy validation status, fraud score, claim complexity) to determine appropriate routing: human review queue, automated processing, fraud investigation, or rejection.
 
-8. **Dispatch**: The claim is sent to downstream systems—the final destination where it will be processed, reviewed, or investigated.
+8. **Downstream Dispatch**: The claim is dispatched to the appropriate downstream system for final processing, review, or investigation.
 
-**The Story**: This flow shows how a claim transforms from messy input to structured, routed information. Each step adds value and moves the claim closer to resolution. The event-driven approach means each step can happen independently, making the system flexible and maintainable.
+**Workflow Characteristics**: This process transforms unstructured input into structured, validated, and routed information. Each stage adds value through domain-specific processing. The event-driven architecture enables independent execution of stages, improving system flexibility and maintainability (Hohpe & Woolf, 2003).
 
 ## Downstream Systems: Integration and Routing
 

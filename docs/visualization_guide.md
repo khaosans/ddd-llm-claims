@@ -5,38 +5,38 @@
 
 ## Why Visualizations Matter
 
-Imagine trying to understand how a complex organization works by reading only written descriptions. You might grasp the concepts, but seeing how departments connect, how information flows, and how decisions are made would be much clearer with a visual map. That's exactly what visualizations do for software systems.
+Visual representations complement textual documentation by illustrating system structure, data flow, and component relationships. While written descriptions convey concepts, visualizations provide spatial and relational context that enhances comprehension.
 
-In this claims processing system, visualizations help us understand:
+In this claims processing system, visualizations facilitate understanding of:
 
-- **The Big Picture**: How different parts of the system work together, like departments in a company
-- **The Journey**: How a claim travels from a customer's email to final processing
-- **The Flow**: What happens at each step and why
-- **The Relationships**: How components communicate and depend on each other
+- **System Architecture**: How components are organized and interact across bounded contexts
+- **Processing Workflow**: How claims progress from initial submission through final routing
+- **Data Flow**: The transformation and movement of data through processing stages
+- **Component Relationships**: Communication patterns and dependencies between system elements
 
-These visualizations aren't just pretty pictures—they're storytelling tools that make complex software architecture accessible to everyone, from students learning Domain-Driven Design (Evans, 2003) to business stakeholders understanding system capabilities.
+These visualizations serve as analytical tools that make complex software architecture accessible to diverse audiences, from students learning Domain-Driven Design (Evans, 2003) to business stakeholders evaluating system capabilities.
 
 ---
 
-## Understanding the Story: A Guide for General Audiences
+## System Overview: A Guide for General Audiences
 
-Before diving into specific visualizations, let's understand what story they're telling. Think of this system like a well-organized office:
+Before examining specific visualizations, it is helpful to understand the overall system structure and processing flow:
 
-1. **A customer sends in a claim** (like dropping off paperwork)
-2. **Specialized departments process it** (like different office departments)
-3. **Information flows between departments** (like inter-office memos)
-4. **Decisions are made at each step** (like approvals and routing)
-5. **The claim reaches its final destination** (like filing or further processing)
+1. **Claim Submission**: Customers submit claims through various input channels
+2. **Specialized Processing**: Bounded contexts handle domain-specific processing tasks
+3. **Event-Driven Communication**: Components communicate through domain events
+4. **Decision Points**: Routing and validation decisions occur at multiple stages
+5. **Final Routing**: Claims are dispatched to appropriate downstream systems
 
-Each visualization tells a different part of this story. Some show the organizational structure (architecture diagrams), others show the step-by-step process (sequence diagrams), and some show real-time progress (interactive visualizations).
+Each visualization presents different aspects of the system. Architecture diagrams illustrate organizational structure, sequence diagrams document temporal workflows, and interactive visualizations provide real-time exploration capabilities.
 
 ---
 
 ## Available Visualizations
 
-### 1. Architecture Diagram: The Organizational Map
+### 1. Architecture Diagram: System Organization
 
-**The Story This Diagram Tells**: Imagine a company with three main departments—one that handles the core business (Claim Intake), one that provides supporting services (Policy Management), and one that specializes in risk assessment (Fraud Assessment). The architecture diagram shows how these departments are organized, what they contain, and how they communicate.
+**Architecture Overview**: The system is organized into three bounded contexts: Claim Intake (Core Domain), Policy Management (Supporting Domain), and Fraud Assessment (Subdomain). The architecture diagram illustrates how these bounded contexts are structured, their internal components, and their communication patterns.
 
 **What You'll See**:
 - **Bounded Contexts**: Separate "departments" with clear boundaries (Evans, 2003). Each context has its own rules and responsibilities.
@@ -52,9 +52,9 @@ Each visualization tells a different part of this story. Some show the organizat
 
 ---
 
-### 2. Sequence Diagram: The Step-by-Step Journey
+### 2. Sequence Diagram: Processing Workflow
 
-**The Story This Diagram Tells**: Follow a single claim as it travels through the system, from the moment a customer submits it until it reaches its final destination. This is like watching a package move through a shipping facility—you see each stop, each person who handles it, and what happens at each stage.
+**Workflow Documentation**: Sequence diagrams document the complete claim processing workflow, illustrating component interactions from initial submission through final routing. They show temporal ordering, message passing, and event-driven coordination.
 
 **What You'll See**:
 - **Step-by-step workflow**: Each action in chronological order, from top to bottom
@@ -62,7 +62,7 @@ Each visualization tells a different part of this story. Some show the organizat
 - **Event flow**: When domain events are published and who listens to them
 - **Timing of operations**: What happens in sequence and what can happen in parallel
 
-**Reading the Diagram**: Read from top to bottom, following the arrows. Each horizontal line represents a component (like an agent or repository), and vertical arrows show messages or actions. The sequence shows the complete journey: intake → validation → assessment → routing → completion.
+**Reading the Diagram**: Read from top to bottom, following message flow. Each horizontal line (lifeline) represents a component (agent or repository), and vertical arrows indicate messages or actions. The sequence documents the complete workflow: intake → validation → assessment → routing → completion.
 
 **Understanding the Flow**: Notice how domain events trigger the next steps. When the Intake Agent finishes extracting facts, it publishes a `ClaimFactsExtracted` event. This event wakes up the Policy Agent, which then validates the claim. This event-driven approach keeps components loosely coupled (Hohpe & Woolf, 2003)—each component does its job and notifies others when done, rather than directly calling them.
 
@@ -94,7 +94,7 @@ This will guide you through processing a claim step-by-step, showing you exactly
 - When domain events are published
 - How the workflow progresses
 
-**The Experience**: Unlike static diagrams, this interactive visualization lets you see the system's behavior. It's the difference between looking at a map and actually taking the journey. You'll see timing, understand dependencies, and get a feel for how the system responds to different inputs.
+**Interactive Capabilities**: Unlike static diagrams, interactive visualizations enable real-time observation of system behavior. They illustrate timing relationships, reveal processing dependencies, and demonstrate system responses to varying inputs.
 
 **Why It Matters**: Interactive visualizations help bridge the gap between understanding the architecture (the "what") and understanding the behavior (the "how"). They're especially valuable for learning because you can experiment, see cause and effect, and develop intuition about system behavior.
 
@@ -102,7 +102,7 @@ This will guide you through processing a claim step-by-step, showing you exactly
 
 ### 4. Programmatic Visualization: Custom Views
 
-**The Story This Tells**: Sometimes you need a specific view of the system—maybe you want to see all claims in a certain status, or track events for a specific claim. Programmatic visualization lets you create custom views tailored to your needs.
+**Programmatic Visualization**: Programmatic visualization enables creation of custom views tailored to specific analytical needs, such as filtering claims by status or tracking events for specific claims.
 
 **What You Can Do**: Use the `WorkflowVisualizer` class to create custom visualizations:
 
@@ -135,7 +135,7 @@ print(visualizer.visualize_workflow_flow())
 
 ### Status Visualization: Where Are We Now?
 
-**The Story**: Like a progress bar on a download, status visualizations show where a claim is in its journey. They answer the question "What's happening right now?"
+**Status Visualization**: Status visualizations indicate the current processing stage of a claim, providing real-time visibility into workflow progress.
 
 **What It Shows**:
 - **Current status**: The claim's current stage (Draft, Facts Extracted, Policy Validated, etc.)
@@ -148,9 +148,9 @@ print(visualizer.visualize_workflow_flow())
 
 ---
 
-### Event Timeline: The Story of What Happened
+### Event Timeline: Processing History
 
-**The Story**: Like a timeline in a history book, event timelines show what happened and when. They tell the complete story of a claim's journey through the system.
+**Event Timeline**: Event timelines document the chronological sequence of domain events for a claim, providing a complete processing history.
 
 **What It Shows**:
 - **Event types**: What happened (ClaimFactsExtracted, PolicyValidated, etc.)
@@ -158,15 +158,15 @@ print(visualizer.visualize_workflow_flow())
 - **Flow between events**: How events connect and trigger each other
 - **Chronological order**: Events listed from first to last
 
-**Reading It**: Read from top to bottom (or left to right, depending on layout). Each event represents a milestone in the claim's journey. Notice how some events trigger others—this shows the event-driven nature of the system (Hohpe & Woolf, 2003).
+**Reading Event Timelines**: Read chronologically (top to bottom or left to right, depending on layout). Each event represents a processing milestone. Event dependencies illustrate the event-driven architecture (Hohpe & Woolf, 2003).
 
-**Why It Matters**: Event timelines are like audit logs—they show the complete history. This is valuable for understanding what happened, debugging issues, and learning how the system behaves.
+**Operational Value**: Event timelines function as audit logs, providing complete processing history. This supports understanding system behavior, debugging issues, and analyzing processing patterns.
 
 ---
 
 ### Workflow Flow: The Complete Picture
 
-**The Story**: Like a flowchart showing a business process, workflow flow diagrams show all possible paths a claim can take, from start to finish.
+**Workflow Flow Diagrams**: Workflow flow diagrams illustrate all possible processing paths a claim may follow, from initial submission through final routing.
 
 **What It Shows**:
 - **All agents and their roles**: Every component that processes the claim
@@ -188,7 +188,7 @@ The workflow flow diagram shows all these possibilities, helping you understand 
 
 ### Mermaid Diagrams: The Language of Visualizations
 
-**The Story**: Mermaid is a text-based diagramming language that lets us create visualizations using code. Think of it like writing a screenplay—you describe what should happen, and Mermaid creates the visual representation.
+**Mermaid Diagramming**: Mermaid is a text-based diagramming language that enables programmatic visualization creation. It uses declarative syntax to describe system structure and behavior, which Mermaid renders as visual diagrams.
 
 **What You Can Create**:
 - **Flowcharts**: Show processes and decision flows
@@ -309,14 +309,14 @@ The visualizer outputs text/ASCII art by default. To export in other formats:
 ### For Learning
 
 - **Start with the big picture**: Understand the architecture before diving into details
-- **Follow a claim's journey**: Use sequence diagrams to trace a complete flow
+- **Trace processing workflows**: Use sequence diagrams to analyze complete processing flows
 - **Use interactive tools**: See the system in action to develop intuition
 - **Compare views**: Look at the same information in different visualizations
 
 ### For Understanding
 
 - **Read the narrative**: Don't just look at diagrams—read the explanations
-- **Ask questions**: What story is this diagram telling? What would happen if...?
+- **Analyze scenarios**: What does this diagram illustrate? What would happen if...?
 - **Trace connections**: Follow arrows and relationships to understand dependencies
 - **Identify patterns**: Notice recurring structures and understand why they exist
 
@@ -324,7 +324,7 @@ The visualizer outputs text/ASCII art by default. To export in other formats:
 
 - **Use the right visualization**: Match the visualization type to your audience
 - **Provide context**: Always explain what the diagram shows and why it matters
-- **Tell the story**: Use visualizations to support a narrative, not replace it
+- **Provide context**: Use visualizations to support documentation, not replace it
 - **Make it interactive**: Let your audience explore interactive visualizations
 
 ---
