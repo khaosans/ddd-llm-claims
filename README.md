@@ -837,15 +837,15 @@ See the system in action! These screenshots demonstrate the interactive dashboar
 
 ## Architecture Highlights
 
-This system demonstrates several important software design principles:
+Key design principles demonstrated:
 
-- **Domain-Driven Design (DDD)**: Code organized around business concepts, not technical layers (Evans, 2003)
-- **Event-Driven Architecture**: Components communicate through events, keeping them loosely coupled (Hohpe & Woolf, 2003)
-- **Anti-Corruption Layer**: Agents protect the system from messy external data (Evans, 2003)
-- **Repository Pattern**: Data access is abstracted, making testing and changes easier (Evans, 2003; Fowler, 2002)
-- **Value Objects & Aggregates**: Data is structured to enforce business rules (Evans, 2003; Vernon, 2013)
+- **Domain-Driven Design (DDD)**: Code organized around business concepts (Evans, 2003)
+- **Event-Driven Architecture**: Loose coupling through events (Hohpe & Woolf, 2003)
+- **Anti-Corruption Layer**: Agents protect domain from external data (Evans, 2003)
+- **Repository Pattern**: Abstracted data access for testability (Evans, 2003; Fowler, 2002)
+- **Value Objects & Aggregates**: Structured data enforces business rules (Evans, 2003; Vernon, 2013)
 
-For detailed architecture documentation, see [docs/TECHNICAL.md](docs/TECHNICAL.md).
+For detailed architecture, see [docs/TECHNICAL.md](docs/TECHNICAL.md) and [Component Inventory](docs/architecture.md#complete-component-inventory).
 
 ---
 
