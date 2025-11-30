@@ -747,6 +747,344 @@ For production use, downstream system integration would require:
 - **API Gateway Pattern**: Newman, S. (2021). *Building microservices* (2nd ed., pp. 78-95). O'Reilly Media.
 - **Bounded Context Boundaries**: Evans, E. (2003). *Domain-driven design* (pp. 335-365). Addison-Wesley Professional.
 
+## Complete Component Inventory
+
+This section provides an exhaustive list of all components in the system, organized by DDD pattern and bounded context. This inventory helps understand the complete system structure and serves as a reference for developers and architects.
+
+### Bounded Contexts
+
+The system is organized into three bounded contexts (Evans, 2003, pp. 335-365):
+
+1. **Claim Intake (Core Domain)** - The primary business value
+2. **Policy Management (Supporting Domain)** - Provides services to the Core Domain
+3. **Fraud Assessment (Subdomain)** - Important but not core business value
+
+### Aggregates (Aggregate Roots)
+
+Aggregates maintain consistency boundaries and have unique identities (Evans, 2003, pp. 125-150; Vernon, 2013, pp. 345-380):
+
+#### Claim Intake Bounded Context
+
+- **`Claim`** (`src/domain/claim/claim.py`)
+  - **Identity**: `claim_id` (UUID)
+  - **Status**: `ClaimStatus` enum (DRAFT, FACTS_EXTRACTED, POLICY_VALIDATED, TRIAGED, PROCESSING, COMPLETED, REJECTED)
+  - **Contains**: ClaimSummary (Value Object), Documents, Domain Events
+  - **Enforces**: Status transition invariants, business rules
+  - **Publishes**: ClaimFactsExtracted, DocumentAdded events
+
+#### Policy Management Bounded Context
+
+- **`Policy`** (`src/domain/policy/policy.py`)
+  - **Identity**: `policy_id` (UUID)
+  - **Status**: `PolicyStatus` enum (ACTIVE, INACTIVE, EXPIRED, CANCELLED)
+  - **Contains**: Coverage details, policy metadata
+  - **Used By**: Policy Validation Agent for claim validation
+
+### Value Objects
+
+Value Objects are immutable and defined by their attributes (Evans, 2003, pp. 97-124):
+
+#### Claim Intake Bounded Context
+
+- **`ClaimSummary`** (`src/domain/claim/claim_summary.py`)
+  - **Purpose**: Structured facts extracted from unstructured input
+  - **Fields**: claim_type, incident_date, claimed_amount, incident_location, description, claimant_name, etc.
+  - **Validation**: Amount must be non-negative, incident_date cannot be in future
+  - **Created By**: Intake Agent
+
+- **`Document`** (`src/domain/claim/document.py`)
+  - **Purpose**: Represents supporting documents attached to claims
+  - **Fields**: document_id, filename, content_type, document_type, status
+  - **Types**: POLICE_REPORT, INVOICE, PHOTO, MEDICAL_RECORD, etc.
+
+#### Fraud Assessment Bounded Context
+
+- **`FraudCheckResult`** (`src/domain/fraud/fraud.py`)
+  - **Purpose**: Result of fraud assessment
+  - **Fields**: fraud_score (0.0-1.0), risk_level (LOW, MEDIUM, HIGH, CRITICAL), risk_factors, confidence
+  - **Created By**: Fraud Agent
+
+#### Anomaly Detection Bounded Context
+
+- **`AnomalyResult`** (`src/domain/anomaly/anomaly.py`)
+  - **Purpose**: Result of anomaly detection (beyond fraud)
+  - **Fields**: anomaly_score, anomaly_type, findings
+  - **Created By**: Anomaly Detection Agent
+
+### Domain Events
+
+Domain Events represent important occurrences in the domain (Vernon, 2013, pp. 381-420). They are immutable and timestamped:
+
+#### Claim Intake Bounded Context Events
+
+- **`ClaimFactsExtracted`** (`src/domain/claim/events.py`)
+  - **Published When**: Intake Agent successfully extracts structured facts
+  - **Contains**: claim_id, summary (ClaimSummary), extracted_at
+  - **Triggers**: Policy validation and fraud assessment
+
+- **`DocumentAdded`** (`src/domain/claim/events.py`)
+  - **Published When**: A supporting document is attached to a claim
+  - **Contains**: claim_id, document_id, document_type, added_at
+  - **Triggers**: Document validation and authenticity checks
+
+- **`DocumentsValidated`** (`src/domain/claim/events.py`)
+  - **Published When**: Document compliance validation completes
+  - **Contains**: claim_id, validated_documents, rejected_documents, missing_document_types, is_compliant
+  - **Triggers**: Workflow orchestration decisions
+
+- **`DocumentAuthenticityChecked`** (`src/domain/claim/events.py`)
+  - **Published When**: Document authenticity check completes
+  - **Contains**: claim_id, document_id, authenticity_score, is_suspicious, findings
+  - **Triggers**: Fraud assessment updates
+
+- **`DocumentMatched`** (`src/domain/claim/events.py`)
+  - **Published When**: Document-claim matching completes
+  - **Contains**: claim_id, match_score, matched_elements, mismatches, missing_documents, recommendations
+  - **Triggers**: Workflow orchestration decisions
+
+#### Policy Management Bounded Context Events
+
+- **`PolicyValidated`** (`src/domain/policy/events.py`)
+  - **Published When**: Policy validation completes
+  - **Contains**: claim_id, policy_id, is_valid, validation_reason, validated_at
+  - **Triggers**: Triage and routing process
+
+#### Fraud Assessment Bounded Context Events
+
+- **`FraudScoreCalculated`** (`src/domain/fraud/events.py`)
+  - **Published When**: Fraud assessment completes
+  - **Contains**: claim_id, fraud_result (FraudCheckResult), calculated_at
+  - **Triggers**: Triage and routing (may route to fraud investigation)
+
+#### Anomaly Detection Bounded Context Events
+
+- **`AnomalyDetected`** (`src/domain/anomaly/events.py`)
+  - **Published When**: Anomaly detection identifies issues
+  - **Contains**: claim_id, anomaly_result (AnomalyResult), detected_at
+  - **Triggers**: Additional review or routing decisions
+
+### Base Event Infrastructure
+
+- **`DomainEvent`** (`src/domain/events.py`)
+  - **Purpose**: Base class for all domain events
+  - **Fields**: event_id (UUID), occurred_at (datetime), event_type (string)
+  - **Properties**: Immutable (frozen=True), timestamped, uniquely identified
+
+- **`EventBus`** (`src/domain/events.py`)
+  - **Purpose**: In-memory event bus for publishing and subscribing to events
+  - **Methods**: `publish()`, `subscribe()`, `clear()`
+  - **Note**: MVP implementation; production would use Redis, RabbitMQ, or Kafka
+
+- **`EventHandler`** (`src/domain/events.py`)
+  - **Purpose**: Abstract interface for event handlers
+  - **Method**: `handle(event: DomainEvent)`
+
+### LLM Agents (Anti-Corruption Layer)
+
+Agents act as Anti-Corruption Layers, translating external data into domain models (Evans, 2003, pp. 365-380):
+
+#### Base Agent Infrastructure
+
+- **`BaseAgent`** (`src/agents/base_agent.py`)
+  - **Purpose**: Abstract base class for all agents
+  - **Provides**: Model provider abstraction, system prompt management, output validation, error handling
+  - **Pattern**: Template Method pattern for agent behavior
+
+- **`ModelProvider`** (`src/agents/model_provider.py`)
+  - **Purpose**: Abstraction for LLM providers
+  - **Implementations**: OllamaProvider, OpenAIProvider, AnthropicProvider, MockProvider
+  - **Why**: Enables vendor independence and easy testing
+
+#### Specialized Agents
+
+- **`IntakeAgent`** (`src/agents/intake_agent.py`)
+  - **Role**: Claims Analyst - Extract structured facts from unstructured input
+  - **Input**: Unstructured text (email, form, note)
+  - **Output**: `ClaimSummary` (Value Object)
+  - **Publishes**: `ClaimFactsExtracted` event
+  - **Model**: Typically uses larger models (llama3.2) for accuracy
+
+- **`PolicyAgent`** (`src/agents/policy_agent.py`)
+  - **Role**: Policy Validation Specialist - Validate claims against policies
+  - **Input**: `ClaimSummary`, list of `Policy` objects
+  - **Output**: Policy validation result
+  - **Publishes**: `PolicyValidated` event
+  - **Model**: Can use smaller models (llama3.2:3b) with low temperature for consistency
+
+- **`FraudAgent`** (`src/agents/fraud_agent.py`)
+  - **Role**: Fraud Investigator - Assess fraud risk
+  - **Input**: `ClaimSummary`, claim history, patterns
+  - **Output**: `FraudCheckResult` (Value Object)
+  - **Publishes**: `FraudScoreCalculated` event
+  - **Model**: Medium to large models for pattern recognition
+
+- **`TriageAgent`** (`src/agents/triage_agent.py`)
+  - **Role**: Claims Triage Specialist - Route claims to downstream systems
+  - **Input**: `Claim`, `FraudCheckResult`, `PolicyValidated` event
+  - **Output**: Routing decision (human_adjudicator_queue, automated_processing, fraud_investigation, specialist_review, rejected)
+  - **Updates**: Claim status
+  - **Model**: Medium models (mistral:7b) with higher temperature for decision-making
+
+- **`DocumentValidationAgent`** (`src/agents/document_validation_agent.py`)
+  - **Role**: Document Compliance Specialist - Validate document compliance
+  - **Input**: `Claim`, list of `Document` objects
+  - **Output**: Validation result
+  - **Publishes**: `DocumentsValidated` event
+
+- **`DocumentAnalysisAgent`** (`src/agents/document_analysis_agent.py`)
+  - **Role**: Document Analyst - Analyze document content
+  - **Input**: `Document` objects
+  - **Output**: Analysis results (extracted text, metadata, etc.)
+
+- **`DocumentMatchingAgent`** (`src/agents/document_matching_agent.py`)
+  - **Role**: Document Matcher - Match documents to claim facts
+  - **Input**: `ClaimSummary`, list of `Document` objects
+  - **Output**: Match results (match_score, matched_elements, mismatches)
+  - **Publishes**: `DocumentMatched` event
+
+- **`HumanReviewAgent`** (`src/human_review/human_review_agent.py`)
+  - **Role**: Human Review Coordinator - Manage human review workflow
+  - **Input**: Claims requiring human review
+  - **Output**: Review decisions, feedback
+  - **Manages**: Review queue, review interface
+
+### Repositories
+
+Repositories abstract data access, keeping domain models independent of persistence (Evans, 2003, pp. 151-170; Fowler, 2002, pp. 322-334):
+
+#### Abstract Interfaces
+
+- **`ClaimRepository`** (`src/repositories/claim_repository.py`)
+  - **Methods**: `save()`, `find_by_id()`, `find_all()`, `delete()`
+  - **Purpose**: Abstract interface for Claim aggregate persistence
+  - **Implementations**: `InMemoryClaimRepository`, `DBClaimRepository`
+
+- **`PolicyRepository`** (`src/repositories/policy_repository.py`)
+  - **Methods**: `save()`, `find_by_id()`, `find_by_customer()`, `find_active()`
+  - **Purpose**: Abstract interface for Policy aggregate persistence
+  - **Implementations**: `InMemoryPolicyRepository`, `DBPolicyRepository`
+
+- **`DocumentRepository`** (`src/repositories/document_repository.py`)
+  - **Methods**: `save()`, `find_by_id()`, `find_by_claim()`
+  - **Purpose**: Abstract interface for Document persistence
+
+#### Implementations
+
+- **`InMemoryClaimRepository`** - For testing and development
+- **`InMemoryPolicyRepository`** - For testing and development
+- **`DBClaimRepository`** - Database-backed implementation
+- **`DBPolicyRepository`** - Database-backed implementation
+
+### Application Services
+
+- **`WorkflowOrchestrator`** (`src/orchestrator/workflow_orchestrator.py`)
+  - **Purpose**: Coordinates the entire claims processing workflow
+  - **Responsibilities**:
+    1. Receives unstructured input
+    2. Triggers Intake Agent
+    3. Listens for domain events
+    4. Coordinates agent execution
+    5. Routes claims to downstream systems
+  - **Pattern**: Application Service (Evans, 2003) - coordinates domain objects without containing business logic
+
+### Human Review Components
+
+- **`ReviewQueue`** (`src/human_review/review_queue.py`)
+  - **Purpose**: Manages queue of claims requiring human review
+  - **Features**: Priority ordering, status tracking, assignment
+
+- **`ReviewInterface`** (`src/human_review/review_interface.py`)
+  - **Purpose**: Interface for human reviewers to interact with claims
+  - **Features**: Display claim details, approve/reject, add comments
+
+- **`FeedbackHandler`** (`src/human_review/feedback_handler.py`)
+  - **Purpose**: Captures and processes human feedback
+  - **Features**: Feedback collection, analytics, learning from decisions
+
+### Infrastructure Components
+
+#### Storage
+
+- **`DocumentStorageService`** (`src/storage/document_storage.py`)
+  - **Purpose**: Manages document file storage
+  - **Features**: Upload, download, metadata management
+
+#### Vector Stores
+
+- **`ClaimVectorStore`** (`src/vector_store/claim_vector_store.py`)
+  - **Purpose**: Vector embeddings for semantic search of claims
+
+- **`PolicyVectorStore`** (`src/vector_store/policy_vector_store.py`)
+  - **Purpose**: Vector embeddings for policy search
+
+- **`FraudPatternStore`** (`src/vector_store/fraud_pattern_store.py`)
+  - **Purpose**: Stores fraud patterns for detection
+
+#### Compliance
+
+- **`DecisionAudit`** (`src/compliance/decision_audit.py`)
+  - **Purpose**: Audit trail for AI decisions
+  - **Features**: Decision logging, context capture, explainability
+
+- **`DecisionContextTracker`** (`src/compliance/decision_context.py`)
+  - **Purpose**: Tracks context for AI decisions
+  - **Features**: Prompt tracking, input/output logging, evidence collection
+
+- **`CompletionSummary`** (`src/compliance/completion_summary.py`)
+  - **Purpose**: Summarizes claim processing completion
+  - **Features**: Status aggregation, decision summary
+
+### UI Components
+
+- **`StreamlitApp`** (`streamlit_app.py`)
+  - **Purpose**: Main Streamlit dashboard application
+  - **Pages**: Dashboard, Process Claim, Claims List, Review Queue
+
+- **`ClaimProcessor`** (`src/ui/components/claim_processor.py`)
+  - **Purpose**: UI component for processing claims
+
+- **`ReviewInterface`** (`src/ui/components/review_interface.py`)
+  - **Purpose**: UI component for human review
+
+- **`DecisionStatus`** (`src/ui/components/decision_status.py`)
+  - **Purpose**: UI component for displaying decision status
+
+- **`DocumentViewer`** (`src/ui/components/document_viewer.py`)
+  - **Purpose**: UI component for viewing documents
+
+### Supporting Infrastructure
+
+- **`CostTracker`** (`src/agents/cost_tracker.py`)
+  - **Purpose**: Tracks LLM API usage and costs
+  - **Features**: Token counting, cost calculation, usage analytics
+
+- **`APIConfig`** (`src/agents/api_config.py`)
+  - **Purpose**: Manages API configuration for LLM providers
+  - **Features**: Provider configuration, key management, endpoint settings
+
+- **`JSONUtils`** (`src/agents/json_utils.py`)
+  - **Purpose**: Utilities for parsing and validating LLM JSON outputs
+  - **Features**: Resilient JSON parsing, extraction from text, validation
+
+### Enumerations (Domain Concepts)
+
+- **`ClaimStatus`** - Claim lifecycle states
+- **`PolicyStatus`** - Policy states
+- **`FraudRiskLevel`** - Fraud risk categorization
+- **`DocumentType`** - Types of supporting documents
+- **`DocumentStatus`** - Document processing states
+
+### Summary Statistics
+
+- **Bounded Contexts**: 3 (Claim Intake, Policy Management, Fraud Assessment)
+- **Aggregates**: 2 (Claim, Policy)
+- **Value Objects**: 4+ (ClaimSummary, FraudCheckResult, AnomalyResult, Document)
+- **Domain Events**: 8 (ClaimFactsExtracted, DocumentAdded, DocumentsValidated, DocumentAuthenticityChecked, DocumentMatched, PolicyValidated, FraudScoreCalculated, AnomalyDetected)
+- **LLM Agents**: 8 (Intake, Policy, Fraud, Triage, DocumentValidation, DocumentAnalysis, DocumentMatching, HumanReview)
+- **Repositories**: 3 interfaces (Claim, Policy, Document) with multiple implementations
+- **Application Services**: 1 (WorkflowOrchestrator)
+- **Infrastructure Components**: 10+ (Storage, Vector Stores, Compliance, UI, etc.)
+
 ## DDD Concepts Illustrated
 
 - **Bounded Contexts**: Separate domains with clear boundaries (Evans, 2003)
