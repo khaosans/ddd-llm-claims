@@ -25,6 +25,7 @@ class DecisionType(str, Enum):
     CLAIM_STATUS_CHANGE = "claim_status_change"  # Claim status transition
     DOCUMENT_VALIDATION = "document_validation"  # Document validation decision
     DOCUMENT_AUTHENTICITY_CHECK = "document_authenticity_check"  # Document authenticity check
+    DOCUMENT_MATCHING = "document_matching"  # Document-claim matching decision
     COMPLIANCE_CHECK = "compliance_check"  # Compliance check decision
 
 

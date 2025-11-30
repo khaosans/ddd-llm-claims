@@ -2,20 +2,31 @@
 
 <div align="center">
 
-> **⚠️ DEMONSTRATION SYSTEM - NOT FOR PRODUCTION USE**  
-> This is an **EDUCATIONAL DEMONSTRATION** for learning Domain-Driven Design (DDD) and LLM integration patterns.  
+> **⚠️ DEMONSTRATION SYSTEM - NOT FOR PRODUCTION USE**
+> This is an **EDUCATIONAL DEMONSTRATION** for learning Domain-Driven Design (DDD) and LLM integration patterns.
 > See [DISCLAIMERS.md](DISCLAIMERS.md) for complete information.
 
 [![Educational](https://img.shields.io/badge/Purpose-Educational-blue)](DISCLAIMERS.md)
 [![Demo Only](https://img.shields.io/badge/Status-Demo%20Only-orange)](DISCLAIMERS.md)
 [![DDD](https://img.shields.io/badge/Architecture-DDD-green)](docs/TECHNICAL.md)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+**Transform unstructured insurance claims into structured data using AI agents and proven software architecture patterns.**
+
+[Quick Start](#quick-start-3-minutes) • [Documentation](#documentation) • [Why This Matters](#why-this-matters) • [What You&#39;ll Learn](#what-youll-learn)
 
 </div>
 
+---
+
 ## Table of Contents
 
+- [Why This Matters](#why-this-matters)
+- [What You&#39;ll Learn](#what-youll-learn)
 - [Overview](#overview)
 - [What Is This?](#what-is-this)
+- [Strengths &amp; Limitations](#strengths--limitations)
 - [System Architecture](#system-architecture)
   - [High-Level Architecture](#high-level-architecture)
   - [Component Diagram](#component-diagram)
@@ -28,11 +39,62 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Live Demo](#live-demo)
+- [Screenshots](#screenshots)
+- [Use Cases](#use-cases)
 - [Architecture Highlights](#architecture-highlights)
 - [Documentation](#documentation)
+- [Common Questions](#common-questions)
 - [References](#references)
 - [License](#license)
 - [Contributing](#contributing)
+
+---
+
+## Why This Matters
+
+**The Problem**: Insurance companies process millions of claims annually. Most arrive as unstructured data—emails, forms, transcripts, notes—requiring manual extraction and validation. This is slow, expensive, and error-prone.
+
+**The Opportunity**: Modern AI (LLMs) can understand and extract information from unstructured text, but integrating them into production systems requires careful architecture to maintain reliability, testability, and maintainability.
+
+**The Solution**: This system demonstrates how **Domain-Driven Design (DDD)** principles (Evans, 2003) can structure AI agent workflows, ensuring that LLM capabilities enhance—rather than complicate—your software architecture.
+
+**Why It's Educational**: You'll see real-world patterns like event-driven architecture, bounded contexts, and anti-corruption layers applied to AI integration—patterns that scale from prototypes to production systems.
+
+---
+
+## What You'll Learn
+
+By exploring this system, you'll gain hands-on experience with:
+
+✅ **Domain-Driven Design (DDD)**
+
+- Bounded contexts and their boundaries
+- Aggregates and consistency boundaries
+- Value objects and immutability
+- Domain events and event-driven architecture
+- Repository pattern for data access
+
+✅ **LLM Integration Patterns**
+
+- Agent-based architectures
+- Prompt engineering strategies
+- Output validation and error handling
+- Anti-corruption layers for external systems
+- Human-in-the-loop workflows
+
+✅ **Software Architecture**
+
+- Event-driven coordination
+- Workflow orchestration
+- Separation of concerns
+- Testability and maintainability
+
+✅ **Practical Skills**
+
+- Building AI-powered applications
+- Structuring complex domains
+- Managing technical debt in AI systems
+- Balancing automation with human oversight
 
 ---
 
@@ -45,8 +107,9 @@ This system demonstrates how **Domain-Driven Design (DDD)** principles (Evans, 2
 ### What Problem Does This Solve?
 
 Insurance companies receive thousands of claims daily in various unstructured formats:
+
 - Emails with different writing styles
-- Online forms with incomplete information  
+- Online forms with incomplete information
 - Phone call transcripts
 - Handwritten notes
 
@@ -71,6 +134,97 @@ All of this happens automatically using **AI (Large Language Models)** (Brown et
 
 ---
 
+## Strengths & Limitations
+
+### ✅ Strengths
+
+**Educational Value**
+
+- **Complete DDD Implementation**: Real-world patterns, not just theory
+- **Multiple Learning Paths**: Code, diagrams, interactive visualizations, and guided tours
+- **Well-Documented**: Extensive documentation with research citations (APA format)
+- **Testable Examples**: Comprehensive test suite demonstrating best practices
+
+**Technical Excellence**
+
+- **Clean Architecture**: Clear separation of concerns, maintainable code structure
+- **Event-Driven Design**: Loosely coupled components that scale well
+- **Multiple Model Support**: Works with Ollama (local), OpenAI, and Anthropic
+- **Human-in-the-Loop**: Demonstrates how to integrate human judgment with AI automation
+
+**Developer Experience**
+
+- **Quick Setup**: Works immediately with mock mode (no configuration needed)
+- **Interactive Dashboard**: Beautiful Streamlit UI for exploring the system
+- **Visual Learning**: Interactive diagrams and guided tours
+- **Extensible**: Easy to add new agents, bounded contexts, or features
+
+**Practical Patterns**
+
+- **Anti-Corruption Layer**: Protects domain from external system changes
+- **Repository Pattern**: Abstracted data access for easy testing
+- **Domain Events**: Enables event-driven workflows and audit trails
+- **Value Objects**: Immutable data structures that enforce business rules
+
+### ⚠️ Limitations
+
+**Not Production-Ready**
+
+- **No Data Persistence**: Uses in-memory storage only—data is lost on restart
+- **No Security**: Missing authentication, authorization, encryption, and security hardening
+- **No Scalability**: Not designed for concurrent production loads or horizontal scaling
+- **No Error Recovery**: Limited error handling and recovery mechanisms
+- **No Monitoring**: No production monitoring, alerting, or observability tools
+- **No Compliance**: Not compliant with insurance regulations (HIPAA, GDPR, SOC 2, etc.)
+- **No Audit Trail**: Limited audit and compliance features
+
+**LLM Limitations**
+
+- **Accuracy Not Guaranteed**: LLM outputs may contain errors or hallucinations
+- **Bias Risk**: LLMs may exhibit biases present in training data
+- **Cost Considerations**: Cloud LLMs incur costs; local models have quality trade-offs
+- **Validation Gaps**: Limited validation of LLM outputs against real-world data
+- **Prompt Sensitivity**: System behavior depends on prompt quality and model selection
+
+**Educational Simplifications**
+
+- **Simplified Domain**: Real insurance domains are far more complex
+- **Missing Features**: Many production features are not implemented
+- **Mock Data**: Uses simplified, synthetic data for demonstration
+- **No Support**: No production support or maintenance provided
+
+**Technical Constraints**
+
+- **In-Memory Event Bus**: Not suitable for distributed systems
+- **Single-Process**: Not designed for microservices or distributed deployment
+- **Limited Testing**: While comprehensive, not production-grade test coverage
+- **No Performance Optimization**: Not optimized for speed or resource usage
+
+### 🎯 When to Use This
+
+**✅ Perfect For:**
+
+- Learning DDD patterns and principles
+- Understanding LLM integration architectures
+- Prototyping AI-powered workflows
+- Educational demonstrations and workshops
+- Academic research and teaching
+- Code examples and tutorials
+- Exploring event-driven architecture
+
+**❌ Not Suitable For:**
+
+- Production insurance claims processing
+- Handling real customer data
+- Compliance-critical applications
+- High-throughput production systems
+- Financial systems requiring audit trails
+- Any system requiring security or compliance
+
+**💡 For Production Use**: Start fresh with proper security, compliance, persistence, and monitoring. This system demonstrates concepts but should not be used as-is for production.
+
+---
+
 ## System Architecture
 
 ### High-Level Architecture
@@ -82,59 +236,59 @@ graph TB
     subgraph "External Input"
         Email["📧 Unstructured Input<br/>(Email/Form/Note)"]
     end
-    
+  
     subgraph "Claim Intake (Core Domain)"
         IntakeAgent["🤖 Intake Agent<br/>(LLM)"]
         ClaimSummary["📄 ClaimSummary<br/>(Value Object)"]
         ClaimAgg["📋 Claim Aggregate"]
         Event1["⚡ ClaimFactsExtracted<br/>(Domain Event)"]
-        
+      
         Email --> IntakeAgent
         IntakeAgent --> ClaimSummary
         ClaimSummary --> ClaimAgg
         ClaimAgg --> Event1
     end
-    
+  
     subgraph "Policy Management (Supporting Domain)"
         PolicyAgent["🔍 Policy Agent<br/>(LLM)"]
         PolicyRepo["💾 Policy Repository"]
         PolicyAgg["📋 Policy Aggregate"]
         Event2["⚡ PolicyValidated<br/>(Domain Event)"]
-        
+      
         PolicyRepo --> PolicyAgg
         PolicyAgent --> PolicyAgg
         PolicyAgg --> Event2
     end
-    
+  
     subgraph "Fraud Assessment (Subdomain)"
         FraudAgent["🚩 Fraud Agent<br/>(LLM/ML)"]
         FraudResult["📊 FraudCheckResult<br/>(Value Object)"]
         Event3["⚡ FraudScoreCalculated<br/>(Domain Event)"]
-        
+      
         FraudAgent --> FraudResult
         FraudResult --> Event3
     end
-    
+  
     subgraph "Workflow Orchestrator (Event-Driven)"
         Orchestrator["🎼 Workflow Orchestrator"]
         TriageAgent["🎯 Triage Agent<br/>(LLM)"]
         Downstream["📦 Downstream Systems"]
-        
+      
         Orchestrator --> TriageAgent
         TriageAgent --> Downstream
     end
-    
+  
     subgraph "Human Review"
         ReviewQueue["👤 Review Queue"]
         HumanReviewer["👨‍💼 Human Reviewer"]
     end
-    
+  
     Event1 --> Orchestrator
     Event2 --> Orchestrator
     Event3 --> Orchestrator
     Orchestrator --> ReviewQueue
     ReviewQueue --> HumanReviewer
-    
+  
     style IntakeAgent fill:#4169E1,stroke:#000080,stroke-width:2px,color:#FFF
     style PolicyAgent fill:#90EE90,stroke:#006400,stroke-width:2px
     style FraudAgent fill:#FFB6C1,stroke:#8B0000,stroke-width:2px
@@ -157,41 +311,41 @@ graph LR
         FA[Fraud Agent]
         TA[Triage Agent]
     end
-    
+  
     subgraph "Domain Layer"
         CA[Claim Aggregate]
         CS[ClaimSummary VO]
         PAgg[Policy Aggregate]
         FR[FraudResult VO]
     end
-    
+  
     subgraph "Infrastructure Layer"
         CR[Claim Repository]
         PR[Policy Repository]
         EB[Event Bus]
     end
-    
+  
     subgraph "Application Layer"
         WO[Workflow Orchestrator]
         HR[Human Review]
     end
-    
+  
     IA --> CS
     CS --> CA
     PA --> PAgg
     FA --> FR
     TA --> WO
-    
+  
     CA --> CR
     PAgg --> PR
-    
+  
     CA --> EB
     PAgg --> EB
     FR --> EB
-    
+  
     EB --> WO
     WO --> HR
-    
+  
     style IA fill:#4169E1,color:#FFF
     style PA fill:#90EE90
     style FA fill:#FFB6C1
@@ -209,22 +363,22 @@ erDiagram
     Claim ||--o{ Document : "contains"
     Claim ||--o{ DomainEvent : "publishes"
     Claim }o--|| ClaimStatus : "has"
-    
+  
     Policy ||--o{ PolicyCoverage : "defines"
     Policy }o--|| PolicyStatus : "has"
-    
+  
     ClaimSummary ||--o| FraudCheckResult : "evaluated by"
     ClaimSummary }o--|| ClaimType : "is"
-    
+  
     Claim ||--o| Policy : "validated against"
-    
+  
     Claim {
         UUID claim_id PK
         string raw_input
         ClaimStatus status
         datetime created_at
     }
-    
+  
     ClaimSummary {
         string claim_type
         datetime incident_date
@@ -232,14 +386,14 @@ erDiagram
         string incident_location
         string description
     }
-    
+  
     Policy {
         UUID policy_id PK
         string policy_number
         PolicyStatus status
         datetime effective_date
     }
-    
+  
     FraudCheckResult {
         decimal fraud_score
         string risk_level
@@ -258,29 +412,29 @@ flowchart TD
     Validate -->|No| Error[Error Handling]
     Validate -->|Yes| Store1[Store ClaimSummary]
     Store1 --> Event1[Publish ClaimFactsExtracted]
-    
+  
     Event1 --> Policy[Policy Agent<br/>Validate Policy]
     Policy --> PolicyRepo[Query Policy Repository]
     PolicyRepo --> PolicyCheck{Policy<br/>Valid?}
     PolicyCheck -->|No| Reject[Reject Claim]
     PolicyCheck -->|Yes| Event2[Publish PolicyValidated]
-    
+  
     Event2 --> Fraud[Fraud Agent<br/>Assess Risk]
     Fraud --> FraudCalc[Calculate Fraud Score]
     FraudCalc --> Event3[Publish FraudScoreCalculated]
-    
+  
     Event3 --> Triage[Triage Agent<br/>Route Claim]
     Triage --> Decision{Routing<br/>Decision}
     Decision -->|High Risk| Review[Human Review Queue]
     Decision -->|Low Risk| Auto[Automated Processing]
     Decision -->|Suspicious| FraudInv[Fraud Investigation]
     Decision -->|Invalid| Reject
-    
+  
     Review --> Human[Human Reviewer]
     Human --> Final([Final Decision])
     Auto --> Final
     FraudInv --> Final
-    
+  
     style Intake fill:#4169E1,color:#FFF
     style Policy fill:#90EE90
     style Fraud fill:#FFB6C1
@@ -288,10 +442,23 @@ flowchart TD
     style Review fill:#FFD700
 ```
 
+### Understanding Our Visualizations
+
+Visualizations help us understand complex systems by showing relationships, flows, and structures that are hard to convey in text alone. Each diagram in this project tells part of the system's story—from how components are organized (architecture diagrams) to how claims flow through the system (sequence diagrams) to interactive exploration (dashboard).
+
+**How to Read Our Diagrams**:
+
+- **Architecture Diagrams**: Show the "organizational structure" of the system—like a company org chart, but for software components
+- **Sequence Diagrams**: Show the "journey" of a claim—step-by-step, moment-by-moment, from submission to completion
+- **Interactive Dashboards**: Let you explore the system dynamically—click, hover, and discover relationships
+
+**Accessibility**: All visualizations include text descriptions, support keyboard navigation, and are designed with accessibility in mind. See the [Visualization Guide](docs/visualization_guide.md) for detailed accessibility information.
+
 For more detailed architecture diagrams, see:
-- **[Architecture Diagram](docs/architecture.md)**: Detailed system architecture
-- **[Sequence Diagram](docs/sequence_diagram.md)**: Step-by-step workflow sequence
-- **[Interactive Dashboard](docs/visualization.html)**: Interactive visualizations
+
+- **[Architecture Diagram](docs/architecture.md)**: Detailed system architecture with narrative explanations
+- **[Sequence Diagram](docs/sequence_diagram.md)**: Step-by-step workflow sequence with journey storytelling
+- **[Interactive Dashboard](docs/visualization.html)**: Interactive visualizations with guided tours and tooltips
 
 ---
 
@@ -336,24 +503,28 @@ Data access is abstracted through repositories, making testing and implementatio
 Think of this system like a well-organized office with specialized departments:
 
 ### Step 1: The Intake Department 📧
+
 - **What it does**: Receives the messy email from a customer
 - **Who does it**: An AI agent (LLM) trained to act like a Claims Analyst
 - **Result**: Extracts structured facts (date, location, amount, description) and creates a clean `ClaimSummary` value object
 - **Event**: Publishes `ClaimFactsExtracted` domain event
 
 ### Step 2: The Policy Department 📋
+
 - **What it does**: Checks if the customer's policy actually covers this type of claim
 - **Who does it**: An AI agent (LLM) trained to validate policies
 - **Result**: Confirms whether the claim is valid or should be rejected
 - **Event**: Publishes `PolicyValidated` domain event
 
 ### Step 3: The Fraud Department 🚩
+
 - **What it does**: Assesses whether the claim might be fraudulent
 - **Who does it**: An AI agent (LLM) or machine learning model that looks for suspicious patterns
 - **Result**: Assigns a risk score (low, medium, high) as a `FraudCheckResult` value object
 - **Event**: Publishes `FraudScoreCalculated` domain event
 
 ### Step 4: The Routing Department 🎯
+
 - **What it does**: Decides where the claim should go next
 - **Who does it**: An AI agent (LLM) that considers all the information
 - **Result**: Routes the claim to:
@@ -374,7 +545,7 @@ Sometimes, the AI needs human help. When a claim is unusual (very large amount, 
 
 ## Getting Started
 
-> **⚠️ Remember**: This is a **DEMONSTRATION SYSTEM** for **EDUCATIONAL PURPOSES ONLY**.  
+> **⚠️ Remember**: This is a **DEMONSTRATION SYSTEM** for **EDUCATIONAL PURPOSES ONLY**.
 > See [DISCLAIMERS.md](DISCLAIMERS.md) before proceeding.
 
 ### Quick Start (3 Minutes)
@@ -463,6 +634,7 @@ streamlit run streamlit_app.py
 ```
 
 **Features**:
+
 - **Local & Open Source**: Works completely offline with Ollama (no API keys needed!)
 - **Mock Mode**: Works immediately without any setup
 - **Demo Mode**: Step-by-step processing with visual progress
@@ -470,6 +642,7 @@ streamlit run streamlit_app.py
 - **Human Review Interface**: Inline review prompts when needed
 
 **Quick Start in Dashboard**:
+
 1. Click "Start Processing Claims" on the dashboard
 2. Select a template (Auto Insurance, High Value, etc.)
 3. Enable "Demo Mode" to see step-by-step processing
@@ -484,12 +657,132 @@ python demo.py
 ```
 
 This will guide you through:
+
 - Complete claim processing workflow
 - Human-in-the-loop review process
 - Step-by-step explanations
 - Real-time visualization
 
 **Works without Ollama** - Uses mock providers for demonstration!
+
+---
+
+## Screenshots
+
+See the system in action! These screenshots demonstrate the interactive dashboard and workflow processing capabilities.
+
+### Process Claim Input Interface
+
+![Process Claim Input Interface](docs/images/process-claim-input.png)
+
+**What you're seeing**: The main input interface where users can submit unstructured claim data for processing. This screenshot shows the clean, intuitive design that makes it easy to get started.
+
+**Key features visible**:
+- **Template Selection**: Choose from pre-built claim templates (High Value Claim, Auto Insurance, etc.) or use custom input
+- **Demo Mode Toggle**: Enable step-by-step processing visualization
+- **Unstructured Data Input**: Text area for entering claim information in any format (emails, forms, notes)
+- **Document Upload**: Drag-and-drop interface for supporting documents (photos, police reports, invoices)
+- **File Type Support**: Accepts PDF, images, and document formats up to 200MB per file
+
+**Why it matters**: This interface demonstrates how the system accepts messy, real-world input and transforms it into structured data. The template system helps users understand different claim types, while the document upload feature shows how the system handles multi-modal inputs.
+
+### Processing Workflow with Extracted Facts
+
+![Processing Workflow](docs/images/workflow-processing.png)
+
+**What you're seeing**: The workflow processing interface showing real-time claim processing through the system's agent pipeline. This screenshot captures the system actively extracting facts from unstructured data.
+
+**Key features visible**:
+- **Live Progress Tracking**: Blue progress bar showing current processing stage
+- **Active Agent Status**: "Intake Agent: Extracting facts from unstructured data..." banner indicating the current workflow step
+- **Workflow Steps**: Visual list showing completed and in-progress steps:
+  - ✅ Extracting Facts (currently active)
+  - ✅ Policy Validated
+  - ✅ Fraud Assessed
+  - ✅ Routed
+- **Claim Results**: Display showing Claim ID, Status (triaged), and Progress (100%)
+- **Extracted Facts Tab**: JSON view of structured data extracted from unstructured input, showing claim type and incident date
+
+**Why it matters**: This demonstrates the event-driven workflow in action. You can see how the system progresses through each agent (Intake → Policy → Fraud → Triage) and how unstructured data becomes structured facts. The extracted facts show the transformation from messy input to clean, usable data structures.
+
+### Fraud Assessment with High Risk Detection
+
+![Fraud Assessment High Risk](docs/images/fraud-assessment-high-risk.png)
+
+**What you're seeing**: The fraud assessment results showing a high-risk fraud detection scenario with detailed reasoning and critical alerts.
+
+**Key features visible**:
+- **Agent Information**: FraudAgent details with timestamp and context indicators
+- **Fraud Score**: 0.85 (high risk) displayed prominently
+- **Critical Alert Banner**: Red warning indicating immediate review required
+- **Detailed Reasoning**: Specific risk factors identified:
+  - Suspicious timing (claim filed < 1 day after incident)
+  - Inflated amounts for the type of incident
+  - Inconsistent stories and descriptions
+- **Decision Summary**: Final fraud score and risk level clearly displayed
+
+**Why it matters**: This screenshot demonstrates the system's ability to not just detect fraud, but to provide **explainable AI** - showing exactly why a claim is flagged. The critical alert system shows how the system escalates high-risk cases for human review, demonstrating the human-in-the-loop pattern. The detailed reasoning helps reviewers understand the AI's decision-making process, which is crucial for trust and compliance.
+
+**Educational Value**: These screenshots show how DDD patterns (bounded contexts, domain events, value objects) manifest in a real user interface. The workflow visualization demonstrates event-driven architecture, while the fraud assessment shows how domain logic (fraud detection rules) is presented to users in an understandable format.
+
+---
+
+## Use Cases
+
+### 🎓 Educational Use Cases
+
+**For Students**
+
+- Learn DDD patterns through working code
+- Understand event-driven architecture
+- See how to structure AI-powered applications
+- Study real-world software architecture patterns
+
+**For Educators**
+
+- Demonstrate DDD concepts in action
+- Show LLM integration patterns
+- Teach event-driven design principles
+- Provide hands-on learning materials
+
+**For Developers**
+
+- Reference implementation for DDD patterns
+- Example of LLM agent architecture
+- Template for event-driven workflows
+- Code examples for common patterns
+
+### 🔬 Research & Prototyping
+
+**Academic Research**
+
+- Study AI-human collaboration patterns
+- Research event-driven architectures
+- Explore domain modeling techniques
+- Analyze LLM integration strategies
+
+**Prototyping**
+
+- Rapidly prototype AI-powered workflows
+- Test different agent architectures
+- Experiment with prompt engineering
+- Validate domain models
+
+### 🏢 Demonstration & Presentation
+
+**Technical Presentations**
+
+- Show DDD principles in practice
+- Demonstrate LLM integration patterns
+- Explain event-driven architecture
+- Present human-in-the-loop workflows
+
+**Client Demos**
+
+- Illustrate AI capabilities
+- Show workflow automation
+- Demonstrate system architecture
+- Present technical approaches
 
 ---
 
@@ -525,12 +818,37 @@ For detailed architecture documentation, see [docs/TECHNICAL.md](docs/TECHNICAL.
 - **[CORRECTNESS.md](docs/CORRECTNESS.md)**: Domain invariants and verification
 - **[DOA_CHECKLIST.md](docs/DOA_CHECKLIST.md)**: Domain-Driven Design verification checklist
 
-### Visualizations
+### Visualizations: Exploring the System Visually
 
-- **[Architecture Diagram](docs/architecture.md)**: Detailed system architecture
-- **[Sequence Diagram](docs/sequence_diagram.md)**: Step-by-step workflow sequence
-- **[Interactive Dashboard](docs/visualization.html)**: Interactive visualizations
-- **[Visualization Guide](docs/visualization_guide.md)**: How to use visualizations
+Visualizations are powerful tools for understanding complex systems. They transform abstract concepts into concrete representations, making architecture, workflows, and relationships accessible to everyone—from developers to business stakeholders.
+
+**The Story Each Visualization Tells**:
+
+- **Architecture Diagrams**: Show how the system is organized into "departments" (bounded contexts), what each contains, and how they communicate. Like an organizational chart, but for software.
+- **Sequence Diagrams**: Follow a claim's complete journey from submission to completion, showing each step, each interaction, and how components coordinate through events.
+- **Interactive Dashboards**: Let you explore the system dynamically—click nodes to learn about concepts, follow workflows to understand flows, and discover relationships through guided tours.
+
+**Accessibility and Inclusivity**:
+
+- All diagrams include narrative text descriptions
+- Interactive visualizations support keyboard navigation
+- Color is not the only way information is conveyed—shapes and labels also carry meaning
+- Screen reader support is provided through ARIA labels and text alternatives
+- Multiple formats available (text, diagrams, interactive) for different learning styles
+
+**Getting Started with Visualizations**:
+
+1. Start with the [Visualization Guide](docs/visualization_guide.md) to understand what each visualization type shows and how to read them
+2. Explore the [Interactive Dashboard](docs/visualization.html) for hands-on learning with guided tours
+3. Review [Architecture Diagrams](docs/architecture.md) to understand system organization
+4. Follow [Sequence Diagrams](docs/sequence_diagram.md) to see the complete claim journey
+
+**Available Visualizations**:
+
+- **[Architecture Diagram](docs/architecture.md)**: Detailed system architecture with narrative introductions explaining what each diagram shows and why it matters
+- **[Sequence Diagram](docs/sequence_diagram.md)**: Step-by-step workflow sequence with comprehensive journey storytelling
+- **[Interactive Dashboard](docs/visualization.html)**: Interactive visualizations with narrative tooltips, guided tours, and accessibility features
+- **[Visualization Guide](docs/visualization_guide.md)**: Complete guide to understanding and using visualizations, with accessibility considerations and reading guides
 
 ### Guides
 
@@ -539,6 +857,62 @@ For detailed architecture documentation, see [docs/TECHNICAL.md](docs/TECHNICAL.
 - **[LOCAL_SETUP.md](LOCAL_SETUP.md)**: Local development setup with Ollama
 
 For a complete documentation index, see [docs/README.md](docs/README.md).
+
+---
+
+## Common Questions
+
+### Is this production-ready?
+
+**No.** This is a demonstration system for educational purposes only. It lacks production features like security, persistence, monitoring, and compliance. See [DISCLAIMERS.md](DISCLAIMERS.md) for complete limitations.
+
+### Can I use this for real insurance claims?
+
+**No.** This system is not designed, tested, or approved for handling real insurance claims or customer data. Use only synthetic, demo data.
+
+### What models does it support?
+
+The system supports:
+
+- **Ollama** (local, open-source models) - Recommended for demos
+- **OpenAI** (cloud-based, requires API key)
+- **Anthropic** (cloud-based, requires API key)
+
+### Do I need API keys?
+
+**No!** The system works with Ollama (local models) or mock mode, both of which require no API keys. API keys are only needed if you want to use cloud-based models (OpenAI, Anthropic).
+
+### How long does setup take?
+
+**3 minutes** for basic setup with mock mode. If you want to use local models with Ollama, add 5-10 minutes for Ollama installation and model download.
+
+### What if I encounter errors?
+
+1. Check that you're using Python 3.10+
+2. Ensure all dependencies are installed (`pip install -r requirements.txt`)
+3. Try mock mode first (no Ollama needed)
+4. See [QUICK_START.md](QUICK_START.md) for troubleshooting
+5. Review [BEST_PRACTICES.md](BEST_PRACTICES.md) for common issues
+
+### Can I extend this system?
+
+**Yes!** The system is designed to be extensible. See [BEST_PRACTICES.md](BEST_PRACTICES.md) for guidelines on adding new agents, bounded contexts, or features.
+
+### What's the best way to learn from this?
+
+1. **Start with the README** - Get the big picture
+2. **Run the demo** - See it in action (`python demo.py` or Streamlit dashboard)
+3. **Explore visualizations** - Understand the architecture visually
+4. **Read the code** - Study the domain models and agents
+5. **Try modifications** - Add features or experiment with patterns
+
+### How accurate are the LLM outputs?
+
+LLM outputs are not guaranteed to be accurate. They may contain errors, hallucinations, or biases. This is why the system includes human review capabilities and validation layers. Always validate LLM outputs before using them in production systems.
+
+### Can I contribute?
+
+**Yes!** Contributions that improve documentation, code examples, educational value, test coverage, or visualizations are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 
@@ -609,6 +983,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ## Contributing
 
 This is an educational project. Contributions that improve:
+
 - Documentation clarity
 - Code examples
 - Educational value

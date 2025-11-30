@@ -269,6 +269,48 @@ class CompletionSummary:
                         ],
                     })
         
+        # Check document matching
+        matching_decisions = [d for d in decisions if d.decision_type == DecisionType.DOCUMENT_MATCHING]
+        for decision in matching_decisions:
+            if isinstance(decision.decision_value, dict):
+                match_score = decision.decision_value.get("match_score", 1.0)
+                missing_docs = decision.decision_value.get("missing_documents", [])
+                mismatches = decision.decision_value.get("mismatches", [])
+                recs = decision.decision_value.get("recommendations", [])
+                
+                # Missing required documents
+                if missing_docs:
+                    recommendations.append({
+                        "priority": "high",
+                        "category": "document_requirements",
+                        "recommendation": f"Missing {len(missing_docs)} required document(s)",
+                        "action_items": [
+                            f"Upload missing documents: {', '.join(missing_docs)}",
+                            "Verify all required documents are provided",
+                        ] + recs[:3],  # Include first 3 recommendations
+                    })
+                
+                # Low match score
+                if match_score < 0.5:
+                    recommendations.append({
+                        "priority": "medium",
+                        "category": "document_matching",
+                        "recommendation": f"Low match score ({match_score:.2f}) between documents and claim",
+                        "action_items": [
+                            "Review images to ensure they match claim description",
+                            "Verify dates, locations, and damage descriptions match",
+                        ] + (mismatches[:3] if mismatches else []),
+                    })
+                
+                # Mismatches found
+                if mismatches and match_score >= 0.5:
+                    recommendations.append({
+                        "priority": "medium",
+                        "category": "document_consistency",
+                        "recommendation": f"Found {len(mismatches)} inconsistency(ies) between documents and claim",
+                        "action_items": mismatches[:5],  # Top 5 mismatches
+                    })
+        
         return recommendations
     
     def _generate_decision_timeline(self, decisions: List) -> List[Dict[str, Any]]:

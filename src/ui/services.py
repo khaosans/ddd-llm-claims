@@ -17,6 +17,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.agents import IntakeAgent, PolicyAgent, TriageAgent, FraudAgent
 from src.agents.model_provider import create_model_provider
+from src.agents.document_analysis_agent import DocumentAnalysisAgent
+from src.agents.document_matching_agent import DocumentMatchingAgent
+from src.agents.document_validation_agent import DocumentValidationAgent
+from src.agents.api_config import get_api_config_manager
 from src.domain.policy import Policy, PolicyStatus
 from src.repositories import InMemoryClaimRepository, InMemoryPolicyRepository
 from src.orchestrator import WorkflowOrchestrator
@@ -45,7 +49,18 @@ class UIService:
             if provider_type.lower() == "mock" or provider_type.lower() == "mock (demo)":
                 from unittest.mock import MagicMock, AsyncMock
                 mock_provider = MagicMock()
-                mock_provider.generate = AsyncMock(return_value='{"claim_type":"auto","incident_date":"2024-01-15T14:30:00","claimed_amount":"3500.00","currency":"USD","incident_location":"Main St","description":"Test","claimant_name":"John Doe"}')
+                
+                async def mock_generate(prompt, **kwargs):
+                    # Handle vision/image analysis prompts
+                    if "image" in prompt.lower() or "damage" in prompt.lower() or kwargs.get("images"):
+                        return '{"damage_type":"collision","severity":"moderate","location_visible":"Main Street","date_indicators":"2024-01-15","matches_claim":true,"match_reasoning":"Image shows collision damage matching claim description","details":"Rear-end collision with visible damage to rear bumper"}'
+                    if "fraud" in prompt.lower() or "analyze" in prompt.lower():
+                        return '{"fraud_score":0.15,"risk_level":"low","is_suspicious":false,"risk_factors":[],"confidence":0.90}'
+                    return '{"claim_type":"auto","incident_date":"2024-01-15T14:30:00","claimed_amount":"3500.00","currency":"USD","incident_location":"Main St","description":"Test","claimant_name":"John Doe"}'
+                
+                mock_provider.generate = AsyncMock(side_effect=mock_generate)
+                mock_provider.supports_vision = lambda: True  # Mock supports vision
+                mock_provider.model = "mock-vision-model"
                 intake_provider = policy_provider = triage_provider = fraud_provider = mock_provider
             else:
                 # Auto-detect model if not provided
@@ -86,11 +101,16 @@ class UIService:
             mock_provider = MagicMock()
             
             async def mock_generate(prompt, **kwargs):
+                # Handle vision/image analysis prompts
+                if "image" in prompt.lower() or "damage" in prompt.lower() or kwargs.get("images"):
+                    return '{"damage_type":"collision","severity":"moderate","location_visible":"Main Street","date_indicators":"2024-01-15","matches_claim":true,"match_reasoning":"Image shows collision damage matching claim description","details":"Rear-end collision with visible damage to rear bumper"}'
                 if "fraud" in prompt.lower() or "analyze" in prompt.lower():
                     return '{"fraud_score":0.15,"risk_level":"low","is_suspicious":false,"risk_factors":[],"confidence":0.90}'
                 return '{"claim_type":"auto","incident_date":"2024-01-15T14:30:00","claimed_amount":"3500.00","currency":"USD","incident_location":"Main St","description":"Test","claimant_name":"John Doe"}'
             
             mock_provider.generate = AsyncMock(side_effect=mock_generate)
+            mock_provider.supports_vision = lambda: True  # Mock supports vision
+            mock_provider.model = "mock-vision-model"
             intake_provider = policy_provider = triage_provider = fraud_provider = mock_provider
         
         # Create agents
@@ -122,6 +142,43 @@ class UIService:
         feedback_handler = FeedbackHandler()
         human_review_agent = HumanReviewAgent(self._review_queue, feedback_handler)
         
+        # Create document agents (with auto-detection)
+        try:
+            # Use API config manager for document agents
+            config_manager = get_api_config_manager()
+            
+            # Document Analysis Agent (for image analysis)
+            document_analysis_agent = DocumentAnalysisAgent(
+                model_provider=None,  # Will auto-detect
+                temperature=0.3
+            )
+            
+            # Document Matching Agent
+            document_matching_agent = DocumentMatchingAgent(
+                model_provider=None,  # Will auto-detect
+                temperature=0.3
+            )
+            
+            # Document Validation Agent (if available)
+            try:
+                document_validation_agent = DocumentValidationAgent(
+                    model_provider=intake_provider,  # Can reuse intake provider
+                    temperature=0.2
+                )
+            except Exception:
+                document_validation_agent = None
+        except Exception as e:
+            # Fallback: create without auto-detection
+            document_analysis_agent = DocumentAnalysisAgent(
+                model_provider=intake_provider,
+                temperature=0.3
+            )
+            document_matching_agent = DocumentMatchingAgent(
+                model_provider=intake_provider,
+                temperature=0.3
+            )
+            document_validation_agent = None
+        
         # Create orchestrator
         self._orchestrator = WorkflowOrchestrator(
             intake_agent=intake_agent,
@@ -131,6 +188,9 @@ class UIService:
             claim_repository=self._claim_repo,
             policy_repository=self._policy_repo,
             human_review_agent=human_review_agent,
+            document_validation_agent=document_validation_agent,
+            document_analysis_agent=document_analysis_agent,
+            document_matching_agent=document_matching_agent,
         )
         
         self._initialized = True

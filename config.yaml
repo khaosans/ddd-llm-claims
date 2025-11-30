@@ -46,6 +46,32 @@ agents:
     model: "llama3.2:3b"  # Optimized for single GPU
     provider: "ollama"
     temperature: 0.2  # Low temperature for consistent fraud detection
+  
+  document_analysis:
+    model: "llava"  # Vision model for image analysis (Ollama)
+    provider: "ollama"
+    temperature: 0.3
+  
+  document_matching:
+    model: "llama3.2:3b"  # Can use vision model if needed
+    provider: "ollama"
+    temperature: 0.3
+
+# Cost Management Settings
+cost_management:
+  budget: null  # Optional budget limit in USD (null = no limit)
+  track_costs: true  # Enable cost tracking
+  alert_threshold: 0.8  # Alert when 80% of budget is used
+
+# Vision Model Configuration
+vision_models:
+  ollama:
+    default_model: "llava"  # Common Ollama vision model
+    fallback_model: "bakllava"  # Alternative vision model
+  openai:
+    default_model: "gpt-4o"  # Vision-capable model
+  anthropic:
+    default_model: "claude-3-5-sonnet-20241022"  # Vision-capable model
 
 # Application Settings
 app:

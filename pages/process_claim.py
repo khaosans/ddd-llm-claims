@@ -515,7 +515,7 @@ if st.session_state.last_claim_result and not st.session_state.processing:
     # Decision Summary Tab
     claim_id = result.get("claim_id")
     if claim_id:
-        tab1, tab2, tab3, tab4 = st.tabs(["📋 Extracted Facts", "🔍 Decisions", "📊 Audit Summary", "📈 Completion Summary"])
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["📋 Extracted Facts", "🔍 Decisions", "📊 Audit Summary", "📈 Completion Summary", "🖼️ Document Matching"])
         
         with tab1:
             # Extracted facts
@@ -769,6 +769,100 @@ if st.session_state.last_claim_result and not st.session_state.processing:
                     st.info("No completion summary available yet.")
             except Exception as e:
                 st.warning(f"Could not load completion summary: {str(e)}")
+        
+        with tab5:
+            # Document Matching Results
+            st.subheader("🖼️ Document Matching Results")
+            try:
+                from src.compliance.decision_audit import get_audit_service
+                from src.compliance.models import DecisionType
+                from uuid import UUID
+                
+                audit_service = get_audit_service()
+                decisions = audit_service.get_decisions_for_claim(UUID(claim_id))
+                
+                # Find document matching decisions
+                matching_decisions = [
+                    d for d in decisions 
+                    if d.decision_type == DecisionType.DOCUMENT_MATCHING
+                ]
+                
+                if matching_decisions:
+                    # Get latest matching decision
+                    latest_match = matching_decisions[-1]
+                    match_data = latest_match.decision_value
+                    
+                    if isinstance(match_data, dict):
+                        # Display match score
+                        match_score = match_data.get("match_score", 0.0)
+                        score_color = "🟢" if match_score >= 0.7 else "🟡" if match_score >= 0.5 else "🔴"
+                        st.metric("Match Score", f"{match_score:.2%}", delta=f"{score_color} {'High' if match_score >= 0.7 else 'Medium' if match_score >= 0.5 else 'Low'} Match")
+                        
+                        # Missing documents
+                        missing_docs = match_data.get("missing_documents", [])
+                        if missing_docs:
+                            st.warning(f"⚠️ **Missing Required Documents:** {', '.join(missing_docs)}")
+                            st.info("Please upload these required documents to proceed with the claim.")
+                        
+                        # Matched elements
+                        matched = match_data.get("matched_elements", [])
+                        if matched:
+                            st.success(f"✅ **Matched Elements:** {', '.join(matched)}")
+                        
+                        # Mismatches
+                        mismatches = match_data.get("mismatches", [])
+                        if mismatches:
+                            st.warning(f"⚠️ **Found {len(mismatches)} Mismatch(es):**")
+                            for mismatch in mismatches[:5]:  # Show top 5
+                                st.write(f"- {mismatch}")
+                        
+                        # Recommendations
+                        recommendations = match_data.get("recommendations", [])
+                        if recommendations:
+                            st.subheader("💡 Recommendations")
+                            for rec in recommendations[:5]:  # Show top 5
+                                st.info(f"• {rec}")
+                        
+                        # Cost summary (if available)
+                        try:
+                            from src.agents.cost_tracker import get_cost_tracker
+                            cost_tracker = get_cost_tracker()
+                            cost_summary = cost_tracker.get_summary()
+                            
+                            with st.expander("💰 Cost Summary"):
+                                st.metric("Total Cost", f"${cost_summary.get('total_cost', 0):.4f}")
+                                st.metric("Total Calls", cost_summary.get('total_calls', 0))
+                                st.metric("Vision Calls", cost_summary.get('vision_calls', 0))
+                                
+                                if cost_summary.get('provider_breakdown'):
+                                    st.subheader("Provider Breakdown")
+                                    for provider, stats in cost_summary['provider_breakdown'].items():
+                                        st.write(f"**{provider.title()}:**")
+                                        st.write(f"- Cost: ${stats.get('total_cost', 0):.4f}")
+                                        st.write(f"- Calls: {stats.get('total_calls', 0)}")
+                                        st.write(f"- Vision Calls: {stats.get('vision_calls', 0)}")
+                        except Exception:
+                            pass  # Cost tracking not critical for UI
+                    else:
+                        st.info("Document matching data not available in expected format.")
+                else:
+                    st.info("📋 Document matching not yet completed. Matching runs after document validation.")
+                    
+                    # Show provider status
+                    try:
+                        from src.agents.api_config import get_api_config_manager
+                        config_manager = get_api_config_manager()
+                        available = config_manager.get_available_providers()
+                        
+                        st.subheader("🔧 Model Provider Status")
+                        for provider, is_available in available.items():
+                            status = "✅ Available" if is_available else "❌ Not Available"
+                            st.write(f"**{provider.title()}:** {status}")
+                    except Exception:
+                        pass
+                        
+            except Exception as e:
+                st.warning(f"Could not load document matching results: {str(e)}")
     else:
         # Fallback to old display if no claim_id
         # Extracted facts

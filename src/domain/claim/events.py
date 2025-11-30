@@ -92,3 +92,24 @@ class DocumentAuthenticityChecked(DomainEvent):
     findings: List[str] = Field(default_factory=list, description="List of findings from authenticity check")
     checked_at: datetime = Field(default_factory=datetime.utcnow, description="When the check was completed")
 
+
+class DocumentMatched(DomainEvent):
+    """
+    Domain Event: Document-claim matching has been completed.
+    
+    This event is published when document matching completes for a claim.
+    It includes match scores, mismatches, missing documents, and recommendations.
+    
+    DDD Pattern: Domain Events enable loose coupling between bounded contexts.
+    The Document Matching context publishes this event, and the workflow
+    orchestrator can react to it.
+    """
+    
+    claim_id: UUID = Field(description="ID of the claim for which documents were matched")
+    match_score: float = Field(ge=0.0, le=1.0, description="Overall match score (0.0-1.0)")
+    matched_elements: List[str] = Field(default_factory=list, description="List of matched aspects")
+    mismatches: List[str] = Field(default_factory=list, description="List of inconsistencies found")
+    missing_documents: List[DocumentType] = Field(default_factory=list, description="List of required document types not present")
+    recommendations: List[str] = Field(default_factory=list, description="List of actionable recommendations")
+    matched_at: datetime = Field(default_factory=datetime.utcnow, description="When matching was completed")
+

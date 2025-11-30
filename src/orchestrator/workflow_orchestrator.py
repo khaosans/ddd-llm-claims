@@ -29,6 +29,7 @@ from ..domain.claim.events import (
     DocumentAdded,
     DocumentsValidated,
     DocumentAuthenticityChecked,
+    DocumentMatched,
 )
 from ..domain.events import DomainEvent, EventBus, EventHandler
 from ..domain.fraud import FraudCheckResult
@@ -40,6 +41,7 @@ from ..agents.triage_agent import TriageAgent
 from ..agents.fraud_agent import FraudAgent
 from ..agents.document_validation_agent import DocumentValidationAgent
 from ..agents.document_analysis_agent import DocumentAnalysisAgent
+from ..agents.document_matching_agent import DocumentMatchingAgent
 from ..repositories import ClaimRepository, PolicyRepository
 from ..human_review import HumanReviewAgent, ReviewPriority
 from ..compliance.decision_audit import get_audit_service
@@ -78,6 +80,7 @@ class WorkflowOrchestrator:
         human_review_agent: Optional[HumanReviewAgent] = None,
         document_validation_agent: Optional[DocumentValidationAgent] = None,
         document_analysis_agent: Optional[DocumentAnalysisAgent] = None,
+        document_matching_agent: Optional[DocumentMatchingAgent] = None,
         document_storage_service: Optional[DocumentStorageService] = None,
     ):
         """
@@ -106,6 +109,7 @@ class WorkflowOrchestrator:
         self.human_review_agent = human_review_agent
         self.document_validation_agent = document_validation_agent
         self.document_analysis_agent = document_analysis_agent
+        self.document_matching_agent = document_matching_agent
         self.document_storage_service = document_storage_service or DocumentStorageService()
         self.authenticity_service = get_authenticity_service()
         
@@ -119,6 +123,7 @@ class WorkflowOrchestrator:
         self.event_bus.subscribe("FraudScoreCalculated", FraudScoreCalculatedHandler(self))
         self.event_bus.subscribe("DocumentAdded", DocumentAddedHandler(self))
         self.event_bus.subscribe("DocumentsValidated", DocumentsValidatedHandler(self))
+        self.event_bus.subscribe("DocumentMatched", DocumentMatchedHandler(self))
     
     async def process_claim(self, raw_input: str, source: str = "email") -> Claim:
         """
@@ -274,6 +279,9 @@ class WorkflowOrchestrator:
             # Publish validation event
             await self.event_bus.publish(validation_event)
             
+            # Trigger document matching after validation
+            await self._match_documents_to_claim(claim)
+            
             # Route to human review if not compliant
             if not validation_event.is_compliant and self.human_review_agent:
                 self.human_review_agent.add_for_review(
@@ -334,6 +342,50 @@ class WorkflowOrchestrator:
         except Exception as e:
             # Log error but don't fail the workflow
             print(f"Warning: Document authenticity check failed: {e}")
+    
+    async def _match_documents_to_claim(self, claim: Claim) -> None:
+        """
+        Match documents to claim using DocumentMatchingAgent.
+        
+        Args:
+            claim: Claim to match documents for
+        """
+        if not self.document_matching_agent:
+            return
+        
+        try:
+            # Perform document matching
+            match_result = await self.document_matching_agent.match_documents_to_claim(claim)
+            
+            # Create and publish matching event
+            matching_event = DocumentMatched(
+                claim_id=claim.claim_id,
+                match_score=match_result.match_score,
+                matched_elements=match_result.matched_elements,
+                mismatches=match_result.mismatches,
+                missing_documents=match_result.missing_documents,
+                recommendations=match_result.recommendations,
+            )
+            await self.event_bus.publish(matching_event)
+            
+            # Route to human review if low match score or missing required docs
+            if (match_result.match_score < 0.5 or match_result.missing_documents) and self.human_review_agent:
+                reason_parts = []
+                if match_result.match_score < 0.5:
+                    reason_parts.append(f"Low match score: {match_result.match_score:.2f}")
+                if match_result.missing_documents:
+                    missing = ", ".join([dt.value for dt in match_result.missing_documents])
+                    reason_parts.append(f"Missing required documents: {missing}")
+                
+                self.human_review_agent.add_for_review(
+                    claim=claim,
+                    reason="; ".join(reason_parts),
+                    ai_decision=f"Document matching: Score {match_result.match_score:.2f}",
+                    priority=ReviewPriority.HIGH if match_result.missing_documents else ReviewPriority.MEDIUM,
+                )
+        except Exception as e:
+            # Log error but don't fail the workflow
+            print(f"Warning: Document matching failed: {e}")
     
     async def _handle_claim_facts_extracted(self, event: ClaimFactsExtracted) -> None:
         """
@@ -619,4 +671,17 @@ class DocumentsValidatedHandler(EventHandler):
         """Handle DocumentsValidated event"""
         if isinstance(event, DocumentsValidated):
             await self.orchestrator._handle_documents_validated(event)
+
+
+class DocumentMatchedHandler(EventHandler):
+    """Handler for DocumentMatched domain event"""
+    
+    def __init__(self, orchestrator: WorkflowOrchestrator):
+        self.orchestrator = orchestrator
+    
+    async def handle(self, event: DomainEvent) -> None:
+        """Handle DocumentMatched event"""
+        if isinstance(event, DocumentMatched):
+            # Matching is already complete, just log or trigger follow-up actions
+            pass
 

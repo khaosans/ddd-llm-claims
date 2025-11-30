@@ -4,6 +4,8 @@ Document Analysis Agent - LLM-based document content analysis
 This agent extracts text from documents (OCR for images, text extraction for PDFs)
 and uses LLM to analyze document content, cross-reference with claim summary,
 and detect inconsistencies or fraud indicators.
+
+Now supports vision models for image analysis.
 """
 
 import base64
@@ -17,6 +19,9 @@ from ..domain.claim import Claim
 from ..domain.claim.document import Document
 from ..storage.document_storage import DocumentStorageService
 from .base_agent import BaseAgent
+from .cost_tracker import get_cost_tracker
+from .api_config import get_api_config_manager
+from .model_provider import create_model_provider
 
 
 class DocumentAnalysisResult:
@@ -65,17 +70,43 @@ class DocumentAnalysisAgent(BaseAgent):
     DDD Role: Application Service that coordinates document analysis
     """
     
-    def __init__(self, model_provider, temperature: float = 0.3):
+    def __init__(self, model_provider=None, temperature: float = 0.3):
         """
         Initialize the document analysis agent.
         
         Args:
-            model_provider: Model provider for LLM analysis
+            model_provider: Model provider for LLM analysis (optional, will auto-detect if None)
             temperature: Temperature for LLM (lower for more consistent analysis)
         """
+        # Auto-detect provider if not provided
+        if model_provider is None:
+            config_manager = get_api_config_manager()
+            provider, model = config_manager.get_model_for_agent("document_analysis")
+            provider_config = config_manager.get_provider_config(provider)
+            
+            if provider == "ollama":
+                model_provider = create_model_provider(
+                    "ollama",
+                    model,
+                    base_url=provider_config.get("base_url", "http://localhost:11434")
+                )
+            elif provider == "openai":
+                model_provider = create_model_provider(
+                    "openai",
+                    model,
+                    api_key=provider_config.get("api_key")
+                )
+            elif provider == "anthropic":
+                model_provider = create_model_provider(
+                    "anthropic",
+                    model,
+                    api_key=provider_config.get("api_key")
+                )
+        
         super().__init__(model_provider, temperature)
         self.storage_service = DocumentStorageService()
         self.audit_service = get_audit_service()
+        self.cost_tracker = get_cost_tracker()
     
     def get_system_prompt(self) -> str:
         """
@@ -131,8 +162,44 @@ Be thorough, objective, and provide clear analysis with evidence."""
         tracker.set_prompt(analysis_prompt)
         
         try:
+            # For images, use vision model if available
+            mime_type = document.metadata.mime_type if document.metadata else ""
+            if mime_type.startswith("image/"):
+                # Analyze image content
+                image_analysis = await self.analyze_image_content(document, claim)
+                tracker.add_evidence("image_analysis", image_analysis)
+                
+                # Build enhanced prompt with image analysis
+                if "error" not in image_analysis:
+                    analysis_prompt = f"""Based on the image analysis and claim information:
+
+Image Analysis:
+{str(image_analysis)}
+
+Claim Information:
+{claim_context}
+
+Please provide your analysis in JSON format:
+{{
+    "summary": "Brief summary of document content",
+    "inconsistencies": ["list", "of", "inconsistencies"],
+    "fraud_indicators": ["list", "of", "fraud", "indicators"],
+    "confidence_score": 0.85
+}}"""
+            
             llm_response = await self.generate(analysis_prompt)
             tracker.set_llm_response(llm_response)
+            
+            # Track cost
+            provider_name = self.model_provider.__class__.__name__.replace("Provider", "").lower()
+            model_name = self.model_provider.model
+            self.cost_tracker.record_usage(
+                provider=provider_name,
+                model=model_name,
+                input_tokens=len(analysis_prompt) // 4,  # Rough estimate
+                output_tokens=len(llm_response) // 4,
+                call_type="text"
+            )
             
             # Parse analysis result
             analysis_result = self._parse_analysis_result(llm_response, document.document_id)
@@ -181,9 +248,117 @@ Be thorough, objective, and provide clear analysis with evidence."""
             )
             raise
     
+    async def analyze_image_content(
+        self,
+        document: Document,
+        claim: Claim,
+    ) -> Dict:
+        """
+        Analyze image content using vision models.
+        
+        Args:
+            document: Image document to analyze
+            claim: Claim the image belongs to
+        
+        Returns:
+            Dictionary with analysis results
+        """
+        try:
+            content = self.storage_service.retrieve_document(document)
+            mime_type = document.metadata.mime_type if document.metadata else ""
+            
+            if not mime_type.startswith("image/"):
+                return {"error": "Document is not an image"}
+            
+            # Check if provider supports vision
+            if not self.model_provider.supports_vision():
+                # Try to get a vision-capable provider
+                config_manager = get_api_config_manager()
+                preferred = config_manager.get_preferred_provider("document_analysis")
+                
+                # Try to find vision-capable provider
+                if config_manager.is_provider_available("ollama"):
+                    provider_config = config_manager.get_provider_config("ollama")
+                    vision_provider = create_model_provider(
+                        "ollama",
+                        "llava",  # Common Ollama vision model
+                        base_url=provider_config.get("base_url", "http://localhost:11434")
+                    )
+                elif config_manager.is_provider_available("openai"):
+                    provider_config = config_manager.get_provider_config("openai")
+                    vision_provider = create_model_provider(
+                        "openai",
+                        "gpt-4o",  # Vision-capable model
+                        api_key=provider_config.get("api_key")
+                    )
+                elif config_manager.is_provider_available("anthropic"):
+                    provider_config = config_manager.get_provider_config("anthropic")
+                    vision_provider = create_model_provider(
+                        "anthropic",
+                        "claude-3-5-sonnet-20241022",
+                        api_key=provider_config.get("api_key")
+                    )
+                else:
+                    return {"error": "No vision-capable provider available"}
+            else:
+                vision_provider = self.model_provider
+            
+            # Prepare prompt for image analysis
+            claim_context = self._prepare_claim_context(claim)
+            prompt = f"""Analyze this image in the context of an insurance claim.
+
+Claim Information:
+{claim_context}
+
+Please analyze the image and provide:
+1. What damage or incident is visible in the image?
+2. What type of damage (e.g., collision, fire, water, theft)?
+3. Severity of damage (if applicable)
+4. Location visible in image (if any)
+5. Date/time indicators (if any)
+6. Does the image match the claim description?
+
+Provide your analysis in JSON format:
+{{
+    "damage_type": "type of damage observed",
+    "severity": "severity level",
+    "location_visible": "location if visible",
+    "date_indicators": "date/time if visible",
+    "matches_claim": true/false,
+    "match_reasoning": "explanation of match/mismatch",
+    "details": "detailed description of what's in the image"
+}}"""
+            
+            # Analyze with vision model
+            response = await vision_provider.generate(
+                prompt=prompt,
+                images=[content],
+                system_prompt="You are an expert insurance claims analyst analyzing damage photos."
+            )
+            
+            # Track cost (approximate - vision models have different pricing)
+            provider_name = vision_provider.__class__.__name__.replace("Provider", "").lower()
+            model_name = vision_provider.model
+            self.cost_tracker.record_usage(
+                provider=provider_name,
+                model=model_name,
+                input_tokens=len(prompt) // 4,  # Rough estimate
+                output_tokens=len(response) // 4,
+                call_type="vision"
+            )
+            
+            # Parse response
+            from .json_utils import parse_json_resilient
+            analysis = parse_json_resilient(response, max_attempts=3)
+            
+            return analysis or {"raw_response": response}
+            
+        except Exception as e:
+            return {"error": str(e)}
+    
     async def _extract_text(self, document: Document) -> str:
         """
-        Extract text from document (OCR for images, text extraction for PDFs).
+        Extract text from document (OCR for images using vision models, text extraction for PDFs).
         
         Args:
             document: Document to extract text from
@@ -212,9 +387,12 @@ Be thorough, objective, and provide clear analysis with evidence."""
                 except Exception:
                     return "[PDF text extraction failed - document may be image-based PDF]"
             
-            # For images, return placeholder (OCR would be implemented here)
+            # For images, use vision model analysis
             if mime_type.startswith("image/"):
-                return "[Image content - OCR not implemented in this demo]"
+                # Use vision model to extract information from image
+                # This is a placeholder - actual implementation would analyze the image
+                # For now, return a message indicating vision analysis is available
+                return "[Image content - will be analyzed using vision model]"
             
             # For other types, return placeholder
             return f"[Text extraction not available for {mime_type}]"
