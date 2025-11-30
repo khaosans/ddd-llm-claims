@@ -77,8 +77,9 @@ graph TB
         FC -->|"Assessment"| ML
     end
     
-    subgraph WO["Workflow Orchestrator (Event-Driven)"]
+    subgraph Orchestrator["Workflow Orchestrator (Event-Driven)"]
         direction TB
+        WO["Workflow Orchestrator<br/>🎼"]
         PV_Event["PolicyValidated<br/>(Domain Event)<br/>⚡"]
         FS_Event["FraudScoreCalculated<br/>(Domain Event)<br/>⚡"]
         PVA["Policy Validation Agent<br/>🔍"]
