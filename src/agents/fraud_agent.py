@@ -335,7 +335,19 @@ Output JSON with your fraud assessment."""
         # Check for suspicious timing (claim filed very quickly after policy start)
         if claim.summary.incident_date and claim.summary.reported_date:
             from datetime import timedelta
-            time_diff = claim.summary.reported_date - claim.summary.incident_date
+            
+            # Normalize both datetimes to timezone-naive for comparison
+            # This handles cases where one might be timezone-aware and the other naive
+            incident_date = claim.summary.incident_date
+            reported_date = claim.summary.reported_date
+            
+            # Remove timezone info if present (convert to naive UTC)
+            if incident_date.tzinfo is not None:
+                incident_date = incident_date.replace(tzinfo=None)
+            if reported_date.tzinfo is not None:
+                reported_date = reported_date.replace(tzinfo=None)
+            
+            time_diff = reported_date - incident_date
             if time_diff.days < 1:
                 checks["high_risk_flags"] += 1
                 checks["risk_factors"].append("Claim reported very quickly after incident (< 1 day)")

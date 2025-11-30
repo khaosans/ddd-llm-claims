@@ -78,9 +78,28 @@ class ClaimSummary(BaseModel):
         Domain Invariant: Incident date cannot be in the future.
         
         This is a business rule enforced by the domain model.
+        Also normalizes timezone-aware datetimes to timezone-naive (UTC).
         """
+        # Normalize to timezone-naive (UTC) for consistency
+        if v.tzinfo is not None:
+            v = v.replace(tzinfo=None)
+        
         if v > datetime.utcnow():
             raise ValueError("Incident date cannot be in the future")
+        return v
+    
+    @field_validator('reported_date')
+    @classmethod
+    def validate_reported_date(cls, v: datetime) -> datetime:
+        """
+        Normalize reported_date to timezone-naive (UTC) for consistency.
+        
+        This ensures all datetime comparisons work correctly regardless
+        of whether the input was timezone-aware or timezone-naive.
+        """
+        # Normalize to timezone-naive (UTC) for consistency
+        if v.tzinfo is not None:
+            v = v.replace(tzinfo=None)
         return v
     
     class Config:
