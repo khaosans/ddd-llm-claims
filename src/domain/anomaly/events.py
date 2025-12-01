@@ -24,3 +24,4 @@ class AnomalyDetected(DomainEvent):
     anomaly_result: AnomalyResult = Field(description="The anomaly detection result (Value Object)")
     detected_at: datetime = Field(default_factory=datetime.utcnow, description="When detection occurred")
 
+

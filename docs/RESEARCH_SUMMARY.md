@@ -200,7 +200,7 @@ This system is grounded in established research across multiple domains:
 - **Event-Driven**: In-memory event bus with domain events
 - **XAI**: ExplainabilityService with multiple explanation levels
 - **HITL**: Human review queue and feedback system
-- **Resilience**: JSON parsing resilience (6 strategies), progressive data normalization (4 strategies), retry logic, automatic type conversion, fallbacks
+- **Resilience**: JSON parsing resilience, retry logic, fallbacks
 - **Testing**: Comprehensive test suite with LLM-specific strategies
 
 ### 🔄 Future Work
@@ -210,7 +210,6 @@ This system is grounded in established research across multiple domains:
 - **Observability**: Distributed tracing, metrics, structured logging
 - **Circuit Breakers**: Production-grade circuit breaker implementation
 - **Advanced Testing**: Property-based testing, adversarial testing
-- **Enhanced Resilience**: Adaptive normalization, ML-based type inference, schema evolution support
 
 ## How to Use This Document
 

@@ -87,3 +87,4 @@ echo "💡 To stop services:"
 echo "   - Streamlit: Press Ctrl+C or close terminal"
 echo "   - Ollama: Stop from Ollama app or: pkill ollama"
 
+

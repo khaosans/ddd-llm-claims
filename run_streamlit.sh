@@ -18,3 +18,4 @@ fi
 # Run streamlit
 streamlit run streamlit_app.py
 
+

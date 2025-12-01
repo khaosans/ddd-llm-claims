@@ -145,3 +145,4 @@ streamlit run streamlit_app.py
 
 The system is now fully configured for single GPU operation with Ollama!
 
+

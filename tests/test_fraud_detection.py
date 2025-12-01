@@ -469,3 +469,4 @@ async def test_fraud_result_validation(fraud_agent_setup):
     if fraud_result.risk_level in [FraudRiskLevel.HIGH, FraudRiskLevel.CRITICAL]:
         assert fraud_result.is_suspicious is True
 
+

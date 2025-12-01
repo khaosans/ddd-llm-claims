@@ -123,7 +123,7 @@ class BaseAgent(ABC):
         """
         pass
     
-    def validate_output(self, output: str, expected_schema: type, max_retries: int = 3) -> Any:
+    def validate_output(self, output: str, expected_schema: type, max_retries: int = 2) -> Any:
         """
         Validate LLM output against a Pydantic schema with resilient parsing.
         
@@ -175,147 +175,13 @@ class BaseAgent(ABC):
                     f"Raw output preview: {output[:200]}..."
                 )
         
-        # Progressive normalization and validation with retries
-        return self._validate_with_auto_fix(data, expected_schema, max_retries)
-    
-    def _validate_with_auto_fix(self, data: Dict[str, Any], schema: type, max_retries: int) -> Any:
-        """
-        Validate data with progressive auto-fixing strategies.
-        
-        Tries multiple normalization strategies in order of aggressiveness:
-        1. Basic numeric cleaning
-        2. Full data normalization
-        3. Aggressive auto-fix
-        4. Final attempt with all fixes
-        
-        Args:
-            data: Parsed JSON data
-            schema: Pydantic model class
-            max_retries: Maximum retry attempts
-            
-        Returns:
-            Validated domain object
-            
-        Raises:
-            ValueError: If validation fails after all attempts
-        """
-        from .data_normalizer import DataNormalizer
-        
-        last_error = None
-        strategies = [
-            # Strategy 1: Basic numeric cleaning (least aggressive)
-            lambda d: self._clean_numeric_strings(d, schema),
-            
-            # Strategy 2: Full normalization (moderate)
-            lambda d: DataNormalizer.normalize_data(d, schema),
-            
-            # Strategy 3: Auto-fix common issues (more aggressive)
-            lambda d: DataNormalizer.auto_fix_common_issues(d, schema),
-            
-            # Strategy 4: Combined approach (most aggressive)
-            lambda d: DataNormalizer.normalize_data(
-                DataNormalizer.auto_fix_common_issues(d, schema), 
-                schema
-            ),
-        ]
-        
-        for attempt_num, normalize_strategy in enumerate(strategies[:max_retries + 1]):
-            try:
-                # Apply normalization strategy
-                normalized_data = normalize_strategy(data)
-                
-                # Try validation
-                return schema(**normalized_data)
-                
-            except Exception as e:
-                last_error = e
-                # If this is the last attempt, don't continue
-                if attempt_num >= max_retries:
-                    break
-                # Otherwise, continue to next strategy
-                continue
-        
-        # All strategies failed - provide detailed error
-        raise ValueError(
-            f"Output does not match expected schema {schema.__name__} after {max_retries + 1} normalization attempts. "
-            f"Last error: {last_error}. "
-            f"Parsed data: {data}"
-        ) from last_error
-    
-    def _clean_numeric_strings(self, data: Dict[str, Any], schema: type) -> Dict[str, Any]:
-        """
-        Clean numeric string fields by removing commas and other formatting.
-        
-        This handles cases where LLMs return formatted numbers like '57,500.00'
-        which Pydantic Decimal fields can't parse directly.
-        
-        Args:
-            data: Dictionary of parsed JSON data
-            schema: Pydantic model class to check field types
-        
-        Returns:
-            Cleaned data dictionary
-        """
-        from decimal import Decimal
-        from pydantic import BaseModel
-        import typing
-        
-        if not isinstance(data, dict) or not issubclass(schema, BaseModel):
-            return data
-        
-        cleaned_data = data.copy()
-        
-        # Get schema fields (Pydantic v2)
-        schema_fields = schema.model_fields if hasattr(schema, 'model_fields') else {}
-        
-        # Known numeric field names (fallback if type checking fails)
-        numeric_field_names = {'amount', 'cost', 'price', 'value', 'score', 'confidence', 
-                              'fraud_score', 'claimed_amount', 'coverage_amount', 'limit'}
-        
-        for field_name, field_info in schema_fields.items():
-            if field_name in cleaned_data:
-                value = cleaned_data[field_name]
-                
-                if not isinstance(value, str):
-                    continue
-                
-                # Check if this looks like a numeric string
-                is_numeric_string = False
-                
-                # Check field type annotation
-                field_type = getattr(field_info, 'annotation', None)
-                if field_type:
-                    # Handle direct Decimal type
-                    if field_type == Decimal:
-                        is_numeric_string = True
-                    # Handle Optional[Decimal] or Union types
-                    elif hasattr(typing, 'get_origin') and typing.get_origin(field_type):
-                        origin = typing.get_origin(field_type)
-                        args = typing.get_args(field_type)
-                        if Decimal in args:
-                            is_numeric_string = True
-                    # Handle old-style Union (Python < 3.10)
-                    elif hasattr(field_type, '__origin__'):
-                        if Decimal in getattr(field_type, '__args__', []):
-                            is_numeric_string = True
-                
-                # Fallback: check field name
-                if not is_numeric_string:
-                    is_numeric_string = any(numeric_name in field_name.lower() 
-                                           for numeric_name in numeric_field_names)
-                
-                # Clean the string if it's numeric
-                if is_numeric_string:
-                    # Remove commas, whitespace, keep decimal point and minus sign
-                    cleaned_value = value.replace(',', '').strip()
-                    # Validate it's a valid number format
-                    try:
-                        # Try to convert to float to validate format
-                        float(cleaned_value)
-                        cleaned_data[field_name] = cleaned_value
-                    except (ValueError, TypeError):
-                        # If conversion fails, leave as is (will be caught by Pydantic)
-                        pass
-        
-        return cleaned_data
+        # Validate against schema
+        try:
+            return expected_schema(**data)
+        except Exception as e:
+            raise ValueError(
+                f"Output does not match expected schema {expected_schema.__name__}. "
+                f"Error: {e}. "
+                f"Parsed data: {data}"
+            ) from e
 

@@ -180,3 +180,4 @@ Generate clear, professional compliance reports."""
         event = await self.validate_claim_documents(input_data)
         return event, event
 
+

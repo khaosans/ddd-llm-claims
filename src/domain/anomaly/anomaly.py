@@ -83,3 +83,4 @@ class AnomalyResult(BaseModel):
         """Convert to dictionary for serialization"""
         return self.model_dump()
 
+

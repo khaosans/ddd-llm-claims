@@ -446,16 +446,6 @@ ollama pull llama3.2
 - Check LLM output format
 - Verify system prompt includes JSON schema
 - Add retry logic with different temperature
-- System automatically tries 6 parsing strategies
-- See docs/RESILIENCE.md for details
-
-### Data Format Errors
-
-- **Comma-separated numbers**: Automatically handled (e.g., "57,500.00" → "57500.00")
-- **Date format variations**: Multiple formats supported automatically
-- **Enum case sensitivity**: Case-insensitive matching enabled
-- **Type mismatches**: Automatic type conversion based on schema
-- System uses progressive normalization (4 strategies) - see docs/RESILIENCE.md
 
 ### Domain Invariant Violations
 
@@ -507,16 +497,6 @@ ollama pull llama3.2
    - Track agent performance metrics
    - Monitor LLM token usage and costs
    - Implement agent health checks
-   - Track normalization success rates
-   - Monitor data format patterns
-
-4. **Enhanced Resilience**
-   - Adaptive normalization based on success patterns
-   - ML-based type inference for unknown fields
-   - Schema evolution support with backward compatibility
-   - Performance optimization (parallel normalization, caching)
-   - Extended format support (international formats, timezones)
-   - See docs/RESILIENCE.md for current implementation
    - Add agent decision logging
    - Distributed tracing for agent workflows (Sigelman et al., 2010; OpenTelemetry Project, n.d.)
    - Observability engineering practices (Charity & Swaminathan, 2021)

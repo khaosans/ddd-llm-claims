@@ -221,13 +221,6 @@ This guide outlines best practices for using, extending, and learning from this 
    - Graceful degradation
    - Clear error messages
 
-5. **Leverage Resilience Features**
-   - Trust automatic normalization (comma-separated numbers, date formats)
-   - Use progressive retry strategies
-   - Monitor normalization success rates
-   - Test with various data formats
-   - See docs/RESILIENCE.md for details
-
 ### Testing Best Practices
 
 Testing LLM-based systems requires specialized strategies beyond traditional unit testing:
@@ -243,8 +236,6 @@ Testing LLM-based systems requires specialized strategies beyond traditional uni
    - Test validation
    - Test error handling
    - Test output parsing
-   - Test data normalization (comma-separated numbers, date formats, enum values)
-   - Test progressive retry strategies
    - Behavioral testing beyond accuracy (Ribeiro et al., 2020)
    - Property-based testing for ML systems (Godefroid et al., 2020)
 

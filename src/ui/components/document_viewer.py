@@ -154,3 +154,4 @@ def display_compliance_status(
         for doc_type in missing_document_types:
             st.write(f"- {doc_type.value.replace('_', ' ').title()}")
 
+

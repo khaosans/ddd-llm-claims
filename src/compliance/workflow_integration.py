@@ -224,3 +224,4 @@ def get_completion_summary(claim_id: UUID) -> Dict[str, Any]:
     monitor = get_decision_monitor()
     return monitor.get_completion_summary(claim_id)
 
+

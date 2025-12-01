@@ -163,3 +163,4 @@ class InMemoryDocumentRepository(DocumentRepository):
         """Clear all documents (useful for testing)"""
         self._documents.clear()
 
+
