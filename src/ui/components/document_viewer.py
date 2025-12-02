@@ -155,3 +155,4 @@ def display_compliance_status(
             st.write(f"- {doc_type.value.replace('_', ' ').title()}")
 
 
+

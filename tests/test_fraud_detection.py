@@ -470,3 +470,4 @@ async def test_fraud_result_validation(fraud_agent_setup):
         assert fraud_result.is_suspicious is True
 
 
+

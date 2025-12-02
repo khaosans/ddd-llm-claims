@@ -84,3 +84,4 @@ class AnomalyResult(BaseModel):
         return self.model_dump()
 
 
+
